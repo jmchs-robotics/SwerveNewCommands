@@ -10,6 +10,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ExampleSubsystem extends SubsystemBase {
+  // Declare subsystem components and constants here
+
+  // Declare class-wide variables here
+
   /**
    * Creates a new ExampleSubsystem.
    */
@@ -21,4 +25,6 @@ public class ExampleSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
+  // Put methods particular to the subsystem here
 }
