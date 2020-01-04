@@ -16,6 +16,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  // Declare inner public classes to segment constants
+
   /**
   * Contains the CAN IDs of the Drivetrian SparkMax motors
   */ 
