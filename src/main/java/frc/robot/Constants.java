@@ -33,6 +33,9 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE = 31;
   }
 
+  /**
+   * Contains the CAN IDs of the elevator SparkMax motors
+   */
   public final class CarriageMotors {
     public static final int LEFT_MOTOR = 21;
     public static final int RIGHT_MOTOR = 22;

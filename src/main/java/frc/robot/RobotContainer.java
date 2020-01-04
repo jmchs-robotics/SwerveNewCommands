@@ -32,6 +32,7 @@ public class RobotContainer {
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController, XboxController.Button.kStickLeft.value);
 
   // Define commands here (if necessary)
+  // Many, or even most, commands can be declared inline.
   private final DefaultSwerveCommand m_autoCommand = new DefaultSwerveCommand(m_swerve, m_primaryController);
 
 
