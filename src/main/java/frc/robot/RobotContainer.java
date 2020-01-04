@@ -24,15 +24,17 @@ public class RobotContainer {
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
 
-  // Define commands here
-  private final DefaultSwerveCommand m_autoCommand = new DefaultSwerveCommand(m_swerve);
-
   // Define Joysticks and Buttons here
   private final XboxController m_primaryController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
 
   private final JoystickButton m_primaryController_A = new JoystickButton(m_primaryController, XboxController.Button.kA.value);
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController, XboxController.Button.kStickLeft.value);
+
+  // Define commands here (if necessary)
+  private final DefaultSwerveCommand m_autoCommand = new DefaultSwerveCommand(m_swerve, m_primaryController);
+
+
   /**
    * The container for the robot.  Contains subsystems, OI devices, and commands.
    */
@@ -55,7 +57,7 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve));
+    m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
   }
 
 
