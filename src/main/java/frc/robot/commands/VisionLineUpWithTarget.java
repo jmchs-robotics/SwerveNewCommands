@@ -15,6 +15,8 @@ public class VisionLineUpWithTarget extends CommandBase {
   SwerveDriveSubsystem m_drivetrain;
   SocketVisionWrapper m_vision;
 
+  private double previousVisionOutput = 0;
+
   /**
    * Creates a new VisionLineUpWithTarget.
    */
@@ -47,7 +49,13 @@ public class VisionLineUpWithTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_drivetrain.pidMove(0, m_vision.get().get_degrees_x(), m_drivetrain.getGyroAngle(), false);
+    // Check vision error for valid result
+    double next = m_vision.get().get_degrees_x();
+    if(next != -0.01){
+      previousVisionOutput = next;
+    }
+
+    m_drivetrain.pidMove(0, previousVisionOutput, m_drivetrain.getGyroAngle(), false);
   }
 
   // Called once the command ends or is interrupted.
@@ -59,6 +67,7 @@ public class VisionLineUpWithTarget extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    // TODO: make finish timer
     return m_drivetrain.forwardAtSetpoint() && m_drivetrain.strafeAtSetpoint() && m_drivetrain.rotationAtSetpoint();
   }
 }
