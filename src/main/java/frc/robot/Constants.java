@@ -16,6 +16,8 @@ package frc.robot;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final boolean SHOW_DEBUG_VISION = false;
+  
   // Declare inner public classes to segment constants
 
   /**
