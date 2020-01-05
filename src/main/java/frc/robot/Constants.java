@@ -37,6 +37,34 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE = 31;
   }
 
+  public final class DrivetrainConstants {
+    // set for SwerveyJr 191207
+    public static final double WHEELBASE = 22;
+    public static final double TRACKWIDTH = 19.5;
+    public static final double WIDTH = 25.75;
+    public static final double LENGTH = 28;
+
+    // PID constants for swerve modules
+    public static final double ANGLE_kP = 3.0;
+    public static final double ANGLE_kI = 0.0;
+    public static final double ANGLE_kD = 0.0;    
+
+    // PID constants for whole-drivetrain strafe control
+    public static final double STRAFE_kP = 0.01;
+    public static final double STRAFE_kI = 0.0;
+    public static final double STRAFE_kD = 0.0;
+
+    // PID constants for whole-drivetrain strafe control
+    public static final double FORWARD_kP = 0.01;
+    public static final double FORWARD_kI = 0.0;
+    public static final double FORWARD_kD = 0.0;
+
+    // PID constants for whole-drivetrain strafe control
+    public static final double ROTATION_kP = 0.01;
+    public static final double ROTATION_kI = 0.0;
+    public static final double ROTATION_kD = 0.0;
+  }
+
   /**
    * Contains the CAN IDs of the elevator SparkMax motors
    */

@@ -189,10 +189,6 @@ public class SwerveDriveModule extends SubsystemBase {
         if (angle < 0) angle += 360;
 
         return angle;
-
-
-          
-
     }
 
     /** 

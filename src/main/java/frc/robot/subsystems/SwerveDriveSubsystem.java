@@ -5,22 +5,29 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpiutil.math.MathUtil;
+import frc.robot.Constants.DrivetrainConstants;
 
 // import the drivetrain constants statically so they can simply be used
 // as variables (see swervedrivemodules below)
 import static frc.robot.Constants.DrivetrainMotors.*;
 
 public class SwerveDriveSubsystem extends HolonomicDrivetrain {
-    // set for SwerveyJr 191207
-    public static final double WHEELBASE = 22;
-    public static final double TRACKWIDTH = 19.5;
-    public static final double WIDTH = 25.75;
-    public static final double LENGTH = 28;
+    // Macro PIDControllers for new synchronous structure
+    // 1/5/2020
+    
+    PIDController strafeController;
+    PIDController forwardController;
+    PIDController rotationController;
 
-    private double angle_kP = 3.0;
-    private double angle_kI = 0.0;
-    private double angle_kD = 0.0;
+    private double forwardMinOutput = -1;
+    private double strafeMinOutput = -1;
+    private double rotationMinOutput = -1;
+    private double forwardMaxOutput = 1;
+    private double strafeMaxOutput = 1;
+    private double rotationMaxOutput = 1;
 
 	/*
 	 * 0 is Front Left
@@ -33,7 +40,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
     private AHRS mNavX = new AHRS(SPI.Port.kMXP, (byte) 200);
 
     public SwerveDriveSubsystem() {
-        super(WIDTH, LENGTH);
+        super(DrivetrainConstants.WIDTH, DrivetrainConstants.LENGTH);
         zeroGyro();
         
         // 10/26/19 Big Switch from Talon to Spark Max controllers
@@ -67,10 +74,14 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             module.setDriveGearRatio(5.7777);
             module.setDriveWheelRadius(module.getDriveWheelRadius() * 1.05);
             module.setMotionConstraints(getMaxAcceleration(), getMaxVelocity());
-            module.setAngleKD(angle_kD);
-            module.setAngleKI(angle_kI);
-            module.setAngleKP(angle_kP);
+            module.setAngleKD(DrivetrainConstants.ANGLE_kD);
+            module.setAngleKI(DrivetrainConstants.ANGLE_kI);
+            module.setAngleKP(DrivetrainConstants.ANGLE_kP);
         }
+
+        strafeController = new PIDController(DrivetrainConstants.STRAFE_kP, DrivetrainConstants.STRAFE_kI, DrivetrainConstants.STRAFE_kD);
+        forwardController = new PIDController(DrivetrainConstants.FORWARD_kP, DrivetrainConstants.FORWARD_kI, DrivetrainConstants.FORWARD_kD);
+        rotationController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
     }
 
     /**
@@ -90,10 +101,10 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             forward = temp;
         }
 
-        double a = strafe - rotation * (WHEELBASE / TRACKWIDTH);
-        double b = strafe + rotation * (WHEELBASE / TRACKWIDTH);
-        double c = forward - rotation * (TRACKWIDTH / WHEELBASE);
-        double d = forward + rotation * (TRACKWIDTH / WHEELBASE);
+        double a = strafe - rotation * (DrivetrainConstants.WHEELBASE / DrivetrainConstants.TRACKWIDTH);
+        double b = strafe + rotation * (DrivetrainConstants.WHEELBASE / DrivetrainConstants.TRACKWIDTH);
+        double c = forward - rotation * (DrivetrainConstants.TRACKWIDTH / DrivetrainConstants.WHEELBASE);
+        double d = forward + rotation * (DrivetrainConstants.TRACKWIDTH / DrivetrainConstants.WHEELBASE);
 
         return new double[]{
                 Math.atan2(b, c) * 180 / Math.PI,
@@ -143,10 +154,10 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             forward = temp;
         }
         
-        double a = strafe - rotation * (WHEELBASE / TRACKWIDTH);
-        double b = strafe + rotation * (WHEELBASE / TRACKWIDTH);
-        double c = forward - rotation * (TRACKWIDTH / WHEELBASE);
-        double d = forward + rotation * (TRACKWIDTH / WHEELBASE);
+        double a = strafe - rotation * (DrivetrainConstants.WHEELBASE / DrivetrainConstants.TRACKWIDTH);
+        double b = strafe + rotation * (DrivetrainConstants.WHEELBASE / DrivetrainConstants.TRACKWIDTH);
+        double c = forward - rotation * (DrivetrainConstants.TRACKWIDTH / DrivetrainConstants.WHEELBASE);
+        double d = forward + rotation * (DrivetrainConstants.TRACKWIDTH / DrivetrainConstants.WHEELBASE);
 
         double[] angles = new double[]{
                 Math.atan2(b, c) * 180 / Math.PI,
@@ -181,8 +192,20 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             }
             mSwerveModules[i].setTargetSpeed(speeds[i]);
         }
-    } 
+    }
 
+    public void pidMove(double forwardError, double strafeError, double angleError, boolean fieldOriented){
+      double forward = forwardController.calculate(forwardError);
+      double strafe = strafeController.calculate(strafeError);
+      double rotation = rotationController.calculate(angleError);
+
+      forward = MathUtil.clamp(forward, forwardMinOutput, forwardMaxOutput);
+      strafe = MathUtil.clamp(strafe, strafeMinOutput, strafeMaxOutput);
+      rotation = MathUtil.clamp(rotation, rotationMinOutput, rotationMaxOutput);
+
+      holonomicDrive(forward, strafe, rotation);
+    }
+    
     @Override
     public void stopDriveMotors() {
         for (SwerveDriveModule module : mSwerveModules) {
@@ -210,34 +233,6 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         return 10; 
     }
 
-    public double getAngleKP() {
-        return angle_kP;
-    }
-    public double getAngleKI() {
-        return angle_kI;
-    }
-    public double getAngleKD() {
-        return angle_kD;
-    }
-    public void setAngleKP( double k) {
-        angle_kP = k;
-        for (int i = 0; i < 4; i++) {
-            mSwerveModules[i].setAngleKP( k);
-        }
-    }
-    public void setAngleKI( double k) {
-        angle_kI = k;
-        for (int i = 0; i < 4; i++) {
-            mSwerveModules[i].setAngleKI( k);
-        }
-    }
-    public void setAngleKD( double k) {
-        angle_kD = k;
-        for (int i = 0; i < 4; i++) {
-            mSwerveModules[i].setAngleKD( k);
-        }
-    }
-
     /**
      * Setting all the modules to be brake or coast
      */
@@ -250,4 +245,108 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         }
     }
 
+    // ALL the PID methods. Like, all of them. There are a lot.
+
+    public void setForwardSetpoint(double setpoint){
+      forwardController.setSetpoint(setpoint);
+    }
+    public void setStrafeSetpoint(double setpoint){
+      strafeController.setSetpoint(setpoint);
+    }
+    public void setRotationSetpoint(double setpoint){
+      rotationController.setSetpoint(setpoint);
+    }
+    public void setForwardTolerance(double positionTolerance, double velocityTolerance){
+      forwardController.setTolerance(positionTolerance, velocityTolerance);
+    }
+    public void setStrafeTolerance(double positionTolerance, double velocityTolerance){
+      strafeController.setTolerance(positionTolerance, velocityTolerance);
+    }
+    public void setRotationTolerance(double positionTolerance, double velocityTolerance){
+      rotationController.setTolerance(positionTolerance, velocityTolerance);
+    }
+    public void setForwardWraparoundInputRange(double min, double max){
+      forwardController.enableContinuousInput(min, max);
+    }
+    public void setStrafeWraparoundInputRange(double min, double max){
+      strafeController.enableContinuousInput(min, max);
+    }
+    public void setRotationWraparoundInputRange(double min, double max){
+      rotationController.enableContinuousInput(min, max);
+    }
+    public void setForwardAccumulationRange(double min, double max){
+      forwardController.setIntegratorRange(min, max);
+    }
+    public void setStrafeAccumulationRange(double min, double max){
+      strafeController.setIntegratorRange(min, max);
+    }
+    public void setRotationAccumulationRange(double min, double max){
+      rotationController.setIntegratorRange(min, max);
+    } 
+    public void setForwardOutputRange(double minOutput, double maxOutput){
+      forwardMinOutput = minOutput;
+      forwardMaxOutput = maxOutput;
+    }
+    public void setStrafeOutputRange(double minOutput, double maxOutput){
+      strafeMinOutput = minOutput;
+      strafeMaxOutput = maxOutput;
+    }
+    public void setRotationOutputRange(double minOutput, double maxOutput) {
+      rotationMinOutput = minOutput;
+      rotationMaxOutput = maxOutput;
+    }
+    public double getForwardErrorDerivative(){
+      return forwardController.getVelocityError();
+    }
+    public double getStrafeErrorDerivative(){
+      return forwardController.getVelocityError();
+    }
+    public double getRotationErrorDerivative(){
+      return rotationController.getVelocityError();
+    }
+    public boolean forwardAtSetpoint(){
+      return forwardController.atSetpoint();
+    }
+    public boolean strafeAtSetpoint(){
+      return strafeController.atSetpoint();
+    }
+    public boolean rotationAtSetpoint(){
+      return strafeController.atSetpoint();
+    }
+    /**
+     * Clear all I accumulation, disable continuous input, and set all 
+     * setpoints to 0.
+     */
+    public void resetPID(){
+      // clear I accumulation
+      forwardController.reset();
+      strafeController.reset();
+      rotationController.reset();
+
+      // reset to noncontinuous input
+      forwardController.disableContinuousInput();
+      strafeController.disableContinuousInput();
+      rotationController.disableContinuousInput();
+
+      // set all setpoints to 0
+      forwardController.setSetpoint(0);
+      strafeController.setSetpoint(0);
+      rotationController.setSetpoint(0);
+
+      // set all I accumulation ranges to defaults
+      forwardController.setIntegratorRange(-1.0, 1.0);
+      strafeController.setIntegratorRange(-1.0,1.0);
+      rotationController.setIntegratorRange(-1.0, 1.0);
+
+      forwardController.setTolerance(0.05, Double.POSITIVE_INFINITY);
+      strafeController.setTolerance(0.05, Double.POSITIVE_INFINITY);
+      rotationController.setTolerance(0.05, Double.POSITIVE_INFINITY);
+
+      forwardMinOutput = -1;
+      strafeMinOutput = -1;
+      rotationMinOutput = -1;
+      forwardMaxOutput = 1;
+      strafeMaxOutput = 1;
+      rotationMaxOutput = 1;
+    }
 }
