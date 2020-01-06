@@ -245,6 +245,19 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         }
     }
 
+    /**
+     * Sets the brake mode off. Same as calling {@code setBrake(false)}.
+     */
+    public void setBrakeOff(){
+      setBrake(false);
+    }
+    /**
+     * Sets the brake mode on. Same as calling {@code setBrake(true)}.
+     */
+    public void setBrakeOn(){
+      setBrake(true);
+    }
+
     // ALL the PID methods. Like, all of them. There are a lot.
 
     public void setForwardSetpoint(double setpoint){

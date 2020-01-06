@@ -7,9 +7,7 @@
 
 package frc.robot.commands;
 
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.SwerveDriveSubsystem;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -66,7 +64,8 @@ public class DefaultSwerveCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.stopDriveMotors();
+    // Try to bring the robot to a dead stop before starting the next command
+    m_subsystem.stopDriveMotors(); 
   }
 
   // Returns true when the command should end.
