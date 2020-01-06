@@ -28,6 +28,11 @@ public class SampleColorCommand extends CommandBase {
     // Has no subsystem requirements -- simply reads the color sensor.
 
     m_colorSensor = sensor;
+
+    m_colorMatcher.addColorMatch(ColorTargets.kBlueTarget);
+    m_colorMatcher.addColorMatch(ColorTargets.kGreenTarget);
+    m_colorMatcher.addColorMatch(ColorTargets.kRedTarget);
+    m_colorMatcher.addColorMatch(ColorTargets.kYellowTarget);
   }
 
   // Called when the command is initially scheduled.

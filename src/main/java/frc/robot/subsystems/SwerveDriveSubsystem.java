@@ -225,12 +225,12 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
 
     @Override
     public double getMaxAcceleration() {
-        return 5.5;
+      return 5.5;
     }
 
     @Override
     public double getMaxVelocity() {
-        return 10; 
+      return 10; 
     }
 
     /**
@@ -238,11 +238,10 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
      */
     public void setBrake(boolean b)
     {
-        System.out.println( "setting brake mode to " + b);
-        for (int i = 0; i < 4; i++)
-        {
-            mSwerveModules[i].setMotorBrake(b);
-        }
+      for (int i = 0; i < 4; i++)
+      {
+        mSwerveModules[i].setMotorBrake(b);
+      }
     }
 
     /**
