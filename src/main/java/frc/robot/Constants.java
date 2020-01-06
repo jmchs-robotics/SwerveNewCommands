@@ -7,6 +7,10 @@
 
 package frc.robot;
 
+import com.revrobotics.ColorMatch;
+
+import edu.wpi.first.wpilibj.util.Color;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants.  This class should not be used for any other purpose.  All constants should be
@@ -23,7 +27,7 @@ public final class Constants {
   /**
   * Contains the CAN IDs of the Drivetrian SparkMax motors
   */ 
-  public final class DrivetrainMotors {
+  public static final class DrivetrainMotors {
     public static final int FRONT_LEFT_DRIVE = 25;
     public static final int FRONT_LEFT_ANGLE = 23;
 
@@ -37,7 +41,7 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE = 31;
   }
 
-  public final class DrivetrainConstants {
+  public static final class DrivetrainConstants {
     // set for SwerveyJr 191207
     public static final double WHEELBASE = 22;
     public static final double TRACKWIDTH = 19.5;
@@ -68,8 +72,18 @@ public final class Constants {
   /**
    * Contains the CAN IDs of the elevator SparkMax motors
    */
-  public final class CarriageMotors {
+  public static final class CarriageMotors {
     public static final int LEFT_MOTOR = 21;
     public static final int RIGHT_MOTOR = 22;
+  }
+
+  /**
+   * Constants for the color sensor targets, in RGB arrays
+   */
+  public static final class ColorTargets {
+    public static final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+    public static final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+    public static final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+    public static final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
   }
 }

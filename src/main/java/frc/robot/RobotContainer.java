@@ -7,14 +7,17 @@
 
 package frc.robot;
 
+import com.revrobotics.ColorSensorV3;
+
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DefaultSwerveCommand;
+import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.VisionLineUpWithTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
-import frc.robot.util.SocketVisionSender;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -37,6 +40,9 @@ public class RobotContainer {
   private final SocketVisionWrapper piece_ = new SocketVisionWrapper("10.59.33.255", 5805);
   private final SocketVisionSendWrapper sender_ = new SocketVisionSendWrapper("10.59.33.255", 5800);
 
+  // Color Sensor
+  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+
   // Define Joysticks and Buttons here
   private final XboxController m_primaryController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
@@ -45,9 +51,12 @@ public class RobotContainer {
       XboxController.Button.kA.value);
   private final JoystickButton m_primaryController_B = new JoystickButton(m_primaryController,
       XboxController.Button.kB.value);
+  private final JoystickButton m_primaryController_LeftBumper = new JoystickButton(m_primaryController, 
+      XboxController.Button.kBumperLeft.value);
+
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value);
-
+  
   // Define commands here (if necessary)
   // Many, or even most, commands can be declared inline.
   private final DefaultSwerveCommand m_autoCommand = new DefaultSwerveCommand(m_swerve, m_primaryController);
@@ -71,6 +80,7 @@ public class RobotContainer {
   private void configureButtonBindings() {
     m_primaryController_A.whenPressed(      
       new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new VisionLineUpWithTarget(m_swerve, rft_), 
         new SendVisionCommand(sender_, "_")
@@ -79,13 +89,23 @@ public class RobotContainer {
 
     m_primaryController_B.whenPressed( // Inline command group!
       new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new SendVisionCommand(sender_, "G"), // Can't be a lambda because Sender's aren't subsystems
         new VisionLineUpWithTarget(m_swerve, piece_), 
         new SendVisionCommand(sender_, "_")
       )
     );
 
-    m_secondaryController_StickLeft.whenPressed(m_autoCommand).whenReleased(m_autoCommand);
+    // Put brake mode on a button!
+    m_primaryController_LeftBumper.whenPressed(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve)
+      ).whenReleased(
+        new InstantCommand(m_swerve::setBrakeOff, m_swerve)
+      );
+
+    m_secondaryController_StickLeft.whileHeld(
+      new SampleColorCommand(m_colorSensor)
+    );
   }
 
   private void configureDefaultCommands() {
