@@ -203,7 +203,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       strafe = MathUtil.clamp(strafe, strafeMinOutput, strafeMaxOutput);
       rotation = MathUtil.clamp(rotation, rotationMinOutput, rotationMaxOutput);
 
-      holonomicDrive(forward, strafe, rotation);
+      holonomicDrive(forward, strafe, rotation, fieldOriented);
     }
     
     @Override
