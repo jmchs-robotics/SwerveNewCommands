@@ -29,6 +29,7 @@ public class SampleColorCommand extends CommandBase {
 
     m_colorSensor = sensor;
 
+    // Colors you want to search for must be added to the colorMatcher.
     m_colorMatcher.addColorMatch(ColorTargets.kBlueTarget);
     m_colorMatcher.addColorMatch(ColorTargets.kGreenTarget);
     m_colorMatcher.addColorMatch(ColorTargets.kRedTarget);
