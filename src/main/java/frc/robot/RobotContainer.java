@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
@@ -42,6 +43,9 @@ public class RobotContainer {
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+
+  // DriveStation for GameSpecificMessage
+  DriverStation m_station = DriverStation.getInstance();
 
   // Define Joysticks and Buttons here
   private final XboxController m_primaryController = new XboxController(0);
@@ -112,6 +116,9 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
   }
 
+  public String getGameSpecificMessage(){
+    return m_station.getGameSpecificMessage();
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
