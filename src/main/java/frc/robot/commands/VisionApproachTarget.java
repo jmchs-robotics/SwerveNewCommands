@@ -68,8 +68,9 @@ public class VisionApproachTarget extends CommandBase {
       previousXCoord = m_vision.get().get_degrees_x();
       previousDistance = m_vision.get().get_distance();
     } else {
-      // Assume robot continued to move forward at same rate
-      previousDistance = m_vision.get().get_distance() - m_drivetrain.getForwardErrorDerivative();
+      // Assume robot continued to move at same rate
+      previousXCoord = previousXCoord - m_drivetrain.getStrafeErrorDerivative();
+      previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
     }
 
     m_drivetrain.pidMove(previousDistance, previousXCoord, m_drivetrain.getGyroAngle(), false);
