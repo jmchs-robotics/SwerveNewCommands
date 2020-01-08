@@ -64,16 +64,12 @@ public class VisionApproachTarget extends CommandBase {
   @Override
   public void execute() {
     // Check vision error for valid result
-    double next = m_vision.get().get_degrees_x();
-    if(next != -0.01){
-      previousXCoord = next;
-    }
-
-    double distance = m_vision.get().get_distance();
-    if(distance > 0){
-      previousDistance = distance;
+    if(m_vision.get().get_direction() != "nada"){
+      previousXCoord = m_vision.get().get_degrees_x();
+      previousDistance = m_vision.get().get_distance();
     } else {
-      previousDistance = distance - m_drivetrain.getForwardErrorDerivative();
+      // Assume robot continued to move forward at same rate
+      previousDistance = m_vision.get().get_distance() - m_drivetrain.getForwardErrorDerivative();
     }
 
     m_drivetrain.pidMove(previousDistance, previousXCoord, m_drivetrain.getGyroAngle(), false);

@@ -15,7 +15,7 @@ public class VisionLineUpWithTarget extends CommandBase {
   SwerveDriveSubsystem m_drivetrain;
   SocketVisionWrapper m_vision;
 
-  private double previousVisionOutput = 0;
+  private double vision_error_x = 0;
 
   /**
    * Creates a new VisionLineUpWithTarget.
@@ -49,13 +49,16 @@ public class VisionLineUpWithTarget extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // Check vision error for valid result
-    double next = m_vision.get().get_degrees_x();
-    if(next != -0.01){
-      previousVisionOutput = next;
+    // Check vision for valid results
+    String visionValid = m_vision.get().get_direction();
+    if(visionValid != "nada"){
+      vision_error_x = m_vision.get().get_degrees_x();
+    } else {
+      // Assume robot keeps moving to the side
+      vision_error_x = vision_error_x - m_drivetrain.getStrafeErrorDerivative();
     }
 
-    m_drivetrain.pidMove(0, previousVisionOutput, m_drivetrain.getGyroAngle(), false);
+    m_drivetrain.pidMove(0, vision_error_x, m_drivetrain.getGyroAngle(), false);
   }
 
   // Called once the command ends or is interrupted.
