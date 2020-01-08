@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
+import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
@@ -60,10 +61,6 @@ public class RobotContainer {
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value);
-  
-  // Define commands here (if necessary)
-  // Many, or even most, commands can be declared inline.
-  private final DefaultSwerveCommand m_autoCommand = new DefaultSwerveCommand(m_swerve, m_primaryController);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -126,7 +123,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
+    
+    return autoCommand;
   }
 }
