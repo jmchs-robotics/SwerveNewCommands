@@ -9,7 +9,8 @@ import java.net.UnknownHostException;
 import frc.robot.Constants;
 
 public class SocketVision extends Thread {
-	public static final String NADA = "nada";
+  public static final String NADA = "nada";
+  public static final String CENTER = "center";
 	public static final String RIGHT = "right";
 	public static final String LEFT = "left";
 
@@ -159,7 +160,7 @@ public class SocketVision extends Thread {
 					ldirection_ = RIGHT;
 
 				} else if (packetParsing[4].equalsIgnoreCase("c")) {
-					ldirection_ = NADA;
+					ldirection_ = CENTER;
 
 				} else {
 					if (Constants.SHOW_DEBUG_VISION) {
@@ -168,7 +169,7 @@ public class SocketVision extends Thread {
 					ldirection_ = NADA;
 				}
 
-				// synchronized (this) 
+				synchronized (this) 
 				{
 					degrees_x = ldegrees_x;
 //					degrees_y = ldegrees_y;
@@ -243,8 +244,7 @@ public class SocketVision extends Thread {
 	 * @return
 	 * The number of units from center (L/R) the target is. -1 if no target is found.
 	 */
-	// public synchronized double get_degrees_x() {
-	public double get_degrees_x() {
+	public synchronized double get_degrees_x() {
 			double tmp = degrees_x;		
 		// degrees_x = 0;
 		return tmp;

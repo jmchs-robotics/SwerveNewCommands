@@ -113,8 +113,32 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
   }
 
+  /**
+   * This grabs the game message from the Driver Station
+   * @return The game specific message.
+   */
   public String getGameSpecificMessage(){
     return m_station.getGameSpecificMessage();
+  }
+
+  /**
+   * Call this to initialize the SocketVision objects. Must be called in periodInit() methods
+   * if you want to use vision in that periodPeriodic() time (where period is autonomous or teleop).
+   */
+  public void visionInit(){
+    sender_.init();
+    rft_.init();
+    piece_.init();
+  }
+
+  /**
+   * Call this to shut down the SocketVision objects. Must be called in disabledInit() to reduce stray threads
+   * running in disabled.
+   */
+  public void visionShutDown(){
+    sender_.shutDown();
+    rft_.shutDown();
+    piece_.shutDown();
   }
 
   /**
