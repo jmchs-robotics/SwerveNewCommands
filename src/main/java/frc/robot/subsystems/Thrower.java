@@ -103,7 +103,7 @@ public class Thrower extends SubsystemBase {
 
   /**
    * Set the target speed for the thrower
-   * @param wheelTargetRPMs The signed target speed for the thrower wheel.
+   * @param wheelTargetRPMs The target speed for the thrower wheel.
    */
   public void setSetpoint(double wheelTargetRPMs){
     m_throwerController.setReference(wheelTargetRPMs * ThrowerConstants.GEAR_RATIO_MOTOR_TO_WHEEL, ControlType.kVelocity);
