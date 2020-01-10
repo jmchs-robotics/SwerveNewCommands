@@ -72,9 +72,27 @@ public final class Constants {
   /**
    * Contains the CAN IDs of the elevator SparkMax motors
    */
-  public static final class CarriageMotors {
+  public static final class ThrowerMotors {
     public static final int LEFT_MOTOR = 21;
     public static final int RIGHT_MOTOR = 22;
+    public static final boolean INVERT = false;
+  }
+
+  /**
+   * Contains the physical and PID constants of the Thrower subsystem
+   */
+  public static final class ThrowerConstants {
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double FEED_FORWARD = 0;
+    public static final double kIz = 0;
+    public static final double MIN_OUTPUT = -1;
+    public static final double MAX_OUTPUT = 1;
+    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; // 40T pinion, 48T wheel gear
+    public static final int UPDATE_RATE = 5;  // 200 Hz update rate leader -> follower. Default 10ms
+
+    public static final boolean TUNE = false;
   }
 
   /**
