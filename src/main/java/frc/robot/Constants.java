@@ -86,4 +86,13 @@ public final class Constants {
     public static final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     public static final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
   }
+
+  /**
+   * Constants for the control panel
+   */
+  public static final class ControlPanelActuators {
+    public static final int motorCanID = 11;
+    public static final int soleniodFirst = 12;
+    public static final int soleniodSecond = 13;
+  }
 }
