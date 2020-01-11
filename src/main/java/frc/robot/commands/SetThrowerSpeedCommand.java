@@ -7,28 +7,38 @@
 
 package frc.robot.commands;
 
+import com.revrobotics.CANPIDController;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ThrowerSubsystem;
 
+import frc.robot.Constants.ThrowerMotor;
+import frc.robot.Constants.ThrowerPIDs;
+
 public class SetThrowerSpeedCommand extends CommandBase {
+  private ThrowerSubsystem m_subsystem;
+  private double setPoint;
   /**
    * Creates a new SetThrowerSpeedCommand.
    */
   public SetThrowerSpeedCommand(ThrowerSubsystem subsystem, double intendedSpeed) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
+
+    m_subsystem=subsystem;
+    setPoint=intendedSpeed;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    
+    m_subsystem.setThrowerSpeed(setPoint);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
+    //SetThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
   }
 
   // Called once the command ends or is interrupted.
@@ -39,6 +49,7 @@ public class SetThrowerSpeedCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return m_subsystem.atSetpoint(0.01);
+    //0.01 means this is the percent we want for our thrower.
   }
 }
