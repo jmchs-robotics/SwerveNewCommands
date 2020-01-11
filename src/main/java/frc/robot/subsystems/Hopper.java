@@ -32,16 +32,25 @@ public class Hopper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
+  /**
+   * Set the next setpoint to one full revolution forward. DO NOT call repeatedly in execute().
+   */
   public void dischargeAll() {
     m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperMotors.ENCODER_TICKS_TO_REVOLUTION);
   }
 
+  /**
+   * Set the next setpoint to one-sixth revolution forward. DO NOT call repeatedly in execute().
+   */
   public void nextSlot() {
     m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperMotors.ENCODER_TICKS_TO_REVOLUTION / 6);
   }
 
+  /**
+   * Set the next setpoint to one-sixth revolution backward. DO NOT call repeatedly in execute().
+   */
   public void previousSlot() {
-    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget())
+    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() - HopperMotors.ENCODER_TICKS_TO_REVOLUTION / 6);
   }
 
   /**
