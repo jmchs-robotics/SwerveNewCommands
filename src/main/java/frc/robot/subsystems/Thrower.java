@@ -116,6 +116,7 @@ public class Thrower extends SubsystemBase {
    * Disable the thrower motors by setting their output to 0 and letting them coast to a stop.
    */
   public void stopThrower(){
+    m_setpoint = 0;
     m_leftMotor.disable();
   }
 
