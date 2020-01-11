@@ -36,6 +36,8 @@ public class Thrower extends SubsystemBase {
   private double kMaxOutput = ThrowerConstants.MAX_OUTPUT;
   private double kMinOutput = ThrowerConstants.MIN_OUTPUT;
 
+  private double m_setpoint = 0;
+
   /**
    * Creates a new Thrower.
    */
@@ -106,7 +108,8 @@ public class Thrower extends SubsystemBase {
    * @param wheelTargetRPMs The target speed for the thrower wheel.
    */
   public void setSetpoint(double wheelTargetRPMs){
-    m_throwerController.setReference(wheelTargetRPMs * ThrowerConstants.GEAR_RATIO_MOTOR_TO_WHEEL, ControlType.kVelocity);
+    m_setpoint = wheelTargetRPMs * ThrowerConstants.GEAR_RATIO_MOTOR_TO_WHEEL;
+    m_throwerController.setReference(m_setpoint, ControlType.kVelocity);
   }
 
   /**
@@ -116,7 +119,11 @@ public class Thrower extends SubsystemBase {
     m_leftMotor.disable();
   }
 
-  public double getVelocity(){
-    return m_throwerEncoder.getVelocity();
+  /**
+   * Get whether the thrower is within a threshold of the setpoint.
+   * @return true if velocity of motor is within thresholdPercent of target.
+   */
+  public boolean atSetpoint(double thresholdPercent){
+    return Math.abs(m_setpoint - m_throwerEncoder.getVelocity()) <= Math.abs(m_setpoint * thresholdPercent);
   }
 }

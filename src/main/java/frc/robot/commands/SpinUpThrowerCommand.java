@@ -10,51 +10,45 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ThrowerLUT;
 import frc.robot.subsystems.Thrower;
-import frc.robot.util.SocketVision;
 import frc.robot.util.SocketVisionWrapper;
 
-public class ThrowToTarget extends CommandBase {
-  private Thrower m_subsystem;
+public class SpinUpThrowerCommand extends CommandBase {
+  private Thrower m_thrower;
   private SocketVisionWrapper m_vision;
 
-  private double setpoint = 0;
-
   /**
-   * Creates a new ThrowToTarget.
+   * Creates a new SpinUpThrowerCommand.
    */
-  public ThrowToTarget(Thrower thrower, SocketVisionWrapper vision) {
+  public SpinUpThrowerCommand(Thrower thrower, SocketVisionWrapper visionTarget) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(thrower);
 
-    m_subsystem = thrower;
-    m_vision = vision;
+    m_thrower = thrower;
+    m_vision = visionTarget;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_thrower.setSetpoint(ThrowerLUT.distanceToRPMs(m_vision.get().get_distance()));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // Make sure that the vision data is valid
-    if(m_vision.get().get_direction() != SocketVision.NADA){
-      setpoint = ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
-    }
-    
-    m_subsystem.setSetpoint(setpoint);
+    // Wait for the thrower to spin up
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_subsystem.stopThrower();
+    // Do nothing -- the thrower should keep spinning!
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    // Within 5% of setpoint
+    return m_thrower.atSetpoint(0.05);
   }
 }

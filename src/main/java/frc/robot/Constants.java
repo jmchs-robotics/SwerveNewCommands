@@ -7,6 +7,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
+import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.ColorMatch;
 
 import edu.wpi.first.wpilibj.util.Color;
@@ -93,6 +100,100 @@ public final class Constants {
     public static final int UPDATE_RATE = 5;  // 200 Hz update rate leader -> follower. Default 10ms
 
     public static final boolean TUNE = false;
+  }
+
+  /**
+   * Contains the LUT for the thrower
+   */
+  public static final class ThrowerLUT {
+    // Known distance to rpm values, where
+    // index = [some mathematical formula, e.g. (int)distance/20]
+    private static final double[] LUT = {
+
+    };
+
+    /**
+     * Use a LUT to map distance to RPMs. Linearly approximate between values.
+     */
+    public static double distanceToRPMs(double inches){
+      // TODO: implement LUT
+      return inches;
+    }
+  }
+
+  public static final class HopperMotors {
+    public static final int MAIN_MOTOR_ID = 15;
+    public static final double ENCODER_TICKS_TO_REVOLUTION = 4096.0;
+
+    public static final TalonSRXConfiguration GetMainMotorConfiguration(){
+      TalonSRXConfiguration config = new TalonSRXConfiguration();
+
+      /* Talon SRX */
+      config.primaryPID.selectedFeedbackSensor = FeedbackDevice.RemoteSensor0;
+      config.primaryPID.selectedFeedbackCoefficient = 0.328293;
+      config.auxiliaryPID.selectedFeedbackSensor = FeedbackDevice.Analog;
+      config.auxiliaryPID.selectedFeedbackCoefficient = 0.877686;
+      config.forwardLimitSwitchSource = LimitSwitchSource.Deactivated;
+      config.reverseLimitSwitchSource = LimitSwitchSource.Deactivated;
+      config.sum0Term = FeedbackDevice.QuadEncoder;
+      config.sum1Term = FeedbackDevice.RemoteSensor0;
+      config.diff0Term = FeedbackDevice.RemoteSensor1;
+      config.diff1Term = FeedbackDevice.PulseWidthEncodedPosition;
+      config.peakCurrentLimit = 20;
+      config.peakCurrentDuration = 200;
+      config.continuousCurrentLimit = 30;
+      config.openloopRamp = 1.023000;
+      config.closedloopRamp = 1.705000;
+      config.peakOutputForward = 0.939394;
+      config.peakOutputReverse = -0.289345;
+      config.nominalOutputForward = 0.739980;
+      config.nominalOutputReverse = -0.119257;
+      config.neutralDeadband = 0.199413;
+      config.voltageCompSaturation = 9.296875;
+      config.voltageMeasurementFilter = 16;
+      config.velocityMeasurementPeriod = VelocityMeasPeriod.Period_25Ms;
+      config.velocityMeasurementWindow = 8;
+      config.forwardLimitSwitchDeviceID = 6;
+      config.reverseLimitSwitchDeviceID = 5;
+      config.forwardLimitSwitchNormal = LimitSwitchNormal.Disabled;
+      config.reverseLimitSwitchNormal = LimitSwitchNormal.Disabled;
+      config.forwardSoftLimitThreshold = 2767;
+      config.reverseSoftLimitThreshold = -1219;
+      config.forwardSoftLimitEnable = false;
+      config.reverseSoftLimitEnable = false;
+
+      config.slot0.kP = 504.000000;
+      config.slot0.kI = 5.600000;
+      config.slot0.kD = 0.200000;
+      config.slot0.kF = 19.300000;
+      config.slot0.integralZone = 900;
+      config.slot0.allowableClosedloopError = 217;
+      config.slot0.maxIntegralAccumulator = 254.000000;
+      config.slot0.closedLoopPeakOutput = 0.869990;
+      config.slot0.closedLoopPeriod = 33;
+
+      config.auxPIDPolarity = true;
+      config.remoteFilter0.remoteSensorDeviceID = 0;
+      config.remoteFilter0.remoteSensorSource = RemoteSensorSource.Off;
+      config.remoteFilter1.remoteSensorDeviceID = 0;
+      config.remoteFilter1.remoteSensorSource = RemoteSensorSource.Off;
+      config.motionCruiseVelocity = 37;
+      config.motionAcceleration = 3;
+      config.motionProfileTrajectoryPeriod = 11;
+      config.feedbackNotContinuous = true;
+      config.remoteSensorClosedLoopDisableNeutralOnLOS = false;
+      config.clearPositionOnLimitF = true;
+      config.clearPositionOnLimitR = true;
+      config.clearPositionOnQuadIdx = false;
+      config.limitSwitchDisableNeutralOnLOS = true;
+      config.softLimitDisableNeutralOnLOS = false;
+      config.pulseWidthPeriod_EdgesPerRot = 9;
+      config.pulseWidthPeriod_FilterWindowSz = 32;
+      config.customParam0 = 3;
+      config.customParam1 = 5;
+
+      return config;
+    }
   }
 
   /**
