@@ -95,4 +95,27 @@ public final class Constants {
     public static final int soleniodFirst = 12;
     public static final int soleniodSecond = 13;
   }
+
+  public static final class ThrowerMotor {
+    public static final int throwerMaxID = 14;
+    //public static final double throwerMotorSpeed = 0.7;//arbitrary number
+    public static final boolean INVERT_FOLLOWER = false;
+  }
+
+  public static final class ThrowerPIDs {
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double FEED_FORWARD = 0;
+    public static final double kIz = 0;
+    public static final double MIN_OUTPUT = -1;
+    public static final double MAX_OUTPUT = 1;
+    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; //40T pinion, 48T wheel gear
+    public static final int UPDATE_RATE = 5; // 200 Ht update rate leader -> folloer. Default 10ms
+
+    public static final boolean TIME = false;
+
+    public static final boolean TUNE = true;
+
+  }
 }
