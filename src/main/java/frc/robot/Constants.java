@@ -82,7 +82,7 @@ public final class Constants {
   public static final class ThrowerMotors {
     public static final int LEFT_MOTOR = 21;
     public static final int RIGHT_MOTOR = 22;
-    public static final boolean INVERT = false;
+    public static final boolean INVERT_FOLLOWER = false;
   }
 
   /**

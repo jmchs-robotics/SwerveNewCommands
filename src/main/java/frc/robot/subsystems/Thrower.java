@@ -48,7 +48,7 @@ public class Thrower extends SubsystemBase {
     m_leftMotor.setIdleMode(IdleMode.kCoast);
     m_rightMotor.setIdleMode(IdleMode.kCoast);
 
-    m_rightMotor.follow(m_leftMotor, ThrowerMotors.INVERT);
+    m_rightMotor.follow(m_leftMotor, ThrowerMotors.INVERT_FOLLOWER);
     // Set the leader to a custom update rate, default 10ms
     m_leftMotor.setPeriodicFramePeriod(PeriodicFrame.kStatus0, ThrowerConstants.UPDATE_RATE);
 
