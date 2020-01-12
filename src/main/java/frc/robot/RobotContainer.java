@@ -155,12 +155,28 @@ public class RobotContainer {
         )
       )
     );
+
+    // Put intake on the secondary B button for now.
+    m_secondaryController_B.whenHeld(
+      new StartEndCommand(
+        ()->{
+          m_intake.lowerIntake();
+          m_intake.setMotor(0.7);
+        }, 
+        ()->{
+          m_intake.raiseIntake();
+          m_intake.setMotor(0);
+        }, 
+        m_intake)
+    );
     
   }
 
   private void configureDefaultCommands() {
     m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController));
+
     m_thrower.setDefaultCommand(new StartEndCommand(m_thrower::stopThrower, ()->{}, m_thrower)); // Spin down thrower on startup, do nothing on end.
+
     m_controlPanel.setDefaultCommand(new StartEndCommand( ()->{
         m_controlPanel.turnOffSolenoid();
         m_controlPanel.setSpinMotor(0);
