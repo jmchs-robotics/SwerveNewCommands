@@ -24,6 +24,7 @@ import frc.robot.commands.VisionApproachTargetCommand;
 import frc.robot.commands.VisionLineUpWithTargetCommand;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
@@ -49,6 +50,7 @@ public class RobotContainer {
   private final ThrowerSubsystem m_thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_hopper = new HopperSubsystem();
   private final ControlPanelSubsystem m_controlPanel = new ControlPanelSubsystem();
+  private final IntakeSubsystem m_intake = new IntakeSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -80,6 +82,8 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value);
   private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
       XboxController.Button.kA.value);
+  private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController,
+      XboxController.Button.kB.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -123,6 +127,7 @@ public class RobotContainer {
       new InstantCommand(m_swerveDrive::setBrakeOff, m_swerveDrive)
     );
 
+    // Put field orientation on a button.
     m_primaryController_LeftBumper.whenPressed(
       new InstantCommand(() -> m_swerveDrive.setFieldOriented(false), m_swerveDrive)
     ).whenReleased(
@@ -150,6 +155,7 @@ public class RobotContainer {
         )
       )
     );
+    
   }
 
   private void configureDefaultCommands() {

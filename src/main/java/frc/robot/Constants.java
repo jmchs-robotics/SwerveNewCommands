@@ -10,7 +10,6 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
@@ -213,5 +212,14 @@ public final class Constants {
     public static final int SOLENOID_FORWARD_CHANNEL = 0;
     public static final int SOLENOID_REVERSE_CHANNEL = 1;
     public static final int SPINNER_ID = 16;
+  }
+
+  /**
+   * Constants for the intake subsystem
+   */
+  public static final class IntakeActuators {
+    public static final int SOLENOID_FORWARD_CHANNEL = 2;
+    public static final int SOLENOID_REVERSE_CHANNEL = 3;
+    public static final int INTAKE_MOTOR_PWM_ID = 0;
   }
 }
