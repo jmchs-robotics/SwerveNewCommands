@@ -16,6 +16,8 @@ import frc.robot.Constants.HopperMotors;
 
 public class HopperSubsystem extends SubsystemBase {
   private TalonSRX m_hopperMotor;
+
+  private int m_storeCount = 0;
   
   /**
    * Creates a new Hopper.
@@ -37,6 +39,7 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public void dischargeAll() {
     m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperMotors.ENCODER_TICKS_TO_REVOLUTION);
+    m_storeCount = 0;
   }
 
   /**
@@ -60,6 +63,21 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public boolean atSetpoint(int maxError) {
     return Math.abs(m_hopperMotor.getClosedLoopError()) < maxError;
+  }
+
+  /**
+   * Valid only if {@code incStoredCount()} is called each time a ball is added to the hopper.
+   * @return The number of balls stored in the hopper.
+   */
+  public int getStoredCount(){
+    return m_storeCount;
+  }
+
+  /**
+   * Increment the counter tracking the number of balls stored in the hopper. Remember that we can store 5 at most!
+   */
+  public void incStoredCount(){
+    m_storeCount++;
   }
 
 }

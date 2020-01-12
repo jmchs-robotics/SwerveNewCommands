@@ -161,7 +161,7 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController));
     m_thrower.setDefaultCommand(new StartEndCommand(m_thrower::stopThrower, ()->{}, m_thrower)); // Spin down thrower on startup, do nothing on end.
-    m_controlPanel.setDefaultCommand(new StartEndCommand(()->{
+    m_controlPanel.setDefaultCommand(new StartEndCommand( ()->{
         m_controlPanel.turnOffSolenoid();
         m_controlPanel.setSpinMotor(0);
       }, ()->{}, m_controlPanel)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
