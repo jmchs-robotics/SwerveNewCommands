@@ -66,6 +66,8 @@ public class RobotContainer {
       XboxController.Button.kB.value);
   private final JoystickButton m_primaryController_LeftBumper = new JoystickButton(m_primaryController, 
       XboxController.Button.kBumperLeft.value);
+  private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController,
+      XboxController.Button.kBumperRight.value);
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value);
@@ -108,11 +110,17 @@ public class RobotContainer {
     );
 
     // Put brake mode on a button!
+    m_primaryController_RightBumper.whenPressed(
+      new InstantCommand(m_swerve::setBrakeOn, m_swerve)
+    ).whenReleased(
+      new InstantCommand(m_swerve::setBrakeOff, m_swerve)
+    );
+
     m_primaryController_LeftBumper.whenPressed(
-        new InstantCommand(m_swerve::setBrakeOn, m_swerve)
-      ).whenReleased(
-        new InstantCommand(m_swerve::setBrakeOff, m_swerve)
-      );
+      new InstantCommand(() -> m_swerve.setFieldOriented(false), m_swerve)
+    ).whenReleased(
+      new InstantCommand(()-> m_swerve.setFieldOriented(true), m_swerve)
+    );
 
     m_secondaryController_StickLeft.whileHeld(
       new SampleColorCommand(m_colorSensor)
