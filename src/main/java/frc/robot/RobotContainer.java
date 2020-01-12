@@ -45,10 +45,10 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  */
 public class RobotContainer {
   // Define subsystems here
-  private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
+  private final SwerveDriveSubsystem m_swerveDrive = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_hopper = new HopperSubsystem();
-  private final ControlPanelSubsystem m_spinner = new ControlPanelSubsystem();
+  private final ControlPanelSubsystem m_controlPanel = new ControlPanelSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -100,40 +100,40 @@ public class RobotContainer {
   private void configureButtonBindings() {
     m_primaryController_A.whenPressed(      
       new SequentialCommandGroup(
-        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+        new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new VisionLineUpWithTarget(m_swerve, rft_), 
+        new VisionLineUpWithTarget(m_swerveDrive, rft_), 
         new SendVisionCommand(sender_, "_")
       )
     );
 
     m_primaryController_B.whenPressed( // Inline command group!
       new SequentialCommandGroup(
-        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+        new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "G"), // Can't be a lambda because Sender's aren't subsystems
-        new VisionLineUpWithTarget(m_swerve, piece_), 
+        new VisionLineUpWithTarget(m_swerveDrive, piece_), 
         new SendVisionCommand(sender_, "_")
       )
     );
 
     // Put brake mode on a button!
     m_primaryController_RightBumper.whenPressed(
-      new InstantCommand(m_swerve::setBrakeOn, m_swerve)
+      new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive)
     ).whenReleased(
-      new InstantCommand(m_swerve::setBrakeOff, m_swerve)
+      new InstantCommand(m_swerveDrive::setBrakeOff, m_swerveDrive)
     );
 
     m_primaryController_LeftBumper.whenPressed(
-      new InstantCommand(() -> m_swerve.setFieldOriented(false), m_swerve)
+      new InstantCommand(() -> m_swerveDrive.setFieldOriented(false), m_swerveDrive)
     ).whenReleased(
-      new InstantCommand(()-> m_swerve.setFieldOriented(true), m_swerve)
+      new InstantCommand(()-> m_swerveDrive.setFieldOriented(true), m_swerveDrive)
     );
 
     // Put accumulate & print output on a button!
     m_primaryController_Y.whileHeld(
       new ParallelCommandGroup(
-        new InstantCommand(m_swerve::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read.
-        new InstantCommand(() -> SmartDashboard.putNumberArray("Robot Position: ", m_swerve.getPosition())) // Use a lambda to get at SmartDashboard
+        new InstantCommand(m_swerveDrive::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read.
+        new InstantCommand(() -> SmartDashboard.putNumberArray("Robot Position: ", m_swerveDrive.getPosition())) // Use a lambda to get at SmartDashboard
       )
     );
 
@@ -153,12 +153,12 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
+    m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController));
     m_thrower.setDefaultCommand(new StartEndCommand(m_thrower::stopThrower, ()->{}, m_thrower)); // Spin down thrower on startup, do nothing on end.
-    m_spinner.setDefaultCommand(new StartEndCommand(()->{
-        m_spinner.turnOffSolenoid();
-        m_spinner.setSpinMotor(0);
-      }, ()->{}, m_spinner)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
+    m_controlPanel.setDefaultCommand(new StartEndCommand(()->{
+        m_controlPanel.turnOffSolenoid();
+        m_controlPanel.setSpinMotor(0);
+      }, ()->{}, m_controlPanel)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
   }
 
   /**
@@ -195,7 +195,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
+    Command autoCommand = new VisionApproachTarget(m_swerveDrive, rft_, 100, 5, 5);
     
     return autoCommand;
   }
