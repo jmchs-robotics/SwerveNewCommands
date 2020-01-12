@@ -361,4 +361,43 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       strafeMaxOutput = 1;
       rotationMaxOutput = 1;
     }
+
+    /**
+     * Accumulate the position vector of each of the swerve modules.
+     */
+    public void accumulatePosition(){
+      for(SwerveDriveModule module : mSwerveModules) {
+        module.accumulatePosition();
+      }
+    }
+
+    public void printPositions(){
+      for(int i = 0; i < 4; i++){
+        SmartDashboard.putNumberArray("Swerve Module " + i, mSwerveModules[i].getXYPosition());
+      }
+    }
+
+    /**
+     * Returns the average position of the swerve drive modules.
+     * @return
+     */
+    public double[] getPosition(){
+      double[] vector = {0,0};
+
+      for(SwerveDriveModule module : mSwerveModules){
+        vector[0] += module.getXYPosition()[0];
+        vector[1] += module.getXYPosition()[1];
+      }
+
+      vector[0] /= 4;
+      vector[1] /= 4;
+
+      return vector;
+    }
+
+    public void setRobotPosition(double x, double y){
+      for(SwerveDriveModule module : mSwerveModules){
+        module.setPosition(x, y);
+      }
+    }
 }

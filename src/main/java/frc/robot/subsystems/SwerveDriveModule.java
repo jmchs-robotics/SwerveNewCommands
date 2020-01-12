@@ -54,14 +54,18 @@ public class SwerveDriveModule extends SubsystemBase {
 
     public static final double SWERVE_1_ENC_MIN = 0.0; 
     // input to breakout is 3.3 but it expects max 5.0 and then downconverts to max 3.3
-	public static final double SWERVE_1_ENC_MAX = 3.3 * 3.3 / 5.0; 
+	  public static final double SWERVE_1_ENC_MAX = 3.3 * 3.3 / 5.0; 
 	
     private double ANGLE_SENSOR_MAX_VOLTAGE = SWERVE_1_ENC_MAX;
     private double ANGLE_SENSOR_MIN_VOLTAGE = SWERVE_1_ENC_MIN;
     private double ANGLE_SENSOR_RANGE = ANGLE_SENSOR_MAX_VOLTAGE - ANGLE_SENSOR_MIN_VOLTAGE;
     public long bfc = 0;
 
-     public SwerveDriveModule(int moduleNumber, CANSparkMax angleMotor, CANSparkMax driveMotor, double zeroOffset) {        this.moduleNumber = moduleNumber;
+    private double[] m_positionVector = { 0, 0 };
+    private double m_deltaAngle = 0;
+    private double m_deltaDrive = 0;
+
+    public SwerveDriveModule(int moduleNumber, CANSparkMax angleMotor, CANSparkMax driveMotor, double zeroOffset) {        this.moduleNumber = moduleNumber;
         
         mAngleMotor = angleMotor;
         mDriveMotor = driveMotor;
@@ -381,5 +385,34 @@ public class SwerveDriveModule extends SubsystemBase {
 
         m_pidControllerDrive.setSmartMotionMaxAccel(inchesToEncoderTicks(maxAcceleration * 12) / 10, 0);
         m_pidControllerDrive.setSmartMotionMaxVelocity(inchesToEncoderTicks(maxVelocity * 12) / 10, 0);
+    }
+
+    /**
+     * Get the X, Y position vector for this swerve module.
+     * @return double[2] X, Y position vector.
+     */
+    public double[] getXYPosition(){
+      return m_positionVector;
+    }
+
+    /**
+     * Accumulate X and Y position into the position vector for this module.
+     */
+    public void accumulatePosition(){
+      m_deltaDrive = m_encoderDrive.getPosition() - m_deltaDrive;
+      double angleRadians = ( m_analogSensorAngle.getPosition() - ANGLE_SENSOR_MIN_VOLTAGE ) * 2 * Math.PI / ANGLE_SENSOR_RANGE; // Scale the sensor output to [0, 2*PI)
+      m_deltaAngle = angleRadians - m_deltaAngle;
+      m_positionVector[0] += m_deltaDrive * Math.cos(m_deltaAngle);
+      m_positionVector[1] += m_deltaDrive * Math.sin(m_deltaAngle);
+    }
+
+    /**
+     * Set the position vector of this module to newX, newY.
+     * @param newX The new X-coord of the module.
+     * @param newY The new Y-coord of the module.
+     */
+    public void setPosition(double newX, double newY) {
+      m_positionVector[0] = newX;
+      m_positionVector[1] = newY;
     }
 }

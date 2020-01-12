@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.DischargeAll;
 import frc.robot.commands.SampleColorCommand;
@@ -28,6 +29,7 @@ import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -68,6 +70,8 @@ public class RobotContainer {
       XboxController.Button.kBumperLeft.value);
   private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController,
       XboxController.Button.kBumperRight.value);
+  private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController,
+      XboxController.Button.kY.value);
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value);
@@ -120,6 +124,14 @@ public class RobotContainer {
       new InstantCommand(() -> m_swerve.setFieldOriented(false), m_swerve)
     ).whenReleased(
       new InstantCommand(()-> m_swerve.setFieldOriented(true), m_swerve)
+    );
+
+    // Put accumulate & print output on a button!
+    m_primaryController_Y.whileHeld(
+      new ParallelCommandGroup(
+        new InstantCommand(m_swerve::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read
+        new InstantCommand(() -> SmartDashboard.putNumberArray("Robot Position: ", m_swerve.getPosition())) // Use a lambda to get at SmartDashboard
+      )
     );
 
     m_secondaryController_StickLeft.whileHeld(
