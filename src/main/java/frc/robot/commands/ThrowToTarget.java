@@ -9,12 +9,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ThrowerLUT;
-import frc.robot.subsystems.Thrower;
+import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVision;
 import frc.robot.util.SocketVisionWrapper;
 
 public class ThrowToTarget extends CommandBase {
-  private Thrower m_subsystem;
+  private ThrowerSubsystem m_subsystem;
   private SocketVisionWrapper m_vision;
 
   private double setpoint = 0;
@@ -22,7 +22,7 @@ public class ThrowToTarget extends CommandBase {
   /**
    * Creates a new ThrowToTarget.
    */
-  public ThrowToTarget(Thrower thrower, SocketVisionWrapper vision) {
+  public ThrowToTarget(ThrowerSubsystem thrower, SocketVisionWrapper vision) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(thrower);
 

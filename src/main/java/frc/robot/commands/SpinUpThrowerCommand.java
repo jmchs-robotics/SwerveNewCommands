@@ -9,17 +9,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ThrowerLUT;
-import frc.robot.subsystems.Thrower;
+import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionWrapper;
 
 public class SpinUpThrowerCommand extends CommandBase {
-  private Thrower m_thrower;
+  private ThrowerSubsystem m_thrower;
   private SocketVisionWrapper m_vision;
 
   /**
    * Creates a new SpinUpThrowerCommand.
    */
-  public SpinUpThrowerCommand(Thrower thrower, SocketVisionWrapper visionTarget) {
+  public SpinUpThrowerCommand(ThrowerSubsystem thrower, SocketVisionWrapper visionTarget) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(thrower);
 

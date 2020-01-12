@@ -14,13 +14,13 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperMotors;
 
-public class Hopper extends SubsystemBase {
+public class HopperSubsystem extends SubsystemBase {
   private TalonSRX m_hopperMotor;
   
   /**
    * Creates a new Hopper.
    */
-  public Hopper() {
+  public HopperSubsystem() {
     m_hopperMotor = new TalonSRX(HopperMotors.MAIN_MOTOR_ID);
     
     m_hopperMotor.configAllSettings(HopperMotors.GetMainMotorConfiguration());

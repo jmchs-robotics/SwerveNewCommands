@@ -23,9 +23,9 @@ import frc.robot.commands.ThrowToTarget;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
 import frc.robot.subsystems.ControlPanelSubsystem;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
-import frc.robot.subsystems.Thrower;
+import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -46,8 +46,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
-  private final Thrower m_thrower = new Thrower();
-  private final Hopper m_hopper = new Hopper();
+  private final ThrowerSubsystem m_thrower = new ThrowerSubsystem();
+  private final HopperSubsystem m_hopper = new HopperSubsystem();
   private final ControlPanelSubsystem m_spinner = new ControlPanelSubsystem();
 
   // Vision objects

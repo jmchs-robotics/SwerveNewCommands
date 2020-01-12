@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ThrowerConstants;
 import frc.robot.Constants.ThrowerMotors;
 
-public class Thrower extends SubsystemBase {
+public class ThrowerSubsystem extends SubsystemBase {
 
   private CANSparkMax m_leftMotor;
   private CANSparkMax m_rightMotor;
@@ -41,7 +41,7 @@ public class Thrower extends SubsystemBase {
   /**
    * Creates a new Thrower.
    */
-  public Thrower() {
+  public ThrowerSubsystem() {
     m_leftMotor = new CANSparkMax(ThrowerMotors.LEFT_MOTOR, MotorType.kBrushless);
     m_rightMotor = new CANSparkMax(ThrowerMotors.RIGHT_MOTOR, MotorType.kBrushless);
 

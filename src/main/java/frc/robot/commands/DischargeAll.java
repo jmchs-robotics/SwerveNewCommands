@@ -8,15 +8,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.HopperSubsystem;
 
 public class DischargeAll extends CommandBase {
-  Hopper m_subsystem;
+  HopperSubsystem m_subsystem;
   
   /**
    * Creates a new DischargeAll.
    */
-  public DischargeAll(Hopper hopper) {
+  public DischargeAll(HopperSubsystem hopper) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(hopper);
 
