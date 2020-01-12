@@ -8,42 +8,53 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.Constants.ThrowerLUT;
+import frc.robot.subsystems.ThrowerSubsystem;
+import frc.robot.util.SocketVision;
+import frc.robot.util.SocketVisionWrapper;
 
-public class DischargeAll extends CommandBase {
-  HopperSubsystem m_subsystem;
-  
+public class ThrowToTargetCommand extends CommandBase {
+  private ThrowerSubsystem m_subsystem;
+  private SocketVisionWrapper m_vision;
+
+  private double setpoint = 0;
+
   /**
-   * Creates a new DischargeAll.
+   * Creates a new ThrowToTarget.
    */
-  public DischargeAll(HopperSubsystem hopper) {
+  public ThrowToTargetCommand(ThrowerSubsystem thrower, SocketVisionWrapper vision) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(hopper);
+    addRequirements(thrower);
 
-    m_subsystem = hopper;
+    m_subsystem = thrower;
+    m_vision = vision;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.dischargeAll();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // Wait for the setpoint to be reached
+    // Make sure that the vision data is valid
+    if(m_vision.get().get_direction() != SocketVision.NADA){
+      setpoint = ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
+    }
+    
+    m_subsystem.setSetpoint(setpoint);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // No need to do anything -- the subsystem holds itself in PID
+    m_subsystem.stopThrower();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetpoint(5);
+    return false;
   }
 }

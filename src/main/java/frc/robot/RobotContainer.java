@@ -15,13 +15,13 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultSwerveCommand;
-import frc.robot.commands.DischargeAll;
+import frc.robot.commands.DischargeAllCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SpinUpThrowerCommand;
-import frc.robot.commands.ThrowToTarget;
-import frc.robot.commands.VisionApproachTarget;
-import frc.robot.commands.VisionLineUpWithTarget;
+import frc.robot.commands.ThrowToTargetCommand;
+import frc.robot.commands.VisionApproachTargetCommand;
+import frc.robot.commands.VisionLineUpWithTargetCommand;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
@@ -102,7 +102,7 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new VisionLineUpWithTarget(m_swerveDrive, rft_), 
+        new VisionLineUpWithTargetCommand(m_swerveDrive, rft_), 
         new SendVisionCommand(sender_, "_")
       )
     );
@@ -111,7 +111,7 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "G"), // Can't be a lambda because Sender's aren't subsystems
-        new VisionLineUpWithTarget(m_swerveDrive, piece_), 
+        new VisionLineUpWithTargetCommand(m_swerveDrive, piece_), 
         new SendVisionCommand(sender_, "_")
       )
     );
@@ -145,8 +145,8 @@ public class RobotContainer {
       new SequentialCommandGroup(
         new SpinUpThrowerCommand(m_thrower, rft_),
         new ParallelRaceGroup(
-          new ThrowToTarget(m_thrower, rft_),
-          new DischargeAll(m_hopper)
+          new ThrowToTargetCommand(m_thrower, rft_),
+          new DischargeAllCommand(m_hopper)
         )
       )
     );
@@ -195,7 +195,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command autoCommand = new VisionApproachTarget(m_swerveDrive, rft_, 100, 5, 5);
+    Command autoCommand = new VisionApproachTargetCommand(m_swerveDrive, rft_, 100, 5, 5);
     
     return autoCommand;
   }
