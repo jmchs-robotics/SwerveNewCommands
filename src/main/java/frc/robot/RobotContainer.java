@@ -165,6 +165,11 @@ public class RobotContainer {
         m_controlPanel.turnOffSolenoid();
         m_controlPanel.setSpinMotor(0);
       }, ()->{}, m_controlPanel)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
+
+    m_intake.setDefaultCommand(new StartEndCommand( ()-> {
+        m_intake.turnOffSolenoid();
+        m_intake.setMotor(0);
+      }, ()->{}, m_intake));  // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for raising system.
   }
 
   /**
