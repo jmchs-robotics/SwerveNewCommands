@@ -22,6 +22,7 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTarget;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
+import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.Thrower;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -46,6 +48,7 @@ public class RobotContainer {
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final Thrower m_thrower = new Thrower();
   private final Hopper m_hopper = new Hopper();
+  private final ControlPanelSubsystem m_spinner = new ControlPanelSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -129,7 +132,7 @@ public class RobotContainer {
     // Put accumulate & print output on a button!
     m_primaryController_Y.whileHeld(
       new ParallelCommandGroup(
-        new InstantCommand(m_swerve::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read
+        new InstantCommand(m_swerve::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read.
         new InstantCommand(() -> SmartDashboard.putNumberArray("Robot Position: ", m_swerve.getPosition())) // Use a lambda to get at SmartDashboard
       )
     );
@@ -151,6 +154,11 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
+    m_thrower.setDefaultCommand(new StartEndCommand(m_thrower::stopThrower, ()->{}, m_thrower)); // Spin down thrower on startup, do nothing on end.
+    m_spinner.setDefaultCommand(new StartEndCommand(()->{
+        m_spinner.turnOffSolenoid();
+        m_spinner.setSpinMotor(0);
+      }, ()->{}, m_spinner)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
   }
 
   /**

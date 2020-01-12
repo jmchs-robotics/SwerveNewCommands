@@ -62,11 +62,4 @@ public class Hopper extends SubsystemBase {
     return Math.abs(m_hopperMotor.getClosedLoopError()) < maxError;
   }
 
-  /**
-   * Checks whether the closed-loop control is within 20 encoder ticks of the setpoint.
-   * @return Whether the absolute value of the closed loop error is less than 20.
-   */
-  public boolean atSetpoint(){
-    return atSetpoint(20);
-  }
 }
