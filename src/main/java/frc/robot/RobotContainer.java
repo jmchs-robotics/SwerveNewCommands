@@ -178,14 +178,16 @@ public class RobotContainer {
             new StartEndCommand(()->{m_intake.setMotor(0.7);},()->{m_intake.setMotor(-0.2);}, m_hopper), // Note that there is no interrupted qualifier for the onEnd Runnable
             new WaitUntilCommand(()->{return m_hopperSensor.getProximity() > 1500;}) // Color sensor proximity is an 11 bit value that is low when the target is far and high when it is near.
           ),
-          new FunctionalCommand(()->{m_hopper.nextSlot(); m_hopper.incStoredCount();}, // Move hopper to next slot
-           ()->{m_intake.setMotor(-0.2);}, // Back drive the intake motor slowly.
-           (interrupted)->{ if(interrupted) m_intake.raiseIntake(); }, // If interrupted, get the intake back up.
-           ()->{return m_hopper.atSetpoint(5);}, // 5 encoder ticks of leeway
-           m_hopper, m_intake) 
+          new FunctionalCommand(
+            ()->{m_hopper.nextSlot(); m_hopper.incStoredCount();}, // Move hopper to next slot
+            ()->{m_intake.setMotor(-0.2);}, // Back drive the intake motor slowly.
+            (interrupted)->{ if(interrupted) m_intake.raiseIntake(); }, // If interrupted, get the intake back up.
+            ()->{return m_hopper.atSetpoint(5);}, // 5 encoder ticks of leeway
+            m_hopper, m_intake // Requires hopper & intake
+           ) 
         ),
         new PerpetualCommand(new InstantCommand(()->{m_intake.raiseIntake(); m_intake.setMotor(-0.7);})), // Raise intake and backdrive if there are 5 balls in the daisy
-        () -> {return m_hopper.getStoredCount() <= 5;}
+        () -> {return m_hopper.getStoredCount() < 5;} // The conditional to branch on: if there are less than 5 balls, intake; else, raise intake and backdrive
       )  
     ).whenReleased( // On release lift the intake, then outtake at 0.7 power for 1.5 seconds. Note that beforeStarting is a decorator that is written after the command body...
       new ParallelRaceGroup(
