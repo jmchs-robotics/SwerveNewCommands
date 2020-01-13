@@ -30,11 +30,17 @@ import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 /**
@@ -59,6 +65,7 @@ public class RobotContainer {
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+  private final ColorSensorV3 m_hopperSensor = new ColorSensorV3(I2C.Port.kMXP); // To be replaced with the actual sensor for the hopper
 
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
@@ -156,7 +163,32 @@ public class RobotContainer {
       )
     );
 
-    // Put intake on the secondary B button for now.
+    // Put intake on the secondary B button for now. Note the use of lambdas to do two things at start & end each.
+    m_secondaryController_B.whileHeld(
+      new ConditionalCommand(
+        new SequentialCommandGroup( // First lower the intake, then in parallel run the intake while checking for a new ball to enter the daisy.
+          new InstantCommand(m_intake::lowerIntake, m_intake),
+          new ParallelRaceGroup(
+            new StartEndCommand(()->{m_intake.setMotor(0.7);},()->{m_intake.setMotor(-0.2);}, m_hopper),
+            new WaitUntilCommand(()->{return m_hopperSensor.getProximity() > 1500;}) // Color sensor proximity is an 11 bit value that is low when the target is far and high when it is near.
+          ),
+          new FunctionalCommand(()->{m_hopper.nextSlot(); m_hopper.incStoredCount();}, // Move hopper to next slot
+           ()->{m_intake.setMotor(-0.2);}, // Back drive the intake motor slowly.
+           (interrupted)->{ if(interrupted) m_intake.raiseIntake(); }, // If interrupted, get the intake back up.
+           ()->{return m_hopper.atSetpoint(5);}, 
+           m_hopper, m_intake) 
+        ),
+        new PerpetualCommand(new InstantCommand(()->{m_intake.raiseIntake(); m_intake.setMotor(-0.7);})), // Raise intake and backdrive if there are 5 balls in the daisy
+        () -> {return m_hopper.getStoredCount() <= 5;}
+      )  
+    ).whenReleased( // On release lift the intake, then outtake at 0.7 power for 1.5 seconds.
+      new ParallelRaceGroup(
+        new RunCommand(()->{m_intake.setMotor(-0.7);}, m_intake),
+        new WaitCommand(1.5)
+      ).beforeStarting(m_intake::raiseIntake, m_intake)
+    );
+
+
     m_secondaryController_B.whenHeld(
       new StartEndCommand(
         ()->{
