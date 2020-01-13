@@ -116,29 +116,4 @@ public class ThrowerSubsystem extends SubsystemBase {
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs(m_setpoint - m_throwEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
   }
-  /*
-  //Turns the Control Panel motor off
-  public void turnSpinnerMotorOff() {
-    m_controlPanelSpinner.set(ControlMode.PercentOutput, 0.0);
-  }
-
-  //Sets the Control Panel Spinner to the given percentage
-  public void setSpinnerMotor(double percentOut) {
-    m_controlPanelSpinner.set(ControlMode.PercentOutput, percentOut);
-  }
-
-  //Set the Double Solenoid to extended
-  public void setPanelPistonExtended() {
-    m_controlPanelPiston.set(DoubleSolenoid.Value.kForward);
-  }
-
-  //Set the Double Solenoid to retracted
-  public void setPanelPistonRetracted() {
-    m_controlPanelPiston.set(DoubleSolenoid.Value.kReverse);
-  }
-
-  //Set the Double Solenoid to off
-  public void setPanelPistonOff() {
-    m_controlPanelPiston.set(DoubleSolenoid.Value.kOff);
-  } */
 }
