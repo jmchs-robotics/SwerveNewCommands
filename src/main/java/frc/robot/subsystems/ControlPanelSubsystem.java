@@ -60,10 +60,18 @@ public class ControlPanelSubsystem extends SubsystemBase {
     m_solenoid.set(Value.kOff);
   }
 
+  /**
+   * Spin the control panel.
+   * @param output The percent to set the output to.
+   */
   public void setSpinMotor(double output){
     m_spinner.set(output);
   }
 
+  /**
+   * Get the status of the control panel subsystem.
+   * @return True if the system is raised (deployed).
+   */
   public boolean isRaised(){
     return m_raised;
   }
