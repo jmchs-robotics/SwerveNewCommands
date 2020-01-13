@@ -222,4 +222,13 @@ public final class Constants {
     public static final int SOLENOID_REVERSE_CHANNEL = 3;
     public static final int INTAKE_MOTOR_PWM_ID = 0;
   }
+
+  /**
+   * Constants for the climber subsystem
+   */
+  public static final class ClimberActuators {
+    public static final int SOLENOID_FORWARD_CHANNEL = 4;
+    public static final int SOLENOID_REVERSE_CHANNEL = 5;
+    public static final int WINCH_MOTOR = 17;
+  }
 }
