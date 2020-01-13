@@ -22,6 +22,7 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTargetCommand;
 import frc.robot.commands.VisionLineUpWithTargetCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -57,6 +58,7 @@ public class RobotContainer {
   private final HopperSubsystem m_hopper = new HopperSubsystem();
   private final ControlPanelSubsystem m_controlPanel = new ControlPanelSubsystem();
   private final IntakeSubsystem m_intake = new IntakeSubsystem();
+  private final ClimberSubsystem m_climber = new ClimberSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -91,6 +93,10 @@ public class RobotContainer {
       XboxController.Button.kA.value);
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController,
       XboxController.Button.kB.value);
+  private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kY.value);
+  private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kX.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -201,6 +207,16 @@ public class RobotContainer {
         }, 
         m_intake)
     );
+
+    m_secondaryController_X.whenPressed(
+      new InstantCommand(m_climber::liftClimber, m_climber)
+    ).whenReleased(
+      new InstantCommand(m_climber::lowerClimber, m_climber)
+    );
+
+    m_secondaryController_Y.whileHeld(
+      new RunCommand(m_climber::climb, m_climber)
+    );
     
   }
 
@@ -214,10 +230,14 @@ public class RobotContainer {
         m_controlPanel.setSpinMotor(0);
       }, ()->{}, m_controlPanel)); // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for lowering system.
 
+    // No default command for hopper because it should be maintaining its position via internal PID.
+
     m_intake.setDefaultCommand(new StartEndCommand( ()-> {
         m_intake.turnOffSolenoid();
         m_intake.setMotor(0);
       }, ()->{}, m_intake));  // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for raising system.
+
+    m_climber.setDefaultCommand(new InstantCommand(m_climber::turnOffSolenoid, m_climber)); // By default, have the solenoid off.
   }
 
   /**
