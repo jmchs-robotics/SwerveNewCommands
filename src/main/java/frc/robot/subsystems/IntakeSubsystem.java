@@ -16,6 +16,9 @@ import frc.robot.Constants.IntakeActuators;
 public class IntakeSubsystem extends SubsystemBase {
   private DoubleSolenoid m_solenoid;
   private Spark m_motor;
+
+  private boolean m_lowered;
+
   /**
    * Creates a new IntakeSubsystem.
    */
@@ -34,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public void lowerIntake(){
     m_solenoid.set(Value.kForward);
+    m_lowered = true;
   }
 
   /**
@@ -41,6 +45,7 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public void raiseIntake(){
     m_solenoid.set(Value.kReverse);
+    m_lowered = false;
   }
 
   /**
@@ -48,6 +53,14 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public void turnOffSolenoid(){
     m_solenoid.set(Value.kOff);
+  }
+
+  /**
+   * Get the status of the intake
+   * @return True if the intake is lowered
+   */
+  public boolean isLowered() {
+    return m_lowered; // return true if the intake piston is forward (intake is lowered down)
   }
 
   /**

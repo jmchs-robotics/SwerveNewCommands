@@ -7,9 +7,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.ColorSensorV3;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -21,6 +19,8 @@ import frc.robot.Constants.ControlPanelActuators;
 public class ControlPanelSubsystem extends SubsystemBase {
   private DoubleSolenoid m_solenoid;
   private CANSparkMax m_spinner;
+
+  private boolean m_raised;
 
   /**
    * Creates a new ControlPanelSubsystem.
@@ -42,6 +42,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    */
   public void raiseSpinner(){
     m_solenoid.set(Value.kForward);
+    m_raised = true;
   }
 
   /**
@@ -49,6 +50,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    */
   public void lowerSpinner(){
     m_solenoid.set(Value.kReverse);
+    m_raised = false;
   }
 
   /**
@@ -60,5 +62,9 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
   public void setSpinMotor(double output){
     m_spinner.set(output);
+  }
+
+  public boolean isRaised(){
+    return m_raised;
   }
 }
