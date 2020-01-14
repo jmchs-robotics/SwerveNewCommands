@@ -9,10 +9,12 @@ package frc.robot;
 
 import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
@@ -47,7 +49,7 @@ public class RobotContainer {
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-
+  private final AnalogInput m_lightSensor = new AnalogInput(0);
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
 
@@ -68,6 +70,8 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value);
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
+  private final JoystickButton m_secondaryController_YButton = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kY.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -125,6 +129,8 @@ public class RobotContainer {
     m_secondaryController_B.whileHeld(
       new SetThrowerSpeedCommand(m_Thrower, 5000)
     );
+
+    m_secondaryController_YButton.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
