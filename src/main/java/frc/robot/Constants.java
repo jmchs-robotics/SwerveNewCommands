@@ -85,6 +85,7 @@ public final class Constants {
     public static final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
     public static final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
     public static final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
+    public static final double cpSpinnerSpeed = 0.5;
   }
 
   /**
@@ -94,6 +95,8 @@ public final class Constants {
     public static final int motorCanID = 11;
     public static final int soleniodFirst = 12;
     public static final int soleniodSecond = 13;
+
+  
   }
 
   public static final class ThrowerMotor {

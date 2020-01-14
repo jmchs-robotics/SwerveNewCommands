@@ -24,7 +24,7 @@ public class MatchColorsCommand extends CommandBase {
   private ColorSensorV3 m_colorSensor;
   private RobotContainer m_container;
   private ColorMatch m_colorMatch = new ColorMatch();
-
+  
   private String m_targetColor;
   
   /**
@@ -68,13 +68,50 @@ public class MatchColorsCommand extends CommandBase {
       if (m_targetColor.equalsIgnoreCase("Y")){
         m_cPanelSubsystem.setSpinnerMotor(0);
       } else if(m_targetColor.equalsIgnoreCase("R")){
-        m_cPanelSubsystem.setSpinnerMotor(0.5);
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("G")){
-        m_cPanelSubsystem.setSpinnerMotor(0.5);
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("B")){
-        m_cPanelSubsystem.setSpinnerMotor(-0.5);
+        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+    }
+
+    if (match.color == ColorTargets.kBlueTarget) {
+      if (m_targetColor.equalsIgnoreCase("Y")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("R")){
+        m_cPanelSubsystem.setSpinnerMotor(0);
+      } else if(m_targetColor.equalsIgnoreCase("G")){
+        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("B")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+    }
+
+    if (match.color == ColorTargets.kYellowTarget) {
+      if (m_targetColor.equalsIgnoreCase("Y")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("R")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("G")){
+        m_cPanelSubsystem.setSpinnerMotor(0);
+      } else if(m_targetColor.equalsIgnoreCase("B")){
+        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+    }
+
+    if (match.color == ColorTargets.kRedTarget) {
+      if (m_targetColor.equalsIgnoreCase("Y")){
+        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("R")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("G")){
+        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+      } else if(m_targetColor.equalsIgnoreCase("B")){
+        m_cPanelSubsystem.setSpinnerMotor(0);
     }
   }
+}
+}
+}
+
 }
 
   // Called once the command ends or is interrupted.
