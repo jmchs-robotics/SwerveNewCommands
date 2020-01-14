@@ -10,12 +10,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HopperMotors;
+import frc.robot.Constants.HopperConstants;
 
 public class HopperSubsystem extends SubsystemBase {
   private TalonSRX m_hopperMotor;
+  private ColorSensorV3 m_hopperSensor; // To be replaced with the actual sensor for the hopper
 
   private int m_storeCount = 0;
   
@@ -23,9 +25,10 @@ public class HopperSubsystem extends SubsystemBase {
    * Creates a new Hopper.
    */
   public HopperSubsystem() {
-    m_hopperMotor = new TalonSRX(HopperMotors.MAIN_MOTOR_ID);
+    m_hopperMotor = new TalonSRX(HopperConstants.MAIN_MOTOR_ID);
+    m_hopperSensor = new ColorSensorV3(HopperConstants.COLOR_SENSOR_PORT);
     
-    m_hopperMotor.configAllSettings(HopperMotors.GetMainMotorConfiguration());
+    m_hopperMotor.configAllSettings(HopperConstants.GetMainMotorConfiguration());
     m_hopperMotor.setNeutralMode(NeutralMode.Brake);
   }
 
@@ -38,7 +41,7 @@ public class HopperSubsystem extends SubsystemBase {
    * Set the next setpoint to one full revolution forward. DO NOT call repeatedly in execute().
    */
   public void dischargeAll() {
-    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperMotors.ENCODER_TICKS_TO_REVOLUTION);
+    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperConstants.ENCODER_TICKS_TO_REVOLUTION);
     m_storeCount = 0;
   }
 
@@ -46,14 +49,14 @@ public class HopperSubsystem extends SubsystemBase {
    * Set the next setpoint to one-sixth revolution forward. DO NOT call repeatedly in execute().
    */
   public void nextSlot() {
-    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperMotors.ENCODER_TICKS_TO_REVOLUTION / 6);
+    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() + HopperConstants.ENCODER_TICKS_TO_REVOLUTION / 6);
   }
 
   /**
    * Set the next setpoint to one-sixth revolution backward. DO NOT call repeatedly in execute().
    */
   public void previousSlot() {
-    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() - HopperMotors.ENCODER_TICKS_TO_REVOLUTION / 6);
+    m_hopperMotor.set(ControlMode.Position, m_hopperMotor.getClosedLoopTarget() - HopperConstants.ENCODER_TICKS_TO_REVOLUTION / 6);
   }
 
   /**
@@ -78,6 +81,14 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public void incStoredCount(){
     m_storeCount++;
+  }
+
+  /**
+   * Detect whether a ball is in the loading slot of the hopper.
+   * @return true if there is a ball in the loading slot.
+   */
+  public boolean ballLoaded(){
+    return m_hopperSensor.getProximity() > HopperConstants.BALL_LOADED_THRESHOLD;
   }
 
 }

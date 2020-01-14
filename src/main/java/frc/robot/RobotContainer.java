@@ -18,6 +18,7 @@ import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.DischargeAllCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
+import frc.robot.commands.SpinThreeTimesCommand;
 import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTargetCommand;
@@ -65,10 +66,6 @@ public class RobotContainer {
   private final SocketVisionWrapper piece_ = new SocketVisionWrapper("10.59.33.255", 5805);
   private final SocketVisionSendWrapper sender_ = new SocketVisionSendWrapper("10.59.33.255", 5800);
 
-  // Color Sensor
-  private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-  private final ColorSensorV3 m_hopperSensor = new ColorSensorV3(I2C.Port.kMXP); // To be replaced with the actual sensor for the hopper
-
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
 
@@ -97,6 +94,10 @@ public class RobotContainer {
       XboxController.Button.kY.value);
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value);
+  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController,
+      XboxController.Button.kBumperLeft.value);
+  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController,
+      XboxController.Button.kBumperRight.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -142,7 +143,7 @@ public class RobotContainer {
 
     // Put field orientation on a button.
     m_primaryController_LeftBumper.whenPressed(
-      new InstantCommand(() -> m_swerveDrive.setFieldOriented(false), m_swerveDrive)
+      new InstantCommand(() -> m_swerveDrive.setFieldOriented(false), m_swerveDrive) // Note the use of lambdas to pass parameters to the subsystem method.
     ).whenReleased(
       new InstantCommand(()-> m_swerveDrive.setFieldOriented(true), m_swerveDrive)
     );
@@ -156,9 +157,10 @@ public class RobotContainer {
     );
 
     m_secondaryController_StickLeft.whileHeld(
-      new SampleColorCommand(m_colorSensor)
+      new SampleColorCommand(m_controlPanel)
     );
 
+    // Throw at the RFT target on a button
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new SpinUpThrowerCommand(m_thrower, rft_),
@@ -176,7 +178,7 @@ public class RobotContainer {
           new InstantCommand(m_intake::lowerIntake, m_intake),
           new ParallelRaceGroup(
             new StartEndCommand(()->{m_intake.setMotor(0.7);},()->{m_intake.setMotor(-0.2);}, m_hopper), // Note that there is no interrupted qualifier for the onEnd Runnable
-            new WaitUntilCommand(()->{return m_hopperSensor.getProximity() > 1500;}) // Color sensor proximity is an 11 bit value that is low when the target is far and high when it is near.
+            new WaitUntilCommand(()->{return m_hopper.ballLoaded();}) // Color sensor proximity is an 11 bit value that is low when the target is far and high when it is near.
           ),
           new FunctionalCommand(
             ()->{m_hopper.nextSlot(); m_hopper.incStoredCount();}, // Move hopper to next slot
@@ -196,32 +198,40 @@ public class RobotContainer {
       ).beforeStarting(m_intake::raiseIntake, m_intake)
     );
 
-
-    m_secondaryController_B.whenHeld(
-      new StartEndCommand(
-        ()->{
-          m_intake.lowerIntake();
-          m_intake.setMotor(0.7);
-        }, 
-        ()->{
-          m_intake.raiseIntake();
-          m_intake.setMotor(0);
-        }, 
-        m_intake)
-    );
-
+    // Raise the climber arm on the X button (lower the arm on release)
     m_secondaryController_X.whenPressed(
       new InstantCommand(m_climber::liftClimber, m_climber)
     ).whenReleased(
       new InstantCommand(m_climber::lowerClimber, m_climber)
     );
 
-    m_secondaryController_Y.whileHeld(
+    // Run the climb motor on the Y button
+    m_secondaryController_Y.whenHeld(
       new RunCommand(m_climber::climb, m_climber)
     );
+
+    // Put spin to color on the left bumper
+    m_secondaryController_LeftBumper.whileHeld(
+      new SequentialCommandGroup(
+        new InstantCommand(m_controlPanel::raiseSpinner, m_controlPanel),
+        new ParallelRaceGroup(
+          new RunCommand(
+            ()->{
+              // Set the output at 0.7 times the direction to turn.
+              m_controlPanel.setSpinMotor(0.7 * m_controlPanel.getDirectionToTurn(m_controlPanel.getColorToSearchFor(getGameSpecificMessage()), m_controlPanel.readColor()));
+            },
+            m_controlPanel),
+          new WaitUntilCommand(()->{ return m_controlPanel.getDirectionToTurn(m_controlPanel.getColorToSearchFor(getGameSpecificMessage()), m_controlPanel.readColor()) == 0; })
+        )
+      )
+    );
+
+    // Right bumper is spin the control panel 3 times
+    m_secondaryController_RightBumper.whenPressed( new SpinThreeTimesCommand(m_controlPanel) ); // Doesn't cancel command on let up
     
   }
 
+  // I'm using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
   private void configureDefaultCommands() {
     m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController));
 
@@ -239,7 +249,7 @@ public class RobotContainer {
         m_intake.setMotor(0);
       }, ()->{}, m_intake));  // Turn off spinny motor and solenoid on startup, do nothing on end. Control groups will have to be responsible for raising system.
 
-    m_climber.setDefaultCommand(new InstantCommand(m_climber::turnOffSolenoid, m_climber)); // By default, have the solenoid off.
+    m_climber.setDefaultCommand(new InstantCommand(m_climber::turnOffSolenoid, m_climber).perpetually()); // By default, have the solenoid off. Never ends via perpetually() decorator
   }
 
   /**

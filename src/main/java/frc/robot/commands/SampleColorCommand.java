@@ -15,25 +15,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ColorTargets;
+import frc.robot.subsystems.ControlPanelSubsystem;
 
 public class SampleColorCommand extends CommandBase {
-  private final ColorSensorV3 m_colorSensor;
-  private final ColorMatch m_colorMatcher = new ColorMatch();
+  private final ControlPanelSubsystem m_subsystem;
 
   /**
    * Creates a new SampleColor.
    */
-  public SampleColorCommand(ColorSensorV3 sensor) {
+  public SampleColorCommand(ControlPanelSubsystem subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Has no subsystem requirements -- simply reads the color sensor.
 
-    m_colorSensor = sensor;
-
-    // Colors you want to search for must be added to the colorMatcher.
-    m_colorMatcher.addColorMatch(ColorTargets.kBlueTarget);
-    m_colorMatcher.addColorMatch(ColorTargets.kGreenTarget);
-    m_colorMatcher.addColorMatch(ColorTargets.kRedTarget);
-    m_colorMatcher.addColorMatch(ColorTargets.kYellowTarget);
+    m_subsystem = subsystem;
   }
 
   // Called when the command is initially scheduled.
@@ -45,31 +39,21 @@ public class SampleColorCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /**
-     * The method GetColor() returns a normalized color value from the sensor and can be
-     * useful if outputting the color to an RGB LED or similar. To
-     * read the raw color, use GetRawColor().
-     * 
-     * The color sensor works best when within a few inches from an object in
-     * well lit conditions (the built in LED is a big help here!). The farther
-     * an object is the more light from the surroundings will bleed into the 
-     * measurements and make it difficult to accurately determine its color.
-     */
-    Color detectedColor = m_colorSensor.getColor();
+
+    Color detectedColor = m_subsystem.readColor();
 
     /**
      * Run the color match algorithm on our detected color
      */
     String colorString;
-    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
-    if (match.color == ColorTargets.kBlueTarget) {
+    if (detectedColor == ColorTargets.kBlueTarget) {
       colorString = "Blue";
-    } else if (match.color == ColorTargets.kRedTarget) {
+    } else if (detectedColor == ColorTargets.kRedTarget) {
       colorString = "Red";
-    } else if (match.color == ColorTargets.kGreenTarget) {
+    } else if (detectedColor == ColorTargets.kGreenTarget) {
       colorString = "Green";
-    } else if (match.color == ColorTargets.kYellowTarget) {
+    } else if (detectedColor == ColorTargets.kYellowTarget) {
       colorString = "Yellow";
     } else {
       colorString = "Unknown";
@@ -82,7 +66,6 @@ public class SampleColorCommand extends CommandBase {
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("Confidence", match.confidence);
     SmartDashboard.putString("Detected Color", colorString);
   }
 

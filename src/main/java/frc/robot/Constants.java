@@ -15,6 +15,8 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.revrobotics.ColorMatch;
 
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.util.Color;
 
 /**
@@ -120,9 +122,12 @@ public final class Constants {
     }
   }
 
-  public static final class HopperMotors {
+  public static final class HopperConstants {
     public static final int MAIN_MOTOR_ID = 15;
     public static final double ENCODER_TICKS_TO_REVOLUTION = 4096.0;
+
+    public static final Port COLOR_SENSOR_PORT = I2C.Port.kMXP;
+	  public static final int BALL_LOADED_THRESHOLD = 1500;
 
     public static final TalonSRXConfiguration GetMainMotorConfiguration(){
       TalonSRXConfiguration config = new TalonSRXConfiguration();
@@ -212,6 +217,7 @@ public final class Constants {
     public static final int SOLENOID_FORWARD_CHANNEL = 0;
     public static final int SOLENOID_REVERSE_CHANNEL = 1;
     public static final int SPINNER_ID = 16;
+    public static final Port COLOR_SENSOR_PORT = I2C.Port.kOnboard;
   }
 
   /**
