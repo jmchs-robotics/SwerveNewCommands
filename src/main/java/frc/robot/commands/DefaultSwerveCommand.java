@@ -46,7 +46,7 @@ public class DefaultSwerveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double forward = -m_stick.getY(Hand.kLeft);
+    double forward = m_stick.getY(Hand.kLeft);
     double strafe = m_stick.getX(Hand.kLeft);
     double rotation = m_stick.getX(Hand.kRight);
 
