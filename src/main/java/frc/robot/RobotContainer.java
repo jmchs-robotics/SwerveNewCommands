@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.DischargeAllCommand;
@@ -31,6 +32,7 @@ import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
+import frc.robot.util.XBoxGamepad;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -69,35 +71,9 @@ public class RobotContainer {
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
 
-  // Define Joysticks and Buttons here
-  private final XboxController m_primaryController = new XboxController(0);
-  private final XboxController m_secondaryController = new XboxController(1);
-
-  private final JoystickButton m_primaryController_A = new JoystickButton(m_primaryController,
-      XboxController.Button.kA.value);
-  private final JoystickButton m_primaryController_B = new JoystickButton(m_primaryController,
-      XboxController.Button.kB.value);
-  private final JoystickButton m_primaryController_LeftBumper = new JoystickButton(m_primaryController, 
-      XboxController.Button.kBumperLeft.value);
-  private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController,
-      XboxController.Button.kBumperRight.value);
-  private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController,
-      XboxController.Button.kY.value);
-
-  private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
-      XboxController.Button.kStickLeft.value);
-  private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kA.value);
-  private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController,
-      XboxController.Button.kB.value);
-  private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kY.value);
-  private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kX.value);
-  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController,
-      XboxController.Button.kBumperLeft.value);
-  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController,
-      XboxController.Button.kBumperRight.value);
+  // Use XBoxGamepad as a drop-in for XBoxController and the associated JoystickButtons
+  private final XBoxGamepad m_primaryController = new XBoxGamepad(0);
+  private final XBoxGamepad m_secondaryController = new XBoxGamepad(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -116,7 +92,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    m_primaryController_A.whenPressed(      
+    m_primaryController.getButton(Button.kA).whenPressed(      
       new SequentialCommandGroup(
         new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
@@ -125,7 +101,7 @@ public class RobotContainer {
       )
     );
 
-    m_primaryController_B.whenPressed( // Inline command group!
+    m_primaryController.getButton(Button.kB).whenPressed( // Inline command group!
       new SequentialCommandGroup(
         new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive), // Brake mode on!
         new SendVisionCommand(sender_, "G"), // Can't be a lambda because Sender's aren't subsystems
@@ -135,33 +111,33 @@ public class RobotContainer {
     );
 
     // Put brake mode on a button!
-    m_primaryController_RightBumper.whenPressed(
+    m_primaryController.getButton(Button.kBumperRight).whenPressed(
       new InstantCommand(m_swerveDrive::setBrakeOn, m_swerveDrive)
     ).whenReleased(
       new InstantCommand(m_swerveDrive::setBrakeOff, m_swerveDrive)
     );
 
     // Put field orientation on a button.
-    m_primaryController_LeftBumper.whenPressed(
+    m_primaryController.getButton(Button.kBumperLeft).whenPressed(
       new InstantCommand(() -> m_swerveDrive.setFieldOriented(false), m_swerveDrive) // Note the use of lambdas to pass parameters to the subsystem method.
     ).whenReleased(
       new InstantCommand(()-> m_swerveDrive.setFieldOriented(true), m_swerveDrive)
     );
 
     // Put accumulate & print output on a button!
-    m_primaryController_Y.whileHeld(
+    m_primaryController.getButton(Button.kY).whileHeld(
       new ParallelCommandGroup(
         new InstantCommand(m_swerveDrive::accumulatePosition), // No need to state that this uses the swerve subsystem b/c it's only a sensor read.
         new InstantCommand(() -> SmartDashboard.putNumberArray("Robot Position: ", m_swerveDrive.getPosition())) // Use a lambda to get at SmartDashboard
       )
     );
 
-    m_secondaryController_StickLeft.whileHeld(
+    m_secondaryController.getButton(Button.kStickLeft).whileHeld(
       new SampleColorCommand(m_controlPanel)
     );
 
     // Throw at the RFT target on a button
-    m_secondaryController_A.whenPressed(
+    m_secondaryController.getButton(Button.kA).whenPressed(
       new SequentialCommandGroup(
         new SpinUpThrowerCommand(m_thrower, rft_),
         new ParallelRaceGroup(
@@ -172,7 +148,7 @@ public class RobotContainer {
     );
 
     // Put intake on the secondary B button for now. Note the use of lambdas to do two things at start & end each.
-    m_secondaryController_B.whileHeld(
+    m_secondaryController.getButton(Button.kA).whileHeld(
       new ConditionalCommand(
         new SequentialCommandGroup( // First lower the intake, then in parallel run the intake while checking for a new ball to enter the daisy.
           new InstantCommand(m_intake::lowerIntake, m_intake),
@@ -199,19 +175,19 @@ public class RobotContainer {
     );
 
     // Raise the climber arm on the X button (lower the arm on release)
-    m_secondaryController_X.whenPressed(
+    m_secondaryController.getButton(Button.kX).whenPressed(
       new InstantCommand(m_climber::liftClimber, m_climber)
     ).whenReleased(
       new InstantCommand(m_climber::lowerClimber, m_climber)
     );
 
     // Run the climb motor on the Y button
-    m_secondaryController_Y.whenHeld(
+    m_secondaryController.getButton(Button.kY).whenHeld(
       new RunCommand(m_climber::climb, m_climber)
     );
 
     // Put spin to color on the left bumper
-    m_secondaryController_LeftBumper.whileHeld(
+    m_secondaryController.getButton(Button.kBumperLeft).whileHeld(
       new SequentialCommandGroup(
         new InstantCommand(m_controlPanel::raiseSpinner, m_controlPanel),
         new ParallelRaceGroup(
@@ -227,13 +203,13 @@ public class RobotContainer {
     );
 
     // Right bumper is spin the control panel 3 times
-    m_secondaryController_RightBumper.whenPressed( new SpinThreeTimesCommand(m_controlPanel) ); // Doesn't cancel command on let up
+    m_secondaryController.getButton(Button.kBumperRight).whenPressed( new SpinThreeTimesCommand(m_controlPanel) ); // Doesn't cancel command on let up
     
   }
 
   // I'm using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
   private void configureDefaultCommands() {
-    m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController));
+    m_swerveDrive.setDefaultCommand(new DefaultSwerveCommand(m_swerveDrive, m_primaryController.getController()));
 
     m_thrower.setDefaultCommand(new StartEndCommand(m_thrower::stopThrower, ()->{}, m_thrower)); // Spin down thrower on startup, do nothing on end.
 

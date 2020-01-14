@@ -110,4 +110,8 @@ public class XBoxGamepad {
   public void setRumble(RumbleType type, double value) {
     m_joystick.setRumble(type, value);
   }
+
+  public XboxController getController(){
+    return m_joystick;
+  }
 }
