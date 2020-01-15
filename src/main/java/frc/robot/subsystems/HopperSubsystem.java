@@ -10,14 +10,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.ColorSensorV3;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 
 public class HopperSubsystem extends SubsystemBase {
   private TalonSRX m_hopperMotor;
-  private ColorSensorV3 m_hopperSensor; // To be replaced with the actual sensor for the hopper
+  private AnalogInput m_hopperSensor; // To be replaced with the actual sensor for the hopper
 
   private int m_storeCount = 0;
   
@@ -26,7 +26,7 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public HopperSubsystem() {
     m_hopperMotor = new TalonSRX(HopperConstants.MAIN_MOTOR_ID);
-    m_hopperSensor = new ColorSensorV3(HopperConstants.COLOR_SENSOR_PORT);
+    m_hopperSensor = new AnalogInput(HopperConstants.SENSOR_PORT);
     
     m_hopperMotor.configAllSettings(HopperConstants.GetMainMotorConfiguration());
     m_hopperMotor.setNeutralMode(NeutralMode.Brake);
@@ -88,7 +88,7 @@ public class HopperSubsystem extends SubsystemBase {
    * @return true if there is a ball in the loading slot.
    */
   public boolean ballLoaded(){
-    return m_hopperSensor.getProximity() > HopperConstants.BALL_LOADED_THRESHOLD;
+    return m_hopperSensor.getVoltage() < HopperConstants.BALL_LOADED_VOLTAGE;
   }
 
 }

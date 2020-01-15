@@ -126,8 +126,8 @@ public final class Constants {
     public static final int MAIN_MOTOR_ID = 15;
     public static final double ENCODER_TICKS_TO_REVOLUTION = 4096.0;
 
-    public static final Port COLOR_SENSOR_PORT = I2C.Port.kMXP;
-	  public static final int BALL_LOADED_THRESHOLD = 1500;
+    public static final int SENSOR_PORT = 0;
+	  public static final double BALL_LOADED_VOLTAGE = 3;
 
     public static final TalonSRXConfiguration GetMainMotorConfiguration(){
       TalonSRXConfiguration config = new TalonSRXConfiguration();
