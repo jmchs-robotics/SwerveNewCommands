@@ -71,13 +71,12 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value);
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
-<<<<<<< HEAD
   private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
       XboxController.Button.kA.value);
-=======
-  private final JoystickButton m_secondaryController_YButton = new JoystickButton(m_secondaryController, 
+  private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
       XboxController.Button.kY.value);
->>>>>>> 1a6a98a95db8929aa2c2821e229251c1682b654b
+  private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kX.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -132,12 +131,12 @@ public class RobotContainer {
       new SampleColorCommand(m_colorSensor)
     );
 
+    //Sets the thrower speed to 5000 i don't know
     m_secondaryController_B.whileHeld(
       new SetThrowerSpeedCommand(m_Thrower, 5000)
     );
 
-<<<<<<< HEAD
-    
+    //The command sequence to line up the robot with power port and shooting 5 powercells
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -155,9 +154,35 @@ public class RobotContainer {
         )
       )
     );
-=======
-    m_secondaryController_YButton.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
->>>>>>> 1a6a98a95db8929aa2c2821e229251c1682b654b
+
+    //The sequence for loading 5 powercells into the daisy
+    m_secondaryController_X.whileHeld(
+        new SequentialCommandGroup(
+          //if the ball count is less than five
+            new SequentialCommandGroup(
+              // Lower intake command
+              //spin intake forward
+              // put power cell in daisy
+            ),
+            new ParallelCommandGroup(
+              new SequentialCommandGroup(
+                // move the hopper into the next slot
+                // Ball count ++
+              )
+              //spin the intake backwards (little bit)
+            ),
+          //else the ball count is 5 (hopefully not higher)
+            new SequentialCommandGroup(
+              //raise intake
+              //spin backwards
+          )
+        )
+        
+    );
+
+
+    //Tells the output of the light sensor used for telling if powercell is in daisy
+    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
