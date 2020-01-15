@@ -121,4 +121,8 @@ public final class Constants {
     public static final boolean TUNE = true;
 
   }
+
+  public static final class HopperConstants {
+    public static final int HOPPER_MOTOR_ID = 6;
+  }
 }
