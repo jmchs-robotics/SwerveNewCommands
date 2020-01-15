@@ -25,6 +25,7 @@ import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -68,6 +69,8 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value);
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
+  private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kA.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -124,6 +127,25 @@ public class RobotContainer {
 
     m_secondaryController_B.whileHeld(
       new SetThrowerSpeedCommand(m_Thrower, 5000)
+    );
+
+    
+    m_secondaryController_A.whenPressed(
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new SetThrowerSpeedCommand(m_Thrower, 5000),
+          // Angle the robot toward the retroflective tape
+          new SequentialCommandGroup(
+            new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+            new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+            new VisionLineUpWithTarget(m_swerve, rft_), 
+            new SendVisionCommand(sender_, "_")
+          )
+        ),
+        new SequentialCommandGroup(
+          //Spin the daisy and reset the Ball Count to 0
+        )
+      )
     );
   }
 
