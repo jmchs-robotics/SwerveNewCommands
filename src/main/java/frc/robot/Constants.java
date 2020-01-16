@@ -101,7 +101,6 @@ public final class Constants {
 
   public static final class ThrowerMotor {
     public static final int throwerMaxID = 14;
-    //public static final double throwerMotorSpeed = 0.7;//arbitrary number
     public static final boolean INVERT_FOLLOWER = false;
   }
 
