@@ -44,13 +44,15 @@ public class HopperSubsystem extends SubsystemBase {
   public HopperSubsystem() {
     m_hopperMotor = new CANSparkMax(HopperConstants.HOPPER_MOTOR_ID, MotorType.kBrushed);
 
-    m_hopperMotor.setIdleMode(IdleMode.kBrake);
+    //Don't want the hopper move beyond intention
+    m_hopperMotor.setIdleMode(IdleMode.kBrake); 
 
     m_hopperController = m_hopperMotor.getPIDController();
     m_hopperEncoder = m_hopperMotor.getAlternateEncoder();
 
+     
     resetReference();
-    
+
     //Sets PID constants
     m_hopperController.setP(kP);
     m_hopperController.setD(kD);
