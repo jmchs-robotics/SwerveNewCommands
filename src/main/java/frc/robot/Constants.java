@@ -124,5 +124,23 @@ public final class Constants {
 
   public static final class HopperConstants {
     public static final int HOPPER_MOTOR_ID = 6;
+    public static final double ONE_ROTATION = 1;
+  }
+
+  public static final class HopperPIDs {
+    public static final double kP = 0;
+    public static final double kI = 0;
+    public static final double kD = 0;
+    public static final double FEED_FORWARD = 0;
+    public static final double kIz = 0;
+    public static final double MIN_OUTPUT = -1;
+    public static final double MAX_OUTPUT = 1;
+    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; //40T pinion, 48T wheel gear
+    public static final int UPDATE_RATE = 5; // 200 Ht update rate leader -> folloer. Default 10ms
+
+    public static final boolean TIME = false;
+
+    public static final boolean TUNE = true;
+
   }
 }
