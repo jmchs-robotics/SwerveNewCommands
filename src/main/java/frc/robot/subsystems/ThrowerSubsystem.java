@@ -44,8 +44,8 @@ public class ThrowerSubsystem extends SubsystemBase {
    * Creates a new ControlPanelSubsystem.
    */
   public ThrowerSubsystem() {
-    m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    m_Follower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
+    m_Thrower = new CANSparkMax(ThrowerMotor.throwerMotorID, MotorType.kBrushless);
+    m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
     m_Follower.setIdleMode(IdleMode.kCoast);
@@ -77,8 +77,9 @@ public class ThrowerSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    //This is where to set the sparkmax speed so it does it every 20 millieseconds
-    //setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
+    //This is where to set the sparkmax speed so it gets set every 20 millieseconds
+    // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
+    m_throwController.setReference(m_setpoint, ControlType.kVelocity);
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
@@ -103,6 +104,10 @@ public class ThrowerSubsystem extends SubsystemBase {
     }
   }
 
+  /**
+   * set motor speed so the thrower wheel is this many RPMs, based on ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL
+   * @param wheelTargetRMPs
+   */
   public void setThrowerSpeed(double wheelTargetRMPs) {
     m_setpoint = wheelTargetRMPs * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
@@ -113,6 +118,11 @@ public class ThrowerSubsystem extends SubsystemBase {
     m_Follower.disable();
   }
 
+    /**
+     * Returns whether the motor's speed is within thresholdPercent of the desired speed
+     * @param thresholdPercent (double) how close the speeds should be to return true, e.g. 0.01 for 1%
+     * @return (boolean) true if the motor is that close to the desired speed
+     */
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs(m_setpoint - m_throwEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
   }
