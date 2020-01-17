@@ -128,10 +128,10 @@ public class RobotContainer {
 
     // Thrower on 2ndary controller, 'B'
     m_secondaryController_B.whenPressed(
-      new SetThrowerSpeedCommand(m_Thrower, 3000)
+      new SetThrowerSpeedCommand(m_Thrower, 3000).perpetually() // Could also be constructed as a lambda, but this works as well. Command is still interruptible.
     );
     m_secondaryController_B.whenReleased(
-      new SetThrowerSpeedCommand(m_Thrower, 0)
+      new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. This should be the default command, and the button should call a whenHeld() instead.
     );
 
 
