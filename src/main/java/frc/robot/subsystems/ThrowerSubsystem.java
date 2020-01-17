@@ -45,10 +45,10 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    //m_Follower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
+    m_Follower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
 
-    m_Thrower.setIdleMode(IdleMode.kCoast);
-    m_Follower.setIdleMode(IdleMode.kCoast);
+    //m_Thrower.setIdleMode(IdleMode.kCoast);
+    //m_Follower.setIdleMode(IdleMode.kCoast);
 
     m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
 
