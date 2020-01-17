@@ -65,13 +65,16 @@ public class ThrowerSubsystem extends SubsystemBase {
     m_throwController.setOutputRange(kMinOutput,kMaxOutput);
 
     //Everything on the smartDashboard:
-    SmartDashboard.putNumber("Thrower P", kP);
-    SmartDashboard.putNumber("Thrower I", kI);
-    SmartDashboard.putNumber("Thrower D", kD);
-    SmartDashboard.putNumber("Thrower Feed Forward", kff);
-    SmartDashboard.putNumber("Thrower I Zone", kIz);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
+    if(ThrowerPIDs.TUNE){
+      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+      SmartDashboard.putNumber("Thrower P", kP);
+      SmartDashboard.putNumber("Thrower I", kI);
+      SmartDashboard.putNumber("Thrower D", kD);
+      SmartDashboard.putNumber("Thrower Feed Forward", kff);
+      SmartDashboard.putNumber("Thrower I Zone", kIz);
+      SmartDashboard.putNumber("Min Output", kMinOutput);
+      SmartDashboard.putNumber("Max Output", kMaxOutput);
+    }
   }
 
   @Override
@@ -83,6 +86,7 @@ public class ThrowerSubsystem extends SubsystemBase {
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
+      double speed = SmartDashboard.getNumber("Thrower desired wheel RPM", 0);
       double p = SmartDashboard.getNumber("Thrower P", 0);
       double i = SmartDashboard.getNumber("Thrower I", 0);
       double d = SmartDashboard.getNumber("Thrower D", 0);
@@ -92,6 +96,7 @@ public class ThrowerSubsystem extends SubsystemBase {
       double min = SmartDashboard.getNumber("Thrower Min Output", 0);
   
       // if PID coefficients on SmartDashboard have changed, write new values to controller
+      if(( speed != m_setpoint)) { m_setpoint = speed; }
       if((p != kP)) { m_throwController.setP(p); kP = p; }
       if((i != kI)) { m_throwController.setI(i); kI = i; }
       if((d != kD)) { m_throwController.setD(d); kD = d; }
