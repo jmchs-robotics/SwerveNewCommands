@@ -45,7 +45,7 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    m_Follower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
+    //m_Follower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
     m_Follower.setIdleMode(IdleMode.kCoast);
@@ -102,9 +102,9 @@ public class ThrowerSubsystem extends SubsystemBase {
       }
     }
   }
-
-  public void setThrowerSpeed(double wheelTargetRMPs) {
-    m_setpoint = wheelTargetRMPs * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
+  // The SPARK Neo Brushless has an Free Empirical Speed of 5,676 RPM's.
+  public void setThrowerSpeed(double wheelTargetRPMs) {
+    m_setpoint = wheelTargetRPMs * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
   }
 
