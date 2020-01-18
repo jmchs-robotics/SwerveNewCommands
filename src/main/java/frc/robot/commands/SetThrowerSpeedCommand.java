@@ -17,7 +17,7 @@ import frc.robot.Constants.ThrowerPIDs;
 
 public class SetThrowerSpeedCommand extends CommandBase {
   private ThrowerSubsystem m_subsystem;
-  private double setPoint = 100;
+  private double setPoint = 1000;
   /**
    * Creates a new SetThrowerSpeedCommand.
    */
@@ -32,7 +32,7 @@ public class SetThrowerSpeedCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("SetThrowerSpeedCommand initialize with setPoint= " + setPoint);
+    // System.out.println("SetThrowerSpeedCommand initialize with setPoint= " + setPoint);
     m_subsystem.setThrowerSpeed(setPoint);
   }
 

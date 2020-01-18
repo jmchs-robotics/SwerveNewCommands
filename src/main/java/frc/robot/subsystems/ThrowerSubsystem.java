@@ -88,8 +88,8 @@ public class ThrowerSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     //This is where to set the sparkmax speed so it gets set every 20 millieseconds
     // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
-    System.out.println( "ThrowerSubsystem periodic, about to set motor speed to " + m_setpoint);
-    m_throwController.setReference(m_setpoint, ControlType.kVelocity);
+    // System.out.println( "ThrowerSubsystem periodic, about to set motor speed to " + m_setpoint);
+    // m_throwController.setReference(m_setpoint, ControlType.kVelocity);
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
@@ -124,14 +124,7 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public void setThrowerSpeed(double wheelTargetRPMs) {
     m_setpoint = wheelTargetRPMs; // * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
-    System.out.println( "ThrowerSubsystem setThrowerSpeed() setpoint = " + m_setpoint);
-
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
-    if(ThrowerPIDs.TUNE){
-      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
-      SmartDashboard.putNumber("Have now set the desired speed this many times: ", ii);
-      ii ++;
-    }
   }
 
   public double getThrowerSpeed() {

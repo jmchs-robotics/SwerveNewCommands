@@ -132,18 +132,12 @@ public class RobotContainer {
     );
 
     // Thrower on secondary controller, 'B'
-    m_secondaryController_B.whenPressed( // whileHeld(
-      new SetThrowerSpeedCommand(m_Thrower, 300) //  m_Thrower.getThrowerSpeed())
-      // new SetThrowerSpeedCommand(m_Thrower, 300).perpetually() // Could also be constructed as a lambda, but this works as well. Command is still interruptible.
-
+    m_secondaryController_B.whileHeld(
+      new SetThrowerSpeedCommand(m_Thrower, 1000) //  m_Thrower.getThrowerSpeed())
     );
-  
     m_secondaryController_B.whenReleased(
       new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. This should be the default command, and the button should call a whenHeld() instead.
     );
-//    m_secondaryController_B.whenReleased(
- //     new SetThrowerSpeedCommand(m_Thrower, 0)
-  //  );
 
 
     //The command sequence to line up the robot with power port and shooting 5 powercells
