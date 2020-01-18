@@ -32,6 +32,7 @@ public class SetThrowerSpeedCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("SetThrowerSpeedCommand initialize with setPoint= " + setPoint);
     m_subsystem.setThrowerSpeed(setPoint);
   }
 

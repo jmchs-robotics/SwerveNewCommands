@@ -126,13 +126,13 @@ public class RobotContainer {
       new SampleColorCommand(m_colorSensor)
     );
 
-    // Thrower on 2ndary controller, 'B'
+    // Thrower on secondary controller, 'B'
     m_secondaryController_B.whenPressed(
-      new SetThrowerSpeedCommand(m_Thrower, 3000)
+      new SetThrowerSpeedCommand(m_Thrower, 300)
     );
-    m_secondaryController_B.whenReleased(
-      new SetThrowerSpeedCommand(m_Thrower, 0)
-    );
+//    m_secondaryController_B.whenReleased(
+ //     new SetThrowerSpeedCommand(m_Thrower, 0)
+  //  );
 
 
     m_secondaryController_YButton.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));

@@ -21,7 +21,7 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
 
     m_hopperMotor.configFactoryDefault();
-    m_hopperMotor.configGetParameter(ParamEnum.p, ordinal, timeoutMs)
+    //m_hopperMotor.configGetParameter(ParamEnum.p, ordinal, timeoutMs);
   }
 
   @Override

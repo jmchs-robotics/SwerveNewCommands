@@ -45,12 +45,12 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMotorID, MotorType.kBrushless);
-    m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
+    // m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
-    m_Follower.setIdleMode(IdleMode.kCoast);
+    // m_Follower.setIdleMode(IdleMode.kCoast);
 
-    m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
+    // m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
 
     m_throwController = m_Thrower.getPIDController();
     m_throwEncoder = m_Thrower.getEncoder();
@@ -72,8 +72,8 @@ public class ThrowerSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Thrower D", kD);
       SmartDashboard.putNumber("Thrower Feed Forward", kff);
       SmartDashboard.putNumber("Thrower I Zone", kIz);
-      SmartDashboard.putNumber("Min Output", kMinOutput);
-      SmartDashboard.putNumber("Max Output", kMaxOutput);
+      SmartDashboard.putNumber("Thrower Min Output", kMinOutput);
+      SmartDashboard.putNumber("Thrower Max Output", kMaxOutput);
     }
   }
 
@@ -96,7 +96,7 @@ public class ThrowerSubsystem extends SubsystemBase {
       double min = SmartDashboard.getNumber("Thrower Min Output", 0);
   
       // if PID coefficients on SmartDashboard have changed, write new values to controller
-      if(( speed != m_setpoint)) { m_setpoint = speed; }
+      if(( speed != m_setpoint)) { setThrowerSpeed( speed); }
       if((p != kP)) { m_throwController.setP(p); kP = p; }
       if((i != kI)) { m_throwController.setI(i); kI = i; }
       if((d != kD)) { m_throwController.setD(d); kD = d; }
@@ -111,16 +111,20 @@ public class ThrowerSubsystem extends SubsystemBase {
 
   /**
    * set motor speed so the thrower wheel is this many RPMs, based on ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL
-   * @param wheelTargetRMPs
+   * @param wheelTargetRPMs
    */
-  public void setThrowerSpeed(double wheelTargetRMPs) {
-    m_setpoint = wheelTargetRMPs * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
+  public void setThrowerSpeed(double wheelTargetRPMs) {
+    m_setpoint = wheelTargetRPMs * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
+    System.out.println( "ThrowerSubsystem setThrowerSpeed() setpoint = " + m_setpoint);
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
+    if(ThrowerPIDs.TUNE){
+      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+    }
   }
 
   public void stopThrower() {
     m_setpoint = 0;
-    m_Follower.disable();
+    // m_Follower.disable();
   }
 
     /**
