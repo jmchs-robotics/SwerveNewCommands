@@ -128,7 +128,7 @@ public class RobotContainer {
 
     // Thrower on secondary controller, 'B'
     m_secondaryController_B.whileHeld(
-      new SetThrowerSpeedCommand(m_Thrower, m_Thrower.getThrowerSpeed())
+      new SetThrowerSpeedCommand(m_Thrower, 300) //  m_Thrower.getThrowerSpeed())
       // new SetThrowerSpeedCommand(m_Thrower, 300).perpetually() // Could also be constructed as a lambda, but this works as well. Command is still interruptible.
     );
     /*
