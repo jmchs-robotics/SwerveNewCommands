@@ -122,6 +122,10 @@ public class ThrowerSubsystem extends SubsystemBase {
     }
   }
 
+  public double getThrowerSpeed() {
+    return m_setpoint;
+  }
+
   public void stopThrower() {
     m_setpoint = 0;
     // m_Follower.disable();
