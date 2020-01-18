@@ -38,7 +38,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   private double kMinOutput = ThrowerPIDs.MIN_OUTPUT;
   
   private double m_setpoint = 0;
-  
+  private double ii = 0;
 
   /**
    * Creates a new ControlPanelSubsystem.
@@ -46,6 +46,12 @@ public class ThrowerSubsystem extends SubsystemBase {
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMotorID, MotorType.kBrushless);
     // m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
+
+    // reset controllers
+    m_Thrower.restoreFactoryDefaults();
+    m_Thrower.clearFaults();
+    // m_Follower.restoreFactoryDefaults();
+    // m_Follower.clearFaults();
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
     // m_Follower.setIdleMode(IdleMode.kCoast);
@@ -82,7 +88,8 @@ public class ThrowerSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     //This is where to set the sparkmax speed so it gets set every 20 millieseconds
     // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
-    m_throwController.setReference(m_setpoint, ControlType.kVelocity);
+    System.out.println( "Periodic, about to set motor speed to " + m_setpoint);
+   // m_throwController.setReference(m_setpoint, ControlType.kVelocity);
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
@@ -119,6 +126,8 @@ public class ThrowerSubsystem extends SubsystemBase {
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
     if(ThrowerPIDs.TUNE){
       SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+      SmartDashboard.putNumber("Have now set the desired speed this many times: ", ii);
+      ii ++;
     }
   }
 

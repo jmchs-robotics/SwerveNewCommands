@@ -39,7 +39,7 @@ public class SetThrowerSpeedCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //SetThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
+    m_subsystem.setThrowerSpeed(setPoint);
   }
 
   // Called once the command ends or is interrupted.
