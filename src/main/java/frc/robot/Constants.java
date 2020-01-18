@@ -108,10 +108,10 @@ public final class Constants {
     public static final double kP = 0.001;
     public static final double kI = 0;
     public static final double kD = 0;
-    public static final double FEED_FORWARD = 0.01;
+    public static final double FEED_FORWARD = 0.01; // minimum useful 1/18 seems to be 0.001
     public static final double kIz = 0;
-    public static final double MIN_OUTPUT = -0.5;
-    public static final double MAX_OUTPUT = 0.5;
+    public static final double MIN_OUTPUT = -1;
+    public static final double MAX_OUTPUT = 1;
     public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 35.0 / 35.0; // 40T pinion, 48T wheel gear
     public static final int UPDATE_RATE = 5; // msecs  200 Ht update rate leader -> folloer. Default 10ms
 

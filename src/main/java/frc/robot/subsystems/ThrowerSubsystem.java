@@ -93,6 +93,7 @@ public class ThrowerSubsystem extends SubsystemBase {
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
+      SmartDashboard.putNumber( "Thrower speed from encoder ", m_throwEncoder.getVelocity());
       double speed = SmartDashboard.getNumber("Thrower desired wheel RPM", 0);
       double p = SmartDashboard.getNumber("Thrower P", 0);
       double i = SmartDashboard.getNumber("Thrower I", 0);
