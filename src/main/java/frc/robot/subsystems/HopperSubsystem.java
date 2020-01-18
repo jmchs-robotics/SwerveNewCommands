@@ -47,6 +47,9 @@ public class HopperSubsystem extends SubsystemBase {
     //Don't want the hopper move beyond intention
     m_hopperMotor.setIdleMode(IdleMode.kBrake); 
 
+
+    m_hopperMotor.configFactoryDefault();
+    //m_hopperMotor.configGetParameter(ParamEnum.p, ordinal, timeoutMs);
     m_hopperController = m_hopperMotor.getPIDController();
     m_hopperEncoder = m_hopperMotor.getAlternateEncoder();
 
