@@ -128,8 +128,8 @@ public final class Constants {
   }
 
   public static final class HopperPIDs {
-    public static final double kP = 0;
-    public static final double kI = 0;
+    public static final double kP = 2e-4; //defaults
+    public static final double kI = 1e-6; //default
     public static final double kD = 0;
     public static final double FEED_FORWARD = 0;
     public static final double kIz = 0;

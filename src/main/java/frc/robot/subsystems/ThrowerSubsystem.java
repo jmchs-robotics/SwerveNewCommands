@@ -44,7 +44,7 @@ public class ThrowerSubsystem extends SubsystemBase {
    * Creates a new ControlPanelSubsystem.
    */
   public ThrowerSubsystem() {
-    m_Thrower = new CANSparkMax(ThrowerMotor.throwerMotorID, MotorType.kBrushless);
+    m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
     // m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
 
     // reset controllers
