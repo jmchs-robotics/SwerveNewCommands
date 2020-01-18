@@ -117,6 +117,7 @@ public class ThrowerSubsystem extends SubsystemBase {
     }
   }
 
+
   /**
    * set motor speed so the thrower wheel is this many RPMs, based on ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL
    * @param wheelTargetRPMs
@@ -124,6 +125,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   public void setThrowerSpeed(double wheelTargetRPMs) {
     m_setpoint = wheelTargetRPMs; // * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
     System.out.println( "ThrowerSubsystem setThrowerSpeed() setpoint = " + m_setpoint);
+
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
     if(ThrowerPIDs.TUNE){
       SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);

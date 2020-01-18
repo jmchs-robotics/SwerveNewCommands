@@ -27,6 +27,7 @@ import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -70,8 +71,12 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value);
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
-  private final JoystickButton m_secondaryController_YButton = new JoystickButton(m_secondaryController, 
+  private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kA.value);
+  private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
       XboxController.Button.kY.value);
+  private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kX.value);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -130,6 +135,7 @@ public class RobotContainer {
     m_secondaryController_B.whenPressed( // whileHeld(
       new SetThrowerSpeedCommand(m_Thrower, 300) //  m_Thrower.getThrowerSpeed())
       // new SetThrowerSpeedCommand(m_Thrower, 300).perpetually() // Could also be constructed as a lambda, but this works as well. Command is still interruptible.
+
     );
   
     m_secondaryController_B.whenReleased(
@@ -140,7 +146,53 @@ public class RobotContainer {
   //  );
 
 
-    m_secondaryController_YButton.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
+    //The command sequence to line up the robot with power port and shooting 5 powercells
+    m_secondaryController_A.whenPressed(
+      new SequentialCommandGroup(
+        new ParallelCommandGroup(
+          new SetThrowerSpeedCommand(m_Thrower, 5000),
+          // Angle the robot toward the retroflective tape
+          new SequentialCommandGroup(
+            new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+            new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+            new VisionLineUpWithTarget(m_swerve, rft_), 
+            new SendVisionCommand(sender_, "_")
+          )
+        ),
+        new SequentialCommandGroup(
+          //Spin the daisy and reset the Ball Count to 0
+        )
+      )
+    );
+
+    //The sequence for loading 5 powercells into the daisy
+    m_secondaryController_X.whileHeld(
+        new SequentialCommandGroup(
+          //if the ball count is less than five
+            new SequentialCommandGroup(
+              // Lower intake command
+              //spin intake forward
+              // put power cell in daisy
+            ),
+            new ParallelCommandGroup(
+              new SequentialCommandGroup(
+                // move the hopper into the next slot
+                // Ball count ++
+              )
+              //spin the intake backwards (little bit)
+            ),
+          //else the ball count is 5 (hopefully not higher)
+            new SequentialCommandGroup(
+              //raise intake
+              //spin backwards
+          )
+        )
+        
+    );
+
+
+    //Tells the output of the light sensor used for telling if powercell is in daisy
+    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
