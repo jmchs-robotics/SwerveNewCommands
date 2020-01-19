@@ -138,8 +138,8 @@ public class RobotContainer {
       new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
     )
     .whenReleased(
-    new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. Is also the default command.
-`    );
+      new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. Is also the default command.
+    );
 
 
     //The command sequence to line up the robot with power port and shooting 5 powercells
