@@ -133,8 +133,8 @@ public class RobotContainer {
     );
 
     // Thrower on secondary controller, 'B'
-    m_secondaryController_B.whileHeld(
-      new SetThrowerSpeedCommand(m_Thrower, 800) // m_Thrower.getThrowerSpeed())
+    m_secondaryController_B.whenHeld( // whenHeld doesn't restart the command if it finishes; useful for command groups to only run once. 
+      new SetThrowerSpeedCommand(m_Thrower, 800).perpetually() // m_Thrower.getThrowerSpeed()) // .perpetually() lets the command run forever.
     //)
     //.whenReleased(
      // new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. Is also the default command.
