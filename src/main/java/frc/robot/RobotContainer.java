@@ -133,13 +133,13 @@ public class RobotContainer {
     );
 
     // Thrower on secondary controller, 'B'
+
     m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
       new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
     )
     .whenReleased(
     new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. Is also the default command.
-      // perhaps the button should call SetThrowerSpeed() whenHeld() instead.
-    );
+`    );
 
 
     //The command sequence to line up the robot with power port and shooting 5 powercells
