@@ -100,7 +100,7 @@ public class ThrowerSubsystem extends SubsystemBase {
       double min = SmartDashboard.getNumber("Thrower Min Output", 0);
   
       // if PID coefficients on SmartDashboard have changed, write new values to controller
-      if(( speed != m_setpoint && m_setpoint > 0)) { setThrowerSpeed( speed); }
+      if(( speed != m_setpoint)) { setThrowerSpeed( speed); }
       if((p != kP)) { m_throwController.setP(p); kP = p; }
       if((i != kI)) { m_throwController.setI(i); kI = i; }
       if((d != kD)) { m_throwController.setD(d); kD = d; }
