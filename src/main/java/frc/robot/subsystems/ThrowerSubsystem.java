@@ -119,6 +119,9 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public void setThrowerSpeed(double targetRPMs) {
     m_setpoint = targetRPMs; 
+    if(ThrowerPIDs.TUNE){
+      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+    }
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
   }
 
@@ -128,6 +131,9 @@ public class ThrowerSubsystem extends SubsystemBase {
 
   public void stopThrower() {
     m_setpoint = 0;
+    if(ThrowerPIDs.TUNE){
+      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+    }
     m_Thrower.disable();
     // m_ThrowerFollower.disable(); // not sure if this is necessary
   }
