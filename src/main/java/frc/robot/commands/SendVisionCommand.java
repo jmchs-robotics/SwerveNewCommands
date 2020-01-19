@@ -27,4 +27,6 @@ public class SendVisionCommand extends InstantCommand {
   public void initialize() {
     sender_.get().setSendData(message_);
   }
+
+
 }
