@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -133,10 +134,11 @@ public class RobotContainer {
 
     // Thrower on secondary controller, 'B'
     m_secondaryController_B.whileHeld(
-      new SetThrowerSpeedCommand(m_Thrower, 1000) //  m_Thrower.getThrowerSpeed())
-    );
-    m_secondaryController_B.whenReleased(
-      new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. This should be the default command, and the button should call a whenHeld() instead.
+      new SetThrowerSpeedCommand(m_Thrower, 800) // m_Thrower.getThrowerSpeed())
+    //)
+    //.whenReleased(
+     // new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. Is also the default command.
+      // perhaps the button should call SetThrowerSpeed() whenHeld() instead.
     );
 
 
@@ -191,7 +193,13 @@ public class RobotContainer {
   }
 
   private void configureDefaultCommands() {
+    // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
+    // default swerve drive is to read from joysticks
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
+
+    // default thrower is to spin down to still
+    m_Thrower.setDefaultCommand(new StartEndCommand( m_Thrower::stopThrower, ()->{}, m_Thrower)); // Spin down thrower on startup, do nothing on end.
+
   }
 
   /**

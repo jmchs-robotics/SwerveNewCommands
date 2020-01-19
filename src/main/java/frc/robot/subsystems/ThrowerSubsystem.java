@@ -25,7 +25,7 @@ import frc.robot.Constants.ThrowerPIDs;
 
 public class ThrowerSubsystem extends SubsystemBase {
   private CANSparkMax m_Thrower;
-  private CANSparkMax m_Follower;
+  private CANSparkMax m_ThrowerFollower;
   private CANPIDController m_throwController;
   private CANEncoder m_throwEncoder;
 
@@ -37,7 +37,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   private double kMaxOutput = ThrowerPIDs.MAX_OUTPUT;
   private double kMinOutput = ThrowerPIDs.MIN_OUTPUT;
   
-  private double m_setpoint = 0;
+  private double m_setpoint = 900;
   private double ii = 0;
 
   /**
@@ -45,18 +45,18 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    // m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
+    // m_ThrowerFollower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
 
     // reset controllers
     m_Thrower.restoreFactoryDefaults();
     m_Thrower.clearFaults();
-    // m_Follower.restoreFactoryDefaults();
-    // m_Follower.clearFaults();
+    // m_ThrowerFollower.restoreFactoryDefaults();
+    // m_ThrowerFollower.clearFaults();
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
-    // m_Follower.setIdleMode(IdleMode.kCoast);
+    // m_ThrowerFollower.setIdleMode(IdleMode.kCoast);
 
-    // m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
+    // m_ThrowerFollower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
 
     m_throwController = m_Thrower.getPIDController();
     m_throwEncoder = m_Thrower.getEncoder();
@@ -85,11 +85,7 @@ public class ThrowerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    //This is where to set the sparkmax speed so it gets set every 20 millieseconds
-    // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
-    // System.out.println( "ThrowerSubsystem periodic, about to set motor speed to " + m_setpoint);
-    // m_throwController.setReference(m_setpoint, ControlType.kVelocity);
+    // periodic() methods are called once per scheduler run
 
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
@@ -117,13 +113,12 @@ public class ThrowerSubsystem extends SubsystemBase {
     }
   }
 
-
   /**
-   * set motor speed so the thrower wheel is this many RPMs, based on ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL
-   * @param wheelTargetRPMs
+   * set desired motor speed so to this many RPMs
+   * @param wheelTargetRPMs desired thrower speed, in RPMs
    */
-  public void setThrowerSpeed(double wheelTargetRPMs) {
-    m_setpoint = wheelTargetRPMs; // * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
+  public void setThrowerSpeed(double targetRPMs) {
+    m_setpoint = targetRPMs; 
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
   }
 
@@ -133,7 +128,8 @@ public class ThrowerSubsystem extends SubsystemBase {
 
   public void stopThrower() {
     m_setpoint = 0;
-    // m_Follower.disable();
+    m_Thrower.disable();
+    // m_ThrowerFollower.disable(); // not sure if this is necessary
   }
 
     /**

@@ -135,7 +135,6 @@ public final class Constants {
     public static final double kIz = 0;
     public static final double MIN_OUTPUT = -1;
     public static final double MAX_OUTPUT = 1;
-    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; //40T pinion, 48T wheel gear
     public static final int UPDATE_RATE = 5; // 200 Ht update rate leader -> folloer. Default 10ms
 
     public static final boolean TIME = false;
