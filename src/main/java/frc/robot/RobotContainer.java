@@ -187,7 +187,6 @@ public class RobotContainer {
         
     );
 
-
     //Tells the output of the light sensor used for telling if powercell is in daisy
     m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
   }
