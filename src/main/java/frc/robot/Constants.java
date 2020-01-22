@@ -100,7 +100,7 @@ public final class Constants {
   public static final class ThrowerMotor {
 
     public static final int throwerMaxID = 14;
-    public static final int FollowerThrowerMaxID = 15;
+    public static final int throwerFollowerMaxID = 15;
 
     public static final boolean INVERT_FOLLOWER = false;
   }
