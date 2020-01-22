@@ -45,18 +45,18 @@ public class ThrowerSubsystem extends SubsystemBase {
    */
   public ThrowerSubsystem() {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    // m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMotorID, MotorType.kBrushless);
+    m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMaxID, MotorType.kBrushless);
 
     // reset controllers
     m_Thrower.restoreFactoryDefaults();
     m_Thrower.clearFaults();
-    // m_Follower.restoreFactoryDefaults();
-    // m_Follower.clearFaults();
+    m_Follower.restoreFactoryDefaults();
+    m_Follower.clearFaults();
 
     m_Thrower.setIdleMode(IdleMode.kCoast);
-    // m_Follower.setIdleMode(IdleMode.kCoast);
+    m_Follower.setIdleMode(IdleMode.kCoast);
 
-    // m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
+    m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
 
     m_throwController = m_Thrower.getPIDController();
     m_throwEncoder = m_Thrower.getEncoder();
