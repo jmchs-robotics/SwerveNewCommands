@@ -123,16 +123,13 @@ public final class Constants {
   }
 
   public static final class HopperConstants {
-    public static final int HOPPER_MOTOR_ID = 6;
+    public static final int HOPPER_MOTOR_ID = 20;
     public static final double ONE_ROTATION = 1;
   }
 
   public static final class HopperPIDs {
-    public static final double kP = 2e-4; //defaults
-    public static final double kI = 1e-6; //default
-    public static final double kD = 0;
+   /* 
     public static final double FEED_FORWARD = 0;
-    public static final double kIz = 0;
     public static final double MIN_OUTPUT = -1;
     public static final double MAX_OUTPUT = 1;
     public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; //40T pinion, 48T wheel gear
@@ -141,7 +138,46 @@ public final class Constants {
     public static final boolean TIME = false;
 
     public static final boolean TUNE = true;
+    */
 
+    /**
+     * given constants from the Talon SRX guide
+     */
 
+    /**
+	  * Which PID slot to pull gains from. Starting 2018, you can choose from
+	  * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
+	  * configuration.
+	  */
+	  public static final int kSlotIdx = 0;
+
+	  /**
+	  * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
+	  * now we just want the primary one.
+	  */
+	  public static final int kPIDLoopIdx = 0;
+
+	  /**
+	  * Set to zero to skip waiting for confirmation, set to nonzero to wait and
+	  * report to DS if action fails.
+	  */
+	  public static final int kTimeoutMs = 30;
+	
+	  /* Choose so that Talon does not report sensor out of phase */
+	  public static boolean kSensorPhase = true;
+
+	  /**
+	  * Choose based on what direction you want to be positive,
+	  * this does not affect motor invert. 
+	  */
+	  public static boolean kMotorInvert = false;
+
+	  /**
+	  *Gains used in Positon Closed Loop, to be adjusted accordingly
+    * Gains(kp, ki, kd, kf, izone, peak output);
+    */
+    static final Gains kGainsDaisy = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+    
   }
+
 }
