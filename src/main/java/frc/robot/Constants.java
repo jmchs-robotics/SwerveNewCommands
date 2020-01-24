@@ -147,8 +147,21 @@ public final class Constants {
     /**
 	  * Which PID slot to pull gains from. Starting 2018, you can choose from
 	  * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
-	  * configuration.
-	  */
+    * configuration.
+    */
+    
+    public static final double kP = 2e-4;
+    public static final double kI = 1e-6;
+    public static final double kD = 0.0;
+    public static final double FEED_FORWARD = 0.0; // minimum useful 1/18 seems to be 0.001
+    public static final double kIz = 0;
+    public static final double MIN_OUTPUT = -1;
+    public static final double MAX_OUTPUT = 1;
+    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 35.0 / 35.0; // 40T pinion, 48T wheel gear
+    public static final int UPDATE_RATE = 5; // msecs  200 Ht update rate leader -> folloer. Default 10ms
+
+    public static final boolean TIME = false;
+    
 	  public static final int kSlotIdx = 0;
 
 	  /**
@@ -177,6 +190,7 @@ public final class Constants {
     * Gains(kp, ki, kd, kf, izone, peak output);
     */
     static final Gains kGainsDaisy = new Gains(0.15, 0.0, 1.0, 0.0, 0, 1.0);
+    public static final boolean TUNE = true;
     
   }
 

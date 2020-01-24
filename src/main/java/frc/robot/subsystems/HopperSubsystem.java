@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
+import frc.robot.Constants.ThrowerPIDs;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
@@ -30,15 +32,16 @@ public class HopperSubsystem extends SubsystemBase {
   private CANPIDController m_hopperController;
   private CANEncoder m_hopperEncoder;
 
-  /*
+  
   private double kP = HopperPIDs.kP;
   private double kI = HopperPIDs.kI;
+  
   private double kD = HopperPIDs.kD;
   private double kIz = HopperPIDs.kIz;
-  private double kff = HopperPIDs.FEED_FORWARD;
+  private double kF = HopperPIDs.FEED_FORWARD;
   private double kMaxOutput = HopperPIDs.MAX_OUTPUT;
   private double kMinOutput = HopperPIDs.MIN_OUTPUT;
-  */
+  
   
   private double m_reference = 0;
   /**
@@ -51,7 +54,7 @@ public class HopperSubsystem extends SubsystemBase {
 		m_hopperMotor.configFactoryDefault();
 		
 		/* Config the sensor used for Primary PID and sensor direction */
-    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 
+    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,
                                             HopperPIDs.kPIDLoopIdx,
                                             HopperPIDs.kTimeoutMs);
 
@@ -78,10 +81,10 @@ public class HopperSubsystem extends SubsystemBase {
 		m_hopperMotor.configAllowableClosedloopError(0, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
 
 		/* Config Position Closed Loop gains in slot0, tsypically kF stays zero. */
-		m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, HopperPIDs.kGainsDaisy.kF, HopperPIDs.kTimeoutMs);
-		m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, Constants.kGains.kP, HopperPIDs.kTimeoutMs);
-		m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, Constants.kGains.kI, HopperPIDs.kTimeoutMs);
-		m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, Constants.kGains.kD, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, kF, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
 
 		/**
 		 * Grab the 360 degree position of the MagEncoder's absolute
@@ -91,14 +94,16 @@ public class HopperSubsystem extends SubsystemBase {
 
 		/* Mask out overflows, keep bottom 12 bits */
 		absolutePosition &= 0xFFF;
-		if (Constants.kSensorPhase) { absolutePosition *= -1; }
-		if (Constants.kMotorInvert) { absolutePosition *= -1; }
+		if (HopperPIDs.kSensorPhase) { absolutePosition *= -1; }
+		if (HopperPIDs.kMotorInvert) { absolutePosition *= -1; }
 		
 		/* Set the quadrature (relative) sensor to match absolute */
-		m_hopperMotor.setSelectedSensorPosition(absolutePosition, Constants.kPIDLoopIdx, Constants.kTimeoutMs);
+		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
 
     //Don't want the hopper move beyond intention
-    //m_hopperMotor.setIdleMode(IdleMode.kBrake); 
+    
+    //Need to set Brake mode for Talon instead of SPARK MAX
+    // m_hopperMotor.setIdleMode(IdleMode.kBrake); 
 
 
     //m_hopperMotor.restoreFactoryDefaults();
@@ -114,19 +119,14 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperController.setD(kD);
     m_hopperController.setI(kI);
     m_hopperController.setIZone(kIz);
-    m_hopperController.setFF(kff);
-    
+    m_hopperController.setFF(kF);
+    */
     m_hopperController.setOutputRange(kMinOutput,kMaxOutput);
 
+    
     //Everything on the smartDashboard:
-    SmartDashboard.putNumber("Thrower P", kP);
-    SmartDashboard.putNumber("Thrower I", kI);
-    SmartDashboard.putNumber("Thrower D", kD);
-    SmartDashboard.putNumber("Thrower Feed Forward", kff);
-    SmartDashboard.putNumber("Thrower I Zone", kIz);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
-    */
+
+    
   }
 
   public void resetReference(){
@@ -136,7 +136,30 @@ public class HopperSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if(HopperPIDs.TUNE){
+      double speed = SmartDashboard.getNumber("Hopper desired wheel RPM", 0);
+      double p = SmartDashboard.getNumber("Hopper P", 0);
+      double i = SmartDashboard.getNumber("Hopper I", 0);
+      double d = SmartDashboard.getNumber("Hopper D", 0);
+      double iz = SmartDashboard.getNumber("Hopper I Zone", 0);
+      double ff = SmartDashboard.getNumber("Hopper Feed Forward", 0);
+      double max = SmartDashboard.getNumber("Hopper Max Output", 0);
+      double min = SmartDashboard.getNumber("Hopper Min Output", 0);
+  
+      // if PID coefficients on SmartDashboard have changed, write new values to controller
+      // if(( speed != m_setpoint)) { setHopperSpeed( speed); }
+      if((p != kP)) { m_hopperController.setP(p); kP = p; }
+      if((i != kI)) { m_hopperController.setI(i); kI = i; }
+      if((d != kD)) { m_hopperController.setD(d); kD = d; }
+      if((iz != kIz)) { m_hopperController.setIZone(iz); kIz = iz; }
+      if((ff != kF)) { m_hopperController.setFF(ff); kF = ff; }
+      if((max != kMaxOutput) || (min != kMinOutput)) { 
+        m_hopperController.setOutputRange(min, max); 
+        kMinOutput = min; kMaxOutput = max; 
+      }
+    }
   }
+  
 
   // Move the daisy one full rotation around
   public void dischargeAll(){
