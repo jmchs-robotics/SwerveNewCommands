@@ -17,7 +17,7 @@ import frc.robot.Constants.HopperPIDs;
 
 public class MoveHopperCommand extends CommandBase {
   private HopperSubsystem m_subsystem;
-  private double setPoint = 100;
+  private double m_setPoint = 100;
   /**
    * Creates a new SetHopperSpeedCommand.
    */
@@ -26,7 +26,7 @@ public class MoveHopperCommand extends CommandBase {
     addRequirements(subsystem);
 
     m_subsystem=subsystem;
-    setPoint=intendedSpeed;
+    m_setPoint=intendedSpeed;
   }
 
   // Called when the command is initially scheduled.

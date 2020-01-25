@@ -150,8 +150,9 @@ public final class Constants {
     * configuration.
     */
     
-    public static final double kP = 2e-4;
+    public static final double kP = 2e-2;
     public static final double kI = 1e-6;
+    public static final double kF = 2e-6;
     public static final double kD = 0.0;
     public static final double FEED_FORWARD = 0.0; // minimum useful 1/18 seems to be 0.001
     public static final double kIz = 0;

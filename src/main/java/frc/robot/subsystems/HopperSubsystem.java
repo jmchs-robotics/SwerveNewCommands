@@ -50,6 +50,11 @@ public class HopperSubsystem extends SubsystemBase {
    * Creates a new HopperSubsystem.
    */
   public HopperSubsystem() {
+    kP = HopperPIDs.kP;
+    kI = HopperPIDs.kI;
+    kD = HopperPIDs.kD;
+    kF = HopperPIDs.kF;
+    
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
 
     /* Factory Default all hardware to prevent unexpected behaviour */
@@ -101,7 +106,8 @@ public class HopperSubsystem extends SubsystemBase {
 		
 		/* Set the quadrature (relative) sensor to match absolute */
 		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
-
+    resetReference();
+    if(HopperPIDs.TUNE){
      SmartDashboard.putNumber("Hopper desired wheel RPM", 0);
      SmartDashboard.putNumber("Hopper P", 0);
      SmartDashboard.putNumber("Hopper I", 0);
@@ -110,17 +116,17 @@ public class HopperSubsystem extends SubsystemBase {
      SmartDashboard.putNumber("Hopper Feed Forward", 0);
      SmartDashboard.putNumber("Hopper Max Output", 0);
      SmartDashboard.putNumber("Hopper Min Output", 0);
-
+    }
     
   }
 
   public void resetReference(){
     m_reference = m_hopperMotor.getSensorCollection().getPulseWidthPosition();//getPosition();
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_hopperMotor.set(ControlMode.Position, m_setpoint);
     if(HopperPIDs.TUNE){
       double speed = SmartDashboard.getNumber("Hopper desired wheel RPM", 0);
       double p = SmartDashboard.getNumber("Hopper P", 0);
@@ -162,6 +168,8 @@ public class HopperSubsystem extends SubsystemBase {
   public void dischargeAll(){
     m_reference += HopperConstants.ONE_ROTATION;
     System.out.println("HopperSubsystem Setting the hopper motor");
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    
     //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
   }
 
