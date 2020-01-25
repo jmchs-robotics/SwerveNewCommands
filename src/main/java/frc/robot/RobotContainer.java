@@ -172,7 +172,7 @@ public class RobotContainer {
     m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
 
     //The sequence for loading 5 powercells into the daisy
-    m_secondaryController_X.whileHeld(
+    /*m_secondaryController_X.whileHeld(
         new SequentialCommandGroup(
           //if the ball count is less than five
             new SequentialCommandGroup(
@@ -194,7 +194,7 @@ public class RobotContainer {
           )
         )
         
-    );
+    );*/
 
 
     //Tells the output of the light sensor used for telling if powercell is in daisy

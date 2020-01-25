@@ -88,7 +88,7 @@ public class ThrowerSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     //This is where to set the sparkmax speed so it gets set every 20 millieseconds
     // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
-    System.out.println( "ThrowerSubsystem periodic, about to set motor speed to " + m_setpoint);
+    //System.out.println( "ThrowerSubsystem periodic, about to set motor speed to " + m_setpoint);
     m_throwController.setReference(m_setpoint, ControlType.kVelocity);
 
      // Tune the thrower's constants

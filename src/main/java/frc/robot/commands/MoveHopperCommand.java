@@ -7,7 +7,7 @@
 
 package frc.robot.commands;
 
-import com.revrobotics.CANPIDController;
+//import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.HopperSubsystem;
@@ -32,6 +32,8 @@ public class MoveHopperCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("MoveHopperCommand calling dischargeAll");
+    
     m_subsystem.dischargeAll();
   }
 

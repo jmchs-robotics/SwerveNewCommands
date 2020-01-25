@@ -9,28 +9,29 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+// import com.revrobotics.CANSparkMax;
+//import com.revrobotics.ControlType;
+//import com.revrobotics.CANSparkMax.IdleMode;
+//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
-import frc.robot.Constants.ThrowerPIDs;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+//import frc.robot.Constants.ThrowerPIDs;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
+//import com.revrobotics.CANEncoder;
+//import com.revrobotics.CANPIDController;
 
 import com.ctre.phoenix.ParamEnum;
 
 public class HopperSubsystem extends SubsystemBase {
   private final TalonSRX m_hopperMotor;
 
-  private CANPIDController m_hopperController;
-  private CANEncoder m_hopperEncoder;
+  //private CANPIDController m_hopperController;
+  //private CANEncoder m_hopperEncoder;
 
   
   private double kP = HopperPIDs.kP;
@@ -101,42 +102,25 @@ public class HopperSubsystem extends SubsystemBase {
 		/* Set the quadrature (relative) sensor to match absolute */
 		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
 
-    //Don't want the hopper move beyond intention
-    
-    //Need to set Brake mode for Talon instead of SPARK MAX
-    // m_hopperMotor.setIdleMode(IdleMode.kBrake); 
-
-
-    //m_hopperMotor.restoreFactoryDefaults();
-    //m_hopperMotor.configGetParameter(ParamEnum.p, ordinal, timeoutMs);
-    //m_hopperController = m_hopperMotor.getPIDController();
-    //m_hopperEncoder = m_hopperMotor.getAlternateEncoder();
-
-     
-    //resetReference();
-
-    /** gets PID constants
-    m_hopperController.setP(kP);
-    m_hopperController.setD(kD);
-    m_hopperController.setI(kI);
-    m_hopperController.setIZone(kIz);
-    m_hopperController.setFF(kF);
-    */
-    m_hopperController.setOutputRange(kMinOutput,kMaxOutput);
-
-    
-    //Everything on the smartDashboard:
+     SmartDashboard.putNumber("Hopper desired wheel RPM", 0);
+     SmartDashboard.putNumber("Hopper P", 0);
+     SmartDashboard.putNumber("Hopper I", 0);
+     SmartDashboard.putNumber("Hopper D", 0);
+     SmartDashboard.putNumber("Hopper I Zone", 0);
+     SmartDashboard.putNumber("Hopper Feed Forward", 0);
+     SmartDashboard.putNumber("Hopper Max Output", 0);
+     SmartDashboard.putNumber("Hopper Min Output", 0);
 
     
   }
 
   public void resetReference(){
-    m_reference = m_hopperEncoder.getPosition();
+    m_reference = m_hopperMotor.getSensorCollection().getPulseWidthPosition();//getPosition();
   }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
     if(HopperPIDs.TUNE){
       double speed = SmartDashboard.getNumber("Hopper desired wheel RPM", 0);
       double p = SmartDashboard.getNumber("Hopper P", 0);
@@ -146,17 +130,29 @@ public class HopperSubsystem extends SubsystemBase {
       double ff = SmartDashboard.getNumber("Hopper Feed Forward", 0);
       double max = SmartDashboard.getNumber("Hopper Max Output", 0);
       double min = SmartDashboard.getNumber("Hopper Min Output", 0);
-  
+    
       // if PID coefficients on SmartDashboard have changed, write new values to controller
       // if(( speed != m_setpoint)) { setHopperSpeed( speed); }
-      if((p != kP)) { m_hopperController.setP(p); kP = p; }
-      if((i != kI)) { m_hopperController.setI(i); kI = i; }
-      if((d != kD)) { m_hopperController.setD(d); kD = d; }
-      if((iz != kIz)) { m_hopperController.setIZone(iz); kIz = iz; }
-      if((ff != kF)) { m_hopperController.setFF(ff); kF = ff; }
+      if((p != kP)) { // m_hopperMotor.setP(p);
+         kP = p; 	
+         m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
+        }
+        
+      if((i != kI)) { m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs); 
+        kI = i; 
+      }
+      if((d != kD)) {m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
+         kD = d;
+       }
+      //if((iz != kIz)) { m_hopperMotor.setIZone(iz); 
+      //  kIz = iz; }
+      if((ff != kF)) { m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, kF, HopperPIDs.kTimeoutMs);
+        kF = ff; 
+      }
       if((max != kMaxOutput) || (min != kMinOutput)) { 
-        m_hopperController.setOutputRange(min, max); 
+        //m_hopperMotor.setOutputRange(min, max); 
         kMinOutput = min; kMaxOutput = max; 
+        
       }
     }
   }
@@ -165,22 +161,26 @@ public class HopperSubsystem extends SubsystemBase {
   // Move the daisy one full rotation around
   public void dischargeAll(){
     m_reference += HopperConstants.ONE_ROTATION;
-    m_hopperController.setReference(m_reference, ControlType.kPosition);
+    System.out.println("HopperSubsystem Setting the hopper motor");
+    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
   }
+
+
 
   // Move the daisy 1/6 rotation forward
   public void nextSlot(){
     m_reference += HopperConstants.ONE_ROTATION/6;
-    m_hopperController.setReference(m_reference, ControlType.kPosition);
+    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
   }
 
   // Move the daisy 1/6 rotation backward
   public void previousSlot(){
     m_reference -= HopperConstants.ONE_ROTATION/6;
-    m_hopperController.setReference(m_reference, ControlType.kPosition);
+    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
   }
 
   public boolean atSetpoint(double thresholdPercent) {
-    return Math.abs(m_setpoint - m_hopperEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
+    
+    return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
   }
 }
