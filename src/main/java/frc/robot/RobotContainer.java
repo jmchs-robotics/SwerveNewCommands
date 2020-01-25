@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.commands.MoveHopperCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -42,6 +44,7 @@ public class RobotContainer {
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
+  private final HopperSubsystem m_Hopper = new HopperSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -164,7 +167,9 @@ public class RobotContainer {
           // Stop thrower
         )
       )
-    );
+    );  
+
+    m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
 
     //The sequence for loading 5 powercells into the daisy
     m_secondaryController_X.whileHeld(

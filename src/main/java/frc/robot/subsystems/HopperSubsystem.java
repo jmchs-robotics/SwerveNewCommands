@@ -41,6 +41,7 @@ public class HopperSubsystem extends SubsystemBase {
   private double kF = HopperPIDs.FEED_FORWARD;
   private double kMaxOutput = HopperPIDs.MAX_OUTPUT;
   private double kMinOutput = HopperPIDs.MIN_OUTPUT;
+  private double m_setpoint = 0;
   
   
   private double m_reference = 0;
@@ -177,5 +178,9 @@ public class HopperSubsystem extends SubsystemBase {
   public void previousSlot(){
     m_reference -= HopperConstants.ONE_ROTATION/6;
     m_hopperController.setReference(m_reference, ControlType.kPosition);
+  }
+
+  public boolean atSetpoint(double thresholdPercent) {
+    return Math.abs(m_setpoint - m_hopperEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
   }
 }
