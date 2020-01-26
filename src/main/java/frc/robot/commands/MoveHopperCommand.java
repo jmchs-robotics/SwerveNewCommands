@@ -17,16 +17,16 @@ import frc.robot.Constants.HopperPIDs;
 
 public class MoveHopperCommand extends CommandBase {
   private HopperSubsystem m_subsystem;
-  private double m_setPoint = 100;
+  private double m_moveToWhere = 0;
   /**
    * Creates a new SetHopperSpeedCommand.
    */
-  public MoveHopperCommand(HopperSubsystem subsystem, double intendedSpeed) {
+  public MoveHopperCommand(HopperSubsystem subsystem, double moveToWhere) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
 
-    m_subsystem=subsystem;
-    m_setPoint=intendedSpeed;
+    m_subsystem = subsystem;
+    m_moveToWhere = moveToWhere;
   }
 
   // Called when the command is initially scheduled.
@@ -40,7 +40,7 @@ public class MoveHopperCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // m_subsystem.setHopperSpeed(setPoint);
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -51,7 +51,13 @@ public class MoveHopperCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetpoint(0.01);
-    //0.01 means this is the percent we want for our Hopper.
+    boolean b = m_subsystem.atSetpoint(0.01);
+    if( b) {
+      System.out.println( "MoveHopperCommand isFinished = true");
+      return true; // m_subsystem.atSetpoint(0.01);
+    }
+    else {
+      return false;
+    }
   }
 }

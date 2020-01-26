@@ -153,7 +153,7 @@ public class RobotContainer {
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new ParallelCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, 5000),
+          new SetThrowerSpeedCommand(m_Thrower, 500),
           // Angle the robot toward the retroflective tape
           new SequentialCommandGroup(
             new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!

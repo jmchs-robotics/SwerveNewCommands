@@ -33,19 +33,14 @@ public class HopperSubsystem extends SubsystemBase {
   //private CANPIDController m_hopperController;
   //private CANEncoder m_hopperEncoder;
 
-  
   private double kP = HopperPIDs.kP;
   private double kI = HopperPIDs.kI;
-  
   private double kD = HopperPIDs.kD;
-  private double kIz = HopperPIDs.kIz;
-  private double kF = HopperPIDs.FEED_FORWARD;
+  private double kF = HopperPIDs.kF;
   private double kMaxOutput = HopperPIDs.MAX_OUTPUT;
   private double kMinOutput = HopperPIDs.MIN_OUTPUT;
   private double m_setpoint = 0;
   
-  
-  private double m_reference = 0;
   /**
    * Creates a new HopperSubsystem.
    */
@@ -61,7 +56,7 @@ public class HopperSubsystem extends SubsystemBase {
 		m_hopperMotor.configFactoryDefault();
 		
 		/* Config the sensor used for Primary PID and sensor direction */
-    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute,
+    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, // Absolute,
                                             HopperPIDs.kPIDLoopIdx,
                                             HopperPIDs.kTimeoutMs);
 
@@ -85,65 +80,65 @@ public class HopperSubsystem extends SubsystemBase {
 		 * neutral within this range. See Table in Section 17.2.1 for native
 		 * units per rotation.
 		 */
-		m_hopperMotor.configAllowableClosedloopError(0, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.configAllowableClosedloopError(HopperPIDs.kPIDLoopIdx, HopperConstants.ALLOWABLE_ERROR, HopperPIDs.kTimeoutMs);
 
 		/* Config Position Closed Loop gains in slot0, tsypically kF stays zero. */
 		m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, kF, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
-
-		/**
-		 * Grab the 360 degree position of the MagEncoder's absolute
-		 * position, and intitally set the relative sensor to match.
-		 */
-		int absolutePosition = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
-
-		/* Mask out overflows, keep bottom 12 bits */
-		absolutePosition &= 0xFFF;
-		if (HopperPIDs.kSensorPhase) { absolutePosition *= -1; }
-		if (HopperPIDs.kMotorInvert) { absolutePosition *= -1; }
 		
-		/* Set the quadrature (relative) sensor to match absolute */
-		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
-    resetReference();
+		resetReference();
     if(HopperPIDs.TUNE){
-     SmartDashboard.putNumber("Hopper desired wheel RPM", 0);
-     SmartDashboard.putNumber("Hopper P", 0);
-     SmartDashboard.putNumber("Hopper I", 0);
-     SmartDashboard.putNumber("Hopper D", 0);
-     SmartDashboard.putNumber("Hopper I Zone", 0);
-     SmartDashboard.putNumber("Hopper Feed Forward", 0);
-     SmartDashboard.putNumber("Hopper Max Output", 0);
-     SmartDashboard.putNumber("Hopper Min Output", 0);
+      SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
+      SmartDashboard.putNumber("Hopper error between setpoint and encoder position", m_hopperMotor.getClosedLoopError());
+      SmartDashboard.putNumber("Hopper P", kP);
+      SmartDashboard.putNumber("Hopper I", kI);
+      SmartDashboard.putNumber("Hopper D", kD);
+        //      SmartDashboard.putNumber("Hopper I Zone", kIz);
+      SmartDashboard.putNumber("Hopper Feed Forward", kF);
+      SmartDashboard.putNumber("Hopper Max Output", kMaxOutput);
+      SmartDashboard.putNumber("Hopper Min Output", kMinOutput);
     }
     
   }
 
   public void resetReference(){
-    m_reference = m_hopperMotor.getSensorCollection().getPulseWidthPosition();//getPosition();
+		/**
+		 * Grab the 360 degree position of the MagEncoder's absolute
+		 * position, and intitally set the relative sensor to match.
+		 */
+    int absolutePosition = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
+    // Mask out overflows, keep bottom 12 bits 
+		absolutePosition &= 0xFFF;
+		if (HopperPIDs.kSensorPhase) { absolutePosition *= -1; }
+		if (HopperPIDs.kMotorInvert) { absolutePosition *= -1; }
+
+    // Set the quadrature (relative) sensor to match absolute
+		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
+    
+    m_setpoint = absolutePosition; // m_hopperMotor.getSelectedSensorPosition(HopperPIDs.kPIDLoopIdx); // getSensorCollection().getPulseWidthPosition();//getPosition();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if(HopperPIDs.TUNE){
-      double speed = SmartDashboard.getNumber("Hopper desired wheel RPM", 0);
       double p = SmartDashboard.getNumber("Hopper P", 0);
       double i = SmartDashboard.getNumber("Hopper I", 0);
       double d = SmartDashboard.getNumber("Hopper D", 0);
-      double iz = SmartDashboard.getNumber("Hopper I Zone", 0);
+      // double iz = SmartDashboard.getNumber("Hopper I Zone", 0);
       double ff = SmartDashboard.getNumber("Hopper Feed Forward", 0);
       double max = SmartDashboard.getNumber("Hopper Max Output", 0);
       double min = SmartDashboard.getNumber("Hopper Min Output", 0);
+      SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
+      SmartDashboard.putNumber("Hopper error between setpoint and encoder position", m_hopperMotor.getClosedLoopError());
     
       // if PID coefficients on SmartDashboard have changed, write new values to controller
-      // if(( speed != m_setpoint)) { setHopperSpeed( speed); }
       if((p != kP)) { // m_hopperMotor.setP(p);
          kP = p; 	
          m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
         }
-        
       if((i != kI)) { m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs); 
         kI = i; 
       }
@@ -158,7 +153,6 @@ public class HopperSubsystem extends SubsystemBase {
       if((max != kMaxOutput) || (min != kMinOutput)) { 
         //m_hopperMotor.setOutputRange(min, max); 
         kMinOutput = min; kMaxOutput = max; 
-        
       }
     }
   }
@@ -166,29 +160,32 @@ public class HopperSubsystem extends SubsystemBase {
 
   // Move the daisy one full rotation around
   public void dischargeAll(){
-    m_reference += HopperConstants.ONE_ROTATION;
-    System.out.println("HopperSubsystem Setting the hopper motor");
-    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    m_setpoint += HopperConstants.ONE_ROTATION;
+    System.out.println("HopperSubsystem Setting the hopper setpoint to " + m_setpoint);
+    m_hopperMotor.set(ControlMode.Position, -HopperConstants.ONE_ROTATION); // relative, so set the setpoint to one rotaation m_setpoint);
     
-    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
+    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
   }
 
 
 
   // Move the daisy 1/6 rotation forward
   public void nextSlot(){
-    m_reference += HopperConstants.ONE_ROTATION/6;
-    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
+    m_setpoint += HopperConstants.ONE_ROTATION/6;
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
   }
 
   // Move the daisy 1/6 rotation backward
   public void previousSlot(){
-    m_reference -= HopperConstants.ONE_ROTATION/6;
-    //m_hopperMotor.setReference(m_reference, ControlType.kPosition);
+    m_setpoint -= HopperConstants.ONE_ROTATION/6;
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
   }
 
   public boolean atSetpoint(double thresholdPercent) {
     
-    return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
+    return Math.abs( m_hopperMotor.getClosedLoopError()) < HopperConstants.ONE_ROTATION * thresholdPercent;
+    // return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
   }
 }
