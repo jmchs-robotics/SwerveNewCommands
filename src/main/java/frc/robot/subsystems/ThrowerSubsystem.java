@@ -87,9 +87,6 @@ public class ThrowerSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     
-    // setThrowerSpeed(ThrowerMotor.throwerMotorSpeed);
-    
-
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
       SmartDashboard.putNumber( "Thrower speed from encoder ", m_throwEncoder.getVelocity());

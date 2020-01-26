@@ -115,33 +115,56 @@ public final class Constants {
     public static final double MAX_OUTPUT = 1;
     public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 35.0 / 35.0; // 40T pinion, 48T wheel gear
     public static final int UPDATE_RATE = 5; // msecs  200 Ht update rate leader -> folloer. Default 10ms
-
     public static final boolean TIME = false;
-
     public static final boolean TUNE = true;
-  
   }
 
   public static final class HopperConstants {
-    public static final int HOPPER_MOTOR_ID = 6;
-    public static final double ONE_ROTATION = 1;
+    public static final int HOPPER_MOTOR_ID = 20;
+    public static final double ONE_ROTATION = 4096;
+    public static final int ALLOWABLE_ERROR = 0;
   }
 
   public static final class HopperPIDs {
-    public static final double kP = 2e-4; //defaults
-    public static final double kI = 1e-6; //default
-    public static final double kD = 0;
-    public static final double FEED_FORWARD = 0;
-    public static final double kIz = 0;
-    public static final double MIN_OUTPUT = -1;
-    public static final double MAX_OUTPUT = 1;
-    public static final double GEAR_RATIO_MOTOR_TO_WHEEL = 40/48; //40T pinion, 48T wheel gear
-    public static final int UPDATE_RATE = 5; // 200 Ht update rate leader -> folloer. Default 10ms
+    /**
+	  * Which PID slot to pull gains from. Starting 2018, you can choose from
+	  * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
+    * configuration.
+    */
+    /**
+	  * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
+	  * now we just want the primary one.
+	  */
+    public static final int kPIDLoopIdx = 0;
 
-    public static final boolean TIME = false;
+    public static final double kP = 0.4; // 2e-2;
+    public static final double kI = 0; // 1e-6;
+    public static final double kD = 0.0;
+    public static final double kF = 0; // 2e-6;
+    public static final double MIN_OUTPUT = -0.3;
+    public static final double MAX_OUTPUT = 0.3;
+    
+	  /**
+	  * Set to zero to skip waiting for confirmation, set to nonzero to wait and
+	  * report to DS if action fails.
+	  */
+	  public static final int kTimeoutMs = 0; // 30;
+	
+    /** 
+     * Choose so that Talon does not report sensor out of phase 
+    * false for prototyping 1/26/20.  
+    * Perhaps set to true when we have the daisy built.
+    */
+	  public static boolean kSensorPhase = false;
 
+	  /**
+	  * Choose based on what direction you want to be positive
+	  */
+	  public static boolean kMotorInvert = false;
+
+    // set to true to put PID and other data on the smart dashboard
     public static final boolean TUNE = true;
-
-
+    
   }
+
 }
