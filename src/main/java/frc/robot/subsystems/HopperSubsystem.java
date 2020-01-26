@@ -7,31 +7,26 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 // import com.revrobotics.CANSparkMax;
 //import com.revrobotics.ControlType;
 //import com.revrobotics.CANSparkMax.IdleMode;
 //import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import com.revrobotics.CANEncoder;
+//import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
-import com.ctre.phoenix.motorcontrol.ControlMode;
-//import frc.robot.Constants.ThrowerPIDs;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-//import com.revrobotics.CANEncoder;
-//import com.revrobotics.CANPIDController;
 
-import com.ctre.phoenix.ParamEnum;
+// import com.ctre.phoenix.ParamEnum;
 
 public class HopperSubsystem extends SubsystemBase {
   private final TalonSRX m_hopperMotor;
-
-  //private CANPIDController m_hopperController;
-  //private CANEncoder m_hopperEncoder;
 
   private double kP = HopperPIDs.kP;
   private double kI = HopperPIDs.kI;
@@ -55,8 +50,9 @@ public class HopperSubsystem extends SubsystemBase {
     /* Factory Default all hardware to prevent unexpected behaviour */
 		m_hopperMotor.configFactoryDefault();
 		
-		/* Config the sensor used for Primary PID and sensor direction */
-    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, // Absolute,
+    /* Config the sensor used for Primary PID and sensor direction */
+    // CTRE's sample code uses _Relative, but as of 1/26 finding _Absolute works better for us.
+    m_hopperMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute, // _Relative _Absolute,
                                             HopperPIDs.kPIDLoopIdx,
                                             HopperPIDs.kTimeoutMs);
 
@@ -72,8 +68,8 @@ public class HopperSubsystem extends SubsystemBase {
 		/* Config the peak and nominal outputs, 12V means full */
 		m_hopperMotor.configNominalOutputForward(0, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.configNominalOutputReverse(0, HopperPIDs.kTimeoutMs);
-		m_hopperMotor.configPeakOutputForward(1, HopperPIDs.kTimeoutMs);
-		m_hopperMotor.configPeakOutputReverse(-1, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.configPeakOutputForward(kMaxOutput, HopperPIDs.kTimeoutMs);
+		m_hopperMotor.configPeakOutputReverse(kMinOutput, HopperPIDs.kTimeoutMs);
 
 		/**
 		 * Config the allowable closed-loop error, Closed-Loop output will be
@@ -87,8 +83,11 @@ public class HopperSubsystem extends SubsystemBase {
 		m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs);
 		m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
-		
-		resetReference();
+    
+    m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
+    
+    // resetReference();  // not used as of 1/26/20.
+    
     if(HopperPIDs.TUNE){
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
       SmartDashboard.putNumber("Hopper error between setpoint and encoder position", m_hopperMotor.getClosedLoopError());
@@ -103,12 +102,16 @@ public class HopperSubsystem extends SubsystemBase {
     
   }
 
+  /**
+   * from CTRE's sample code https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java/PositionClosedLoop/src/main/java/frc/robot/Robot.java.  
+   * Not used as of 1/26/20.
+   * Grab the 360 degree position of the MagEncoder's absolute
+   * position, and intitally set the relative sensor to match.
+   */
   public void resetReference(){
-		/**
-		 * Grab the 360 degree position of the MagEncoder's absolute
-		 * position, and intitally set the relative sensor to match.
-		 */
     int absolutePosition = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
+    m_setpoint = absolutePosition; // m_hopperMotor.getSelectedSensorPosition(HopperPIDs.kPIDLoopIdx); // getSensorCollection().getPulseWidthPosition();//getPosition();
+
     // Mask out overflows, keep bottom 12 bits 
 		absolutePosition &= 0xFFF;
 		if (HopperPIDs.kSensorPhase) { absolutePosition *= -1; }
@@ -117,7 +120,6 @@ public class HopperSubsystem extends SubsystemBase {
     // Set the quadrature (relative) sensor to match absolute
 		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
     
-    m_setpoint = absolutePosition; // m_hopperMotor.getSelectedSensorPosition(HopperPIDs.kPIDLoopIdx); // getSensorCollection().getPulseWidthPosition();//getPosition();
   }
 
   @Override
@@ -133,58 +135,73 @@ public class HopperSubsystem extends SubsystemBase {
       double min = SmartDashboard.getNumber("Hopper Min Output", 0);
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
       SmartDashboard.putNumber("Hopper error between setpoint and encoder position", m_hopperMotor.getClosedLoopError());
-    
+      SmartDashboard.putNumber("Hopper encoder position from getSelectedSensorPosition()", m_hopperMotor.getSelectedSensorPosition());
+
       // if PID coefficients on SmartDashboard have changed, write new values to controller
-      if((p != kP)) { // m_hopperMotor.setP(p);
+      if((p != kP)) { 
          kP = p; 	
          m_hopperMotor.config_kP(HopperPIDs.kPIDLoopIdx, kP, HopperPIDs.kTimeoutMs);
         }
-      if((i != kI)) { m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs); 
+      if((i != kI)) { 
         kI = i; 
+        m_hopperMotor.config_kI(HopperPIDs.kPIDLoopIdx, kI, HopperPIDs.kTimeoutMs); 
       }
-      if((d != kD)) {m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
-         kD = d;
+      if((d != kD)) {
+        kD = d;
+        m_hopperMotor.config_kD(HopperPIDs.kPIDLoopIdx, kD, HopperPIDs.kTimeoutMs);
        }
       //if((iz != kIz)) { m_hopperMotor.setIZone(iz); 
       //  kIz = iz; }
-      if((ff != kF)) { m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, kF, HopperPIDs.kTimeoutMs);
+      if((ff != kF)) { 
         kF = ff; 
+        m_hopperMotor.config_kF(HopperPIDs.kPIDLoopIdx, kF, HopperPIDs.kTimeoutMs);
       }
-      if((max != kMaxOutput) || (min != kMinOutput)) { 
-        //m_hopperMotor.setOutputRange(min, max); 
-        kMinOutput = min; kMaxOutput = max; 
+      if(max != kMaxOutput) {
+        kMaxOutput = max;
+        m_hopperMotor.configPeakOutputForward(kMaxOutput, HopperPIDs.kTimeoutMs);
+      }
+      if( min != kMinOutput){
+        kMinOutput = min;
+    		m_hopperMotor.configPeakOutputReverse(kMinOutput, HopperPIDs.kTimeoutMs);
       }
     }
   }
   
 
-  // Move the daisy one full rotation around
+  /**
+   *  Move the daisy one full rotation, from current position
+   */
   public void dischargeAll(){
-    m_setpoint += HopperConstants.ONE_ROTATION;
+    m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION;
     System.out.println("HopperSubsystem Setting the hopper setpoint to " + m_setpoint);
-    m_hopperMotor.set(ControlMode.Position, -HopperConstants.ONE_ROTATION); // relative, so set the setpoint to one rotaation m_setpoint);
-    
-    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
+    m_hopperMotor.set(ControlMode.Position, m_setpoint); 
   }
 
-
-
-  // Move the daisy 1/6 rotation forward
+  /**
+   *  Move the daisy 1/6 rotation forward, from current position
+   */
   public void nextSlot(){
-    m_setpoint += HopperConstants.ONE_ROTATION/6;
+    m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
   }
 
-  // Move the daisy 1/6 rotation backward
+  /**
+   *  Move the daisy 1/6 rotation backward, from current position
+   */
   public void previousSlot(){
-    m_setpoint -= HopperConstants.ONE_ROTATION/6;
+    m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    //m_hopperMotor.setReference(m_setpoint, ControlType.kPosition);
+  }
+
+  public void moveForwardSlowly() {
+    m_hopperMotor.set(ControlMode.PercentOutput, .1);
+  }
+  // stop
+  public void stopMotor() {
+    m_hopperMotor.set(ControlMode.PercentOutput, 0);
   }
 
   public boolean atSetpoint(double thresholdPercent) {
-    
     return Math.abs( m_hopperMotor.getClosedLoopError()) < HopperConstants.ONE_ROTATION * thresholdPercent;
     // return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
   }

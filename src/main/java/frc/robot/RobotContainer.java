@@ -170,7 +170,10 @@ public class RobotContainer {
     );  
 
     m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
-
+    m_secondaryController_X.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
+    // for testing, to check whether to invert the motor or the sensor
+    m_secondaryController_Y.whenHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
+    m_secondaryController_Y.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
     //The sequence for loading 5 powercells into the daisy
     /*m_secondaryController_X.whileHeld(
         new SequentialCommandGroup(
@@ -198,7 +201,7 @@ public class RobotContainer {
 
 
     //Tells the output of the light sensor used for telling if powercell is in daisy
-    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
+    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
