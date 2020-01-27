@@ -7,39 +7,40 @@
 
 package frc.robot.commands;
 
-import com.revrobotics.CANPIDController;
+//import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.ThrowerSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
 
-import frc.robot.Constants.ThrowerMotor;
-import frc.robot.Constants.ThrowerPIDs;
+import frc.robot.Constants.HopperConstants;
+import frc.robot.Constants.HopperPIDs;
 
-public class SetThrowerSpeedCommand extends CommandBase {
-  private ThrowerSubsystem m_subsystem;
-  private double setPoint = 1000;
+public class MoveHopperCommand extends CommandBase {
+  private HopperSubsystem m_subsystem;
+  private double m_moveToWhere = 0;
   /**
-   * Creates a new SetThrowerSpeedCommand.
+   * Creates a new SetHopperSpeedCommand.
    */
-  public SetThrowerSpeedCommand(ThrowerSubsystem subsystem, double intendedSpeed) {
+  public MoveHopperCommand(HopperSubsystem subsystem, double moveToWhere) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
 
-    m_subsystem=subsystem;
-    setPoint=intendedSpeed;
+    m_subsystem = subsystem;
+    m_moveToWhere = moveToWhere;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //System.out.println("SetThrowerSpeedCommand initialize with setPoint= " + setPoint);
-    m_subsystem.setThrowerSpeed(setPoint);
+    System.out.println("MoveHopperCommand calling dischargeAll");
+    
+    m_subsystem.dischargeAll();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // m_subsystem.setThrowerSpeed(setPoint);
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -50,7 +51,13 @@ public class SetThrowerSpeedCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetpoint(0.05);
-    //0.01 means this is the percent we want for our thrower.
+    boolean b = m_subsystem.atSetpoint(0.01);
+    if( b) {
+      System.out.println( "MoveHopperCommand isFinished = true");
+      return true; // m_subsystem.atSetpoint(0.01);
+    }
+    else {
+      return false;
+    }
   }
 }

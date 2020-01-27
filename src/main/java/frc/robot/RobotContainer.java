@@ -30,7 +30,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.commands.MoveHopperCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -43,6 +46,7 @@ public class RobotContainer {
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
+  private final HopperSubsystem m_Hopper = new HopperSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -54,7 +58,7 @@ public class RobotContainer {
   private final AnalogInput m_lightSensor = new AnalogInput(0);
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
-
+3
   // Define Joysticks and Buttons here
   private final XboxController m_primaryController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
@@ -141,7 +145,7 @@ public class RobotContainer {
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new ParallelCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, 5000),
+          new SetThrowerSpeedCommand(m_Thrower, 500),
           // Angle the robot toward the retroflective tape
           new SequentialCommandGroup(
             new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
@@ -155,10 +159,15 @@ public class RobotContainer {
           // Stop thrower
         )
       )
-    );
+    );  
 
+    m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
+    m_secondaryController_X.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
+    // for testing, to check whether to invert the motor or the sensor
+    m_secondaryController_Y.whenHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
+    m_secondaryController_Y.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
     //The sequence for loading 5 powercells into the daisy
-    m_secondaryController_X.whileHeld(
+    /*m_secondaryController_X.whileHeld(
         new SequentialCommandGroup(
           //if the ball count is less than five
             new SequentialCommandGroup(
@@ -180,10 +189,10 @@ public class RobotContainer {
           )
         )
         
-    );
+    );*/
 
     //Tells the output of the light sensor used for telling if powercell is in daisy
-    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("output", m_lightSensor.getVoltage());}));
+    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
