@@ -163,6 +163,7 @@ public final class Constants {
 	  public static boolean kMotorInvert = false;
 
     // set to true to put PID and other data on the smart dashboard
+
     public static final boolean TUNE = true;
     
   }

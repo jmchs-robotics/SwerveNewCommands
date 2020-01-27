@@ -25,7 +25,7 @@ import frc.robot.Constants.ThrowerPIDs;
 
 public class ThrowerSubsystem extends SubsystemBase {
   private CANSparkMax m_Thrower;
-  private CANSparkMax m_Follower;
+  private CANSparkMax m_ThrowerFollower;
   private CANPIDController m_throwController;
   private CANEncoder m_throwEncoder;
 
@@ -37,7 +37,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   private double kMaxOutput = ThrowerPIDs.MAX_OUTPUT;
   private double kMinOutput = ThrowerPIDs.MIN_OUTPUT;
   
-  private double m_setpoint = 0;
+  private double m_setpoint = 900;
   private double ii = 0;
 
   /**
@@ -47,9 +47,11 @@ public class ThrowerSubsystem extends SubsystemBase {
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
     m_Follower = new CANSparkMax(ThrowerMotor.throwerFollowerMaxID, MotorType.kBrushless);
 
+
     // reset controllers
     m_Thrower.restoreFactoryDefaults();
     m_Thrower.clearFaults();
+    
     m_Follower.restoreFactoryDefaults();
     m_Follower.clearFaults();
 
@@ -57,6 +59,7 @@ public class ThrowerSubsystem extends SubsystemBase {
     m_Follower.setIdleMode(IdleMode.kCoast);
 
     m_Follower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
+
 
     m_throwController = m_Thrower.getPIDController();
     m_throwEncoder = m_Thrower.getEncoder();
@@ -85,8 +88,9 @@ public class ThrowerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    
+    // periodic() methods are called once per scheduler run
+
+
      // Tune the thrower's constants
      if(ThrowerPIDs.TUNE){
       SmartDashboard.putNumber( "Thrower speed from encoder ", m_throwEncoder.getVelocity());
@@ -113,21 +117,16 @@ public class ThrowerSubsystem extends SubsystemBase {
     }
   }
 
-
   /**
-   * set motor speed so the thrower wheel is this many RPMs, based on ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL
-   * @param wheelTargetRPMs
+   * set desired motor speed so to this many RPMs
+   * @param wheelTargetRPMs desired thrower speed, in RPMs
    */
-  public void setThrowerSpeed(double wheelTargetRPMs) {
-    m_setpoint = wheelTargetRPMs; // * ThrowerPIDs.GEAR_RATIO_MOTOR_TO_WHEEL;
-    System.out.println( "ThrowerSubsystem setThrowerSpeed() setpoint = " + m_setpoint);
-
-    m_throwController.setReference(m_setpoint, ControlType.kVelocity);
+  public void setThrowerSpeed(double targetRPMs) {
+    m_setpoint = targetRPMs; 
     if(ThrowerPIDs.TUNE){
       SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
-     
-      
     }
+    m_throwController.setReference(m_setpoint, ControlType.kVelocity);
   }
 
   public double getThrowerSpeed() {
@@ -137,10 +136,10 @@ public class ThrowerSubsystem extends SubsystemBase {
   public void stopThrower() {
     m_setpoint = 0;
     if(ThrowerPIDs.TUNE){
-        SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
+      SmartDashboard.putNumber("Thrower desired wheel RPM", m_setpoint);
     }
     m_Thrower.disable();
-    // m_Follower.disable();
+    // m_ThrowerFollower.disable(); // not sure if this is necessary
   }
 
     /**

@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.commands.MoveHopperCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -56,7 +58,7 @@ public class RobotContainer {
   private final AnalogInput m_lightSensor = new AnalogInput(0);
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
-
+3
   // Define Joysticks and Buttons here
   private final XboxController m_primaryController = new XboxController(0);
   private final XboxController m_secondaryController = new XboxController(1);
@@ -135,21 +137,11 @@ public class RobotContainer {
     );
 
     // Thrower on secondary controller, 'B'
-    m_secondaryController_B.whenPressed( // whileHeld(
-      new SetThrowerSpeedCommand(m_Thrower, 300) //  m_Thrower.getThrowerSpeed())
-      // new SetThrowerSpeedCommand(m_Thrower, 300).perpetually() // Could also be constructed as a lambda, but this works as well. Command is still interruptible.
 
+    m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
+      new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
     );
-  
-    m_secondaryController_B.whenReleased(
-      new InstantCommand(m_Thrower::stopThrower, m_Thrower) // Let the thrower coast to a stop. This should be the default command, and the button should call a whenHeld() instead.
-    );
-//    m_secondaryController_B.whenReleased(
- //     new SetThrowerSpeedCommand(m_Thrower, 0)
-  //  );
-
-
-    //The command sequence to line up the robot with power port and shooting 5 powercells
+    
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -199,13 +191,18 @@ public class RobotContainer {
         
     );*/
 
-
     //Tells the output of the light sensor used for telling if powercell is in daisy
     m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
   private void configureDefaultCommands() {
+    // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
+    // default swerve drive is to read from joysticks
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
+
+    // default thrower is to spin down to still
+    m_Thrower.setDefaultCommand(new StartEndCommand( m_Thrower::stopThrower, ()->{}, m_Thrower)); // Spin down thrower on startup, do nothing on end.
+
   }
 
   /**
