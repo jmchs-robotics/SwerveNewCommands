@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
@@ -30,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.commands.MoveHopperCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;;
@@ -47,6 +49,7 @@ public class RobotContainer {
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
+  private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
 
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
@@ -65,24 +68,26 @@ public class RobotContainer {
   private final XboxController m_secondaryController = new XboxController(1);
 
   private final JoystickButton m_primaryController_A = new JoystickButton(m_primaryController,
-      XboxController.Button.kA.value);
+      XboxController.Button.kA.value); // Line up robot to the retroflective tape
   private final JoystickButton m_primaryController_B = new JoystickButton(m_primaryController,
-      XboxController.Button.kB.value);
+      XboxController.Button.kB.value); // Line up robot with a power cell
   private final JoystickButton m_primaryController_LeftBumper = new JoystickButton(m_primaryController, 
-      XboxController.Button.kBumperLeft.value);
+      XboxController.Button.kBumperLeft.value); // turns off field orientation
   private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController, 
-      XboxController.Button.kBumperRight.value);
+      XboxController.Button.kBumperRight.value); // Brake Mode Activate
+  private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
+      XboxController.Button.kY.value); // Test on Control Panel Rotation
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
-      XboxController.Button.kStickLeft.value);
+      XboxController.Button.kStickLeft.value); // runs sample color
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kB.value);
+      XboxController.Button.kB.value); // Sets the thrower Speed
   private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kA.value);
+      XboxController.Button.kA.value); //Launch all the power cells towards the high power port
   private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kY.value);
+      XboxController.Button.kY.value); //Test to the Hopper
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kX.value);
+      XboxController.Button.kX.value); // Move Daisy one slot
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -135,6 +140,10 @@ public class RobotContainer {
 
     m_secondaryController_StickLeft.whileHeld(
       new SampleColorCommand(m_colorSensor)
+    );
+
+    m_primaryController_Y.whenPressed(
+      new ControlPanelRotation(m_PatSajak)
     );
 
     // Thrower on secondary controller, 'B'
