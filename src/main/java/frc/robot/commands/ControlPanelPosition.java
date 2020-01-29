@@ -18,22 +18,24 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ColorTargets;
 import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.RobotContainer;
 
-public class ControlPanelRotation extends CommandBase {
+public class ControlPanelPosition extends CommandBase {
   //private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private ControlPanelSubsystem m_patSajak;
+  private RobotContainer m_container;
 
   private final ColorSensorV3 m_colorSensor;
   private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private Color m_startColor, m_lastColor;
-  private int m_numRevolutions;
+  private Color m_startColor, m_lastColor, m_targetColor, m_currentColor;
+ //private int m_numRevolutions;
 
   /**
    * Creates a new SampleColor.
    */
-  public ControlPanelRotation(ControlPanelSubsystem patSajak, ColorSensorV3 sensor) {
+  public ControlPanelPosition(ControlPanelSubsystem patSajak, ColorSensorV3 sensor) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Requires the ControlPanel Subsystem
     addRequirements(patSajak);
@@ -48,6 +50,10 @@ public class ControlPanelRotation extends CommandBase {
   public void initialize() {
     m_startColor = m_patSajak.readColor();
     m_lastColor = m_startColor;
+    m_currentColor = m_startColor;
+
+    //Get target using {@code getColorToSearchFor}
+    m_targetColor = m_patSajak.getColorToSearchFor(m_container.getGameSpecificMessage());
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -64,7 +70,6 @@ public class ControlPanelRotation extends CommandBase {
 
     m_patSajak.raiseSpinner();
     m_patSajak.setSpinMotor(0.7);
-
 
     //Smart Dashboard for testing
     Color detectedColor = m_colorSensor.getColor();
@@ -108,6 +113,8 @@ public class ControlPanelRotation extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    return false;
+    /** 
      // Don't read the same panel multiple times!
      if(m_patSajak.readColor() != m_lastColor){
       m_lastColor = m_patSajak.readColor();
@@ -116,5 +123,6 @@ public class ControlPanelRotation extends CommandBase {
     }
     
     return m_numRevolutions > 6; // Turn at least 3 but no more than 5 times. The color swatches will pass by twice, so > 6 gives 3.5+ turns.
+    */
   }
 }

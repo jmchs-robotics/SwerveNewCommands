@@ -143,7 +143,7 @@ public class RobotContainer {
     );
 
     m_primaryController_Y.whenPressed(
-      new ControlPanelRotation(m_PatSajak)
+      new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
 
     // Thrower on secondary controller, 'B'
