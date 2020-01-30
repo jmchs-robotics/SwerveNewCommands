@@ -21,7 +21,7 @@ import frc.robot.Constants.ControlPanelActuators;
 import frc.robot.Constants.ColorTargets;
 
 public class ControlPanelSubsystem extends SubsystemBase {
-  private Spark m_controlPanelSpinner;
+  private Spark  m_controlPanelSpinner;
   private DoubleSolenoid m_controlPanelSolenoid;
   private ColorSensorV3 m_controlPanelColorSensorV3;
 
