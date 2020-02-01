@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ControlPanelRotation;
@@ -69,25 +70,47 @@ public class RobotContainer {
 
   private final JoystickButton m_primaryController_A = new JoystickButton(m_primaryController,
       XboxController.Button.kA.value); // Line up robot to the retroflective tape
+  // want B to put climber arm down
   private final JoystickButton m_primaryController_B = new JoystickButton(m_primaryController,
       XboxController.Button.kB.value); // Line up robot with a power cell
   private final JoystickButton m_primaryController_LeftBumper = new JoystickButton(m_primaryController, 
       XboxController.Button.kBumperLeft.value); // turns off field orientation
   private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController, 
       XboxController.Button.kBumperRight.value); // Brake Mode Activate
+  // want climber arm up
   private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
       XboxController.Button.kY.value); // Test on Control Panel Rotation
+  // add d-pad up and for winch
+  // right trigger for shooter sequence with vision
+  private final JoystickButton m_primary_LeftTrigger = new JoystickButton(m_primaryController,
+      XboxController.Axis.kLeftTrigger.value);
+  private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, 
+      XboxController.Button.kStart.value);
+
+  // left trigger for shooter sequence without vision
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value); // runs sample color
+  // want b to start Pat Sajack rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value); // Sets the thrower Speed
+  //want A to put Pat Sajak down
   private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
       XboxController.Button.kA.value); //Launch all the power cells towards the high power port
+  // want y to put Pat Sajak up
   private final JoystickButton m_secondaryController_Y = new JoystickButton(m_secondaryController, 
       XboxController.Button.kY.value); //Test to the Hopper
+  // want x to start Pat Sajak position control
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
+  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperLeft.value); // Intake up
+  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperRight.value); // Intake down
+  // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
+  // right trigger for intake with daisy advance sequence(pick up the balls)
+  // left trigger for intake reverse
+  
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -148,7 +171,8 @@ public class RobotContainer {
 
     // Thrower on secondary controller, 'B'
 
-    m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
+    //m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
+      m_primary_LeftTrigger.whenHeld(
       new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
     );
     

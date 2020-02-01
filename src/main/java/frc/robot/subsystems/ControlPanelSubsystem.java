@@ -9,8 +9,11 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.revrobotics.ColorMatch;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Victor;
+
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -21,7 +24,8 @@ import frc.robot.Constants.ControlPanelActuators;
 import frc.robot.Constants.ColorTargets;
 
 public class ControlPanelSubsystem extends SubsystemBase {
-  private Spark  m_controlPanelSpinner;
+  //private Spark  m_controlPanelSpinner;
+  private VictorSPX m_controlPanelSpinner;
   private DoubleSolenoid m_controlPanelSolenoid;
   private ColorSensorV3 m_controlPanelColorSensorV3;
 
@@ -32,7 +36,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    * Creates a new ControlPanelSubsystem.
    */
   public ControlPanelSubsystem() {
-    m_controlPanelSpinner = new Spark(ControlPanelActuators.sparkChannel);
+    m_controlPanelSpinner = new VictorSPX(ControlPanelActuators.victorID);
     m_controlPanelSolenoid = new DoubleSolenoid(ControlPanelActuators.soleniodForward, ControlPanelActuators.soleniodBackward);
     m_controlPanelColorSensorV3 = new ColorSensorV3(ControlPanelActuators.sensorPort);
 
@@ -130,7 +134,7 @@ public class ControlPanelSubsystem extends SubsystemBase {
    * @param output The percent to set the output to.
    */
   public void setSpinMotor(double output){
-    m_controlPanelSpinner.set(output);
+    m_controlPanelSpinner.set(ControlMode.PercentOutput, output);
   }
 
   /**
@@ -143,13 +147,12 @@ public class ControlPanelSubsystem extends SubsystemBase {
 
   //Turns the Control Panel motor off
   public void turnSpinnerMotorOff() {
-    //m_controlPanelSpinner.set(ControlMode.PercentOutput, 0.0);
-    m_controlPanelSpinner.set(0.0);
+    m_controlPanelSpinner.set(ControlMode.PercentOutput, 0.0);
   }
 
   //Sets the Control Panel Spinner to the given percentage
   public void setSpinnerMotor(double percentOut) {
-    m_controlPanelSpinner.set(percentOut);
+    m_controlPanelSpinner.set(ControlMode.PercentOutput, percentOut);
   }
 
   //Set the Double Solenoid to extended

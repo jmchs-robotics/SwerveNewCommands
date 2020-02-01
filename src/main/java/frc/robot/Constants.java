@@ -95,7 +95,7 @@ public final class Constants {
    * Constants for the control panel
    */
   public static final class ControlPanelActuators {
-    public static final int sparkChannel = 0;
+    public static final int victorID = 10;
     public static final int soleniodForward = 0;
     public static final int soleniodBackward = 1;
     public static final Port sensorPort = I2C.Port.kOnboard;
