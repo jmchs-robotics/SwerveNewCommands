@@ -31,6 +31,7 @@ import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
+import frc.robot.util.JoystickAnalogButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -116,6 +117,7 @@ public class RobotContainer {
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
+  private final JoystickAnalogButton m_primaryController_LeftTrigger = new JoystickAnalogButton( m_primaryController, Hand.kLeft, 0.5);
   
 
   /**
@@ -176,15 +178,11 @@ public class RobotContainer {
     );
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
-    SmartDashboard.putNumber("getTriggerAxis", m_primaryController.getTriggerAxis( Hand.kLeft));
     // m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
-    // m_primary_LeftTrigger.whileActiveContinuous(
-      if( m_primaryController.getTriggerAxis( Hand.kLeft) > 0.5) { // Button.kBumperLeft);
-        
-        new SetThrowerSpeedCommand(m_Thrower, 700).perpetually(); // m_Thrower.getThrowerSpeed())
+      m_primaryController_LeftTrigger.whenHeld(
+        new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
       // TODO: spin diasy
-      }
-    //);
+      );
     m_primary_RightTrigger.whenActive(
 
       new SequentialCommandGroup(
