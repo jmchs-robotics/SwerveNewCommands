@@ -46,16 +46,16 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;;
  * commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // Define subsystems here
-  private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
-  private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
-  private final HopperSubsystem m_Hopper = new HopperSubsystem();
-  private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
-
   // Vision objects
   private final SocketVisionWrapper rft_ = new SocketVisionWrapper("10.59.33.255", 5801);
   private final SocketVisionWrapper piece_ = new SocketVisionWrapper("10.59.33.255", 5805);
   private final SocketVisionSendWrapper sender_ = new SocketVisionSendWrapper("10.59.33.255", 5800);
+
+  // Define subsystems here
+  private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
+  private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem( rft_);
+  private final HopperSubsystem m_Hopper = new HopperSubsystem();
+  private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);

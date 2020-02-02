@@ -22,6 +22,8 @@ import com.revrobotics.CANPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ThrowerMotor;
 import frc.robot.Constants.ThrowerPIDs;
+import frc.robot.util.SocketVisionWrapper;
+import frc.robot.RobotContainer;
 
 public class ThrowerSubsystem extends SubsystemBase {
   private CANSparkMax m_Thrower;
@@ -40,10 +42,20 @@ public class ThrowerSubsystem extends SubsystemBase {
   private double m_setpoint = 900;
   private double ii = 0;
 
+  private SocketVisionWrapper m_rft;
+
   /**
-   * Creates a new ControlPanelSubsystem.
+   * Creates a new Thrower Subsystem.
    */
+/*
   public ThrowerSubsystem() {
+    ThrowerSubsystem( null);
+  }
+*/
+  public ThrowerSubsystem( SocketVisionWrapper rft){
+
+    m_rft = rft;
+
     m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
     m_ThrowerFollower = new CANSparkMax(ThrowerMotor.throwerFollowerMaxID, MotorType.kBrushless);
 
@@ -102,6 +114,8 @@ public class ThrowerSubsystem extends SubsystemBase {
       double ff = SmartDashboard.getNumber("Thrower Feed Forward", 0);
       double max = SmartDashboard.getNumber("Thrower Max Output", 0);
       double min = SmartDashboard.getNumber("Thrower Min Output", 0);
+
+      SmartDashboard.putNumber("Target distance, from SocketVision", m_rft.get().get_distance());
   
       // if PID coefficients on SmartDashboard have changed, write new values to controller
       if(( speed != m_setpoint)) { setThrowerSpeed( speed); }
@@ -115,6 +129,8 @@ public class ThrowerSubsystem extends SubsystemBase {
         kMinOutput = min; kMaxOutput = max; 
       }
     }
+
+    
   }
 
   /**
