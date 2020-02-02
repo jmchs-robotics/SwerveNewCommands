@@ -32,9 +32,19 @@ public class MoveHopperCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("MoveHopperCommand calling dischargeAll");
-    
-    m_subsystem.dischargeAll();
+    // System.out.println("MoveHopperCommand calling dischargeAll");
+    if( m_moveToWhere == 6) {
+      m_subsystem.dischargeAll();
+    }
+    else if (m_moveToWhere == 1) {
+      m_subsystem.nextSlot();
+    }
+    else if (m_moveToWhere == -1) {
+      m_subsystem.previousSlot();
+    }
+    else {
+      m_subsystem.dischargeAll();
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -53,7 +63,7 @@ public class MoveHopperCommand extends CommandBase {
   public boolean isFinished() {
     boolean b = m_subsystem.atSetpoint(0.01);
     if( b) {
-      System.out.println( "MoveHopperCommand isFinished = true");
+      // System.out.println( "MoveHopperCommand isFinished = true");
       return true; // m_subsystem.atSetpoint(0.01);
     }
     else {

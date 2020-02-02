@@ -21,6 +21,8 @@ import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SetThrowerSpeedCommand;
+import frc.robot.commands.SpinUpThrowerCommand;
+import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
 import frc.robot.subsystems.SwerveDriveSubsystem;
@@ -30,6 +32,7 @@ import frc.robot.util.SocketVisionWrapper;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.ControlPanelSubsystem;
@@ -53,7 +56,7 @@ public class RobotContainer {
 
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
-  private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem( rft_);
+  private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
   private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
 
@@ -82,12 +85,13 @@ public class RobotContainer {
       XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
   // right trigger for shooter sequence with vision
+  private final JoystickButton m_primary_RightTrigger = new JoystickButton(m_primaryController,
+  XboxController.Axis.kRightTrigger.value);
+  // left trigger for shooter without vision
   private final JoystickButton m_primary_LeftTrigger = new JoystickButton(m_primaryController,
       XboxController.Axis.kLeftTrigger.value);
   private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, 
       XboxController.Button.kStart.value);
-
-  // left trigger for shooter sequence without vision
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value); // runs sample color
@@ -169,13 +173,27 @@ public class RobotContainer {
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
 
-    // Thrower on secondary controller, 'B'
-
+    // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     //m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
-      m_primary_LeftTrigger.whenHeld(
+    m_primary_LeftTrigger.whileActiveContinuous(
       new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
+      // TODO: spin diasy
+    );
+    m_primary_RightTrigger.whenActive(
+      new SequentialCommandGroup(
+        // TODO: turn on green LED
+        // tell Vision Coprocessor to process RFT
+        new SendVisionCommand(sender_, "R"),
+        new SpinUpThrowerCommand(m_Thrower, rft_),
+        new ParallelRaceGroup(
+          new ThrowToTargetCommand(m_Thrower, rft_),
+          new MoveHopperCommand(m_Hopper, 6)
+        )
+        // turn green LED off
+      )
     );
     
+    /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
         new ParallelCommandGroup(
@@ -194,6 +212,7 @@ public class RobotContainer {
         )
       )
     );  
+    */
 
     m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
     m_secondaryController_X.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop

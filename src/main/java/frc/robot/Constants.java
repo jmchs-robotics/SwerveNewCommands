@@ -102,10 +102,8 @@ public final class Constants {
   }
 
   public static final class ThrowerMotor {
-
-    public static final int throwerMaxID = 14;
-    public static final int throwerFollowerMaxID = 15;
-
+    public static final int THROWER_MASTER_ID = 14;
+    public static final int THROWER_FOLLOWER_ID = 15;
     public static final boolean INVERT_FOLLOWER = false;
   }
 
@@ -173,4 +171,8 @@ public final class Constants {
     
   }
 
+  public static final class LED {
+    public static final int GREEN = 0;
+    public static final int SPOTLIGHT = 1;
+  }
 }
