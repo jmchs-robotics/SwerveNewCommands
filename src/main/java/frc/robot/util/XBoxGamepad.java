@@ -1,10 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018-2019 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.util;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,9 +13,18 @@ public class XBoxGamepad {
   private XboxController m_joystick;
 
   private JoystickButton m_A, m_B, m_X, m_Y, m_bumperLeft, m_bumperRight, m_stickLeft, m_stickRight, m_start, m_back;
+  private JoystickAnalogButton m_left, m_right;
+
+  private final double m_defaultTriggerLevel;
 
   public XBoxGamepad(int id) {
     m_joystick = new XboxController(id);
+    m_defaultTriggerLevel = 0.5;
+  }
+
+  public XBoxGamepad(int id, double triggerLevel){
+    m_joystick = new XboxController(id);
+    m_defaultTriggerLevel = triggerLevel;
   }
 
   /**
@@ -76,6 +78,21 @@ public class XBoxGamepad {
       return m_stickRight;
     default:
       return null;
+    }
+  }
+
+  public JoystickAnalogButton getTriggerAsButton(Hand hand){
+    switch(hand){
+      case kLeft:
+        if(m_left == null)
+          m_left = new JoystickAnalogButton(m_joystick, hand, m_defaultTriggerLevel);
+        return m_left;
+      case kRight:
+      if(m_right == null)
+          m_right = new JoystickAnalogButton(m_joystick, hand, m_defaultTriggerLevel);
+        return m_right;
+      default:
+        return null;
     }
   }
 
