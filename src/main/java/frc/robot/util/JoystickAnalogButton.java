@@ -36,6 +36,6 @@ public class JoystickAnalogButton extends Button {
    */
   @Override
   public boolean get() {
-    return m_joystick.getTriggerAxis(m_triggerHand) < m_triggerLevel;
+    return m_joystick.getTriggerAxis(m_triggerHand) > m_triggerLevel;
   }
 }
