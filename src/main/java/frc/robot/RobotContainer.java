@@ -179,27 +179,33 @@ public class RobotContainer {
     );
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
-    // m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
+    // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_LeftTrigger.whenHeld(
-        new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
-      // TODO: spin diasy
+        new SequentialCommandGroup(
+          new SetThrowerSpeedCommand(m_Thrower, 700), //.perpetually() // m_Thrower.getThrowerSpeed())
+          new ParallelCommandGroup( 
+            new SetThrowerSpeedCommand( m_Thrower, 700),
+            new MoveHopperCommand(m_Hopper, 6)
+          )
+        )
       );
 
-      m_primaryController_RightTrigger.whenHeld(  // bt using whenHeld, the command gets canceled when the 'button' is released
-      new SequentialCommandGroup(
-        // Turn on green LED
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
-        // tell Vision Coprocessor to process RFT
-        new SendVisionCommand(sender_, "R"),
-        new SpinUpThrowerCommand(m_Thrower, rft_),
-        // TODO: drivetrain rotate to target.
-        new ParallelRaceGroup(
-          new ThrowToTargetCommand(m_Thrower, rft_),
-          new MoveHopperCommand(m_Hopper, 6)
+      // Thrower on primary controller, Right Trigger throw with vision
+      // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
+      // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
+      m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
+        new SequentialCommandGroup(
+          new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+          new SendVisionCommand(sender_, "R"), // tell Vision Coprocessor to track RFT
+          // TODO: drivetrain rotate to target, Parallel Command Group (simultaneously) with spin up thrower.
+          new SpinUpThrowerCommand(m_Thrower, rft_),
+          new ParallelRaceGroup(
+            new ThrowToTargetCommand(m_Thrower, rft_),
+            new MoveHopperCommand(m_Hopper, 6)
+          )
+          // Turning off LED is handled by thrower default command
         )
-        // Turning off LED is handled by thrower default command
-      )
-    );
+      );  
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
