@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
@@ -174,11 +175,15 @@ public class RobotContainer {
     );
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
-    //m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
-    m_primary_LeftTrigger.whileActiveContinuous(
-      new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
+    SmartDashboard.putNumber("getTriggerAxis", m_primaryController.getTriggerAxis( Hand.kLeft));
+    // m_secondaryController_B.whenHeld( // ) Pressed( // whileHeld(
+    // m_primary_LeftTrigger.whileActiveContinuous(
+      if( m_primaryController.getTriggerAxis( Hand.kLeft) > 0.5) { // Button.kBumperLeft);
+        
+        new SetThrowerSpeedCommand(m_Thrower, 700).perpetually(); // m_Thrower.getThrowerSpeed())
       // TODO: spin diasy
-    );
+      }
+    //);
     m_primary_RightTrigger.whenActive(
       new SequentialCommandGroup(
         // TODO: turn on green LED
