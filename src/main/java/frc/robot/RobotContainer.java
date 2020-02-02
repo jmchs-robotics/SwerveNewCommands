@@ -10,6 +10,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DefaultSwerveCommand;
@@ -37,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PerpetualCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -200,6 +202,9 @@ public class RobotContainer {
 
     // Right bumper is spin the control panel 3 times
     m_secondaryController.getButton(Button.kBumperRight).whenPressed( new SpinThreeTimesCommand(m_controlPanel) ); // Doesn't cancel command on let up
+
+    // Testing joystickAnalogButton
+    m_primaryController.getTriggerAsButton(Hand.kLeft).whenPressed(new PrintCommand("Hey, a trigger as a button!"));
     
   }
 
