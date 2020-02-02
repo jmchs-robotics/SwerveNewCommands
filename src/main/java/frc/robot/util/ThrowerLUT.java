@@ -1,7 +1,9 @@
+package frc.robot.util;
+
 /**
    * Contains the LUT for the thrower
    */
-  public class ThrowerLUT {
+public class ThrowerLUT {
     // if the vision coprocessor can't see the RFT, thrower should be set to this speed
     public static double DEFAULT_RPM = 500;
 
@@ -20,4 +22,4 @@
       double rpm = 700 + 2 * inches;
       return rpm;
     }
-  }
+}
