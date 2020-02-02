@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -22,12 +24,16 @@ import com.revrobotics.CANPIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ThrowerMotor;
 import frc.robot.Constants.ThrowerPIDs;
+import frc.robot.util.SocketVisionWrapper;
+import frc.robot.RobotContainer;
 
 public class ThrowerSubsystem extends SubsystemBase {
   private CANSparkMax m_Thrower;
   private CANSparkMax m_ThrowerFollower;
   private CANPIDController m_throwController;
   private CANEncoder m_throwEncoder;
+
+  private final DigitalOutput m_led;
 
   private double kP = ThrowerPIDs.kP;
   private double kI = ThrowerPIDs.kI;
@@ -41,25 +47,27 @@ public class ThrowerSubsystem extends SubsystemBase {
   private double ii = 0;
 
   /**
-   * Creates a new ControlPanelSubsystem.
+   * Creates a new Thrower Subsystem.
    */
-  public ThrowerSubsystem() {
-    m_Thrower = new CANSparkMax(ThrowerMotor.throwerMaxID, MotorType.kBrushless);
-    m_ThrowerFollower = new CANSparkMax(ThrowerMotor.throwerFollowerMaxID, MotorType.kBrushless);
+  public ThrowerSubsystem(){
+    // led
+    m_led = new DigitalOutput(ThrowerMotor.LED_CHANNEL);
 
+    // controllers for thrower motors
+    m_Thrower = new CANSparkMax(ThrowerMotor.THROWER_MASTER_ID, MotorType.kBrushless);
+    m_ThrowerFollower = new CANSparkMax(ThrowerMotor.THROWER_FOLLOWER_ID, MotorType.kBrushless);
 
     // reset controllers
     m_Thrower.restoreFactoryDefaults();
-    m_Thrower.clearFaults();
-    
+    m_Thrower.clearFaults();    
     m_ThrowerFollower.restoreFactoryDefaults();
     m_ThrowerFollower.clearFaults();
 
+    // set up thrower controllers
     m_Thrower.setIdleMode(IdleMode.kCoast);
     m_ThrowerFollower.setIdleMode(IdleMode.kCoast);
 
     m_ThrowerFollower.follow(m_Thrower, ThrowerMotor.INVERT_FOLLOWER);
-
 
     m_throwController = m_Thrower.getPIDController();
     m_throwEncoder = m_Thrower.getEncoder();
@@ -102,7 +110,7 @@ public class ThrowerSubsystem extends SubsystemBase {
       double ff = SmartDashboard.getNumber("Thrower Feed Forward", 0);
       double max = SmartDashboard.getNumber("Thrower Max Output", 0);
       double min = SmartDashboard.getNumber("Thrower Min Output", 0);
-  
+
       // if PID coefficients on SmartDashboard have changed, write new values to controller
       if(( speed != m_setpoint)) { setThrowerSpeed( speed); }
       if((p != kP)) { m_throwController.setP(p); kP = p; }
@@ -115,6 +123,8 @@ public class ThrowerSubsystem extends SubsystemBase {
         kMinOutput = min; kMaxOutput = max; 
       }
     }
+
+    
   }
 
   /**
@@ -149,5 +159,19 @@ public class ThrowerSubsystem extends SubsystemBase {
      */
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs(m_setpoint - m_throwEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
+  }
+
+  /**
+   * Turns on the thrower targeting LED.
+   */
+  public void turnOnLED(){
+    m_led.set(true);
+  }
+
+  /**
+   * Turns off the thrower targeting LED.
+   */
+  public void turnOffLED(){
+    m_led.set(false);
   }
 }

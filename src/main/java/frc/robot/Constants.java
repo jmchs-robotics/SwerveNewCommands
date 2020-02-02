@@ -9,6 +9,8 @@ package frc.robot;
 
 import com.revrobotics.ColorMatch;
 
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.util.Color;
 
 /**
@@ -88,21 +90,22 @@ public final class Constants {
     public static final double cpSpinnerSpeed = 0.5;
   }
 
+
   /**
    * Constants for the control panel
    */
   public static final class ControlPanelActuators {
-    public static final int motorCanID = 11;
-    public static final int soleniodFirst = 12;
-    public static final int soleniodSecond = 13;
+    public static final int victorID = 10;
+    public static final int soleniodForward = 0;
+    public static final int soleniodBackward = 1;
+    public static final Port sensorPort = I2C.Port.kOnboard;
   }
 
   public static final class ThrowerMotor {
-
-    public static final int throwerMaxID = 14;
-    public static final int throwerFollowerMaxID = 15;
-
+    public static final int THROWER_MASTER_ID = 14;
+    public static final int THROWER_FOLLOWER_ID = 15;
     public static final boolean INVERT_FOLLOWER = false;
+	public static final int LED_CHANNEL = 0;
   }
 
   public static final class ThrowerPIDs {
@@ -118,6 +121,7 @@ public final class Constants {
     public static final boolean TIME = false;
     public static final boolean TUNE = true;
   }
+
 
   public static final class HopperConstants {
     public static final int HOPPER_MOTOR_ID = 20;
@@ -168,4 +172,8 @@ public final class Constants {
     
   }
 
+  public static final class LED {
+    public static final int GREEN = 0;
+    public static final int SPOTLIGHT = 1;
+  }
 }
