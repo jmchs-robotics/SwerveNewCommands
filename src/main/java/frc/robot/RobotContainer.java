@@ -180,7 +180,7 @@ public class RobotContainer {
       new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed()) // The perpetually decorator means we don't need to restart the command continuously, so whenHeld is enough.
       // TODO: spin diasy
     );
-    m_primary_RightTrigger.whenActive(
+    m_primary_RightTrigger.whenActive( // This will not cancel when the button is lifted.
       new SequentialCommandGroup(
         // Turn on green LED
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
