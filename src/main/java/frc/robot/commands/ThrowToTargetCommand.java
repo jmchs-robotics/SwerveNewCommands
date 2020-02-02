@@ -12,6 +12,7 @@ import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVision;
 import frc.robot.util.SocketVisionWrapper;
 import frc.robot.util.ThrowerLUT;
+import edu.wpi.first.wpilibj.smartdashboard.*;
 
 public class ThrowToTargetCommand extends CommandBase {
   private ThrowerSubsystem m_subsystem;
@@ -44,6 +45,7 @@ public class ThrowToTargetCommand extends CommandBase {
   @Override
   public void execute() {
     // Make sure that the vision data is valid
+    SmartDashboard.putNumber("ThrowToTargetCommand", m_vision.get().get_distance());
     if(m_vision.get().get_direction() != SocketVision.NADA){
       setpoint = ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
     }

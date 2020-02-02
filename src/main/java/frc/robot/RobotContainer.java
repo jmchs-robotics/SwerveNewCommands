@@ -118,6 +118,7 @@ public class RobotContainer {
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
   private final JoystickAnalogButton m_primaryController_LeftTrigger = new JoystickAnalogButton( m_primaryController, Hand.kLeft, 0.5);
+  private final JoystickAnalogButton m_primaryController_RightTrigger = new JoystickAnalogButton( m_primaryController, Hand.kRight, 0.5);
   
 
   /**
@@ -183,8 +184,8 @@ public class RobotContainer {
         new SetThrowerSpeedCommand(m_Thrower, 700).perpetually() // m_Thrower.getThrowerSpeed())
       // TODO: spin diasy
       );
-    m_primary_RightTrigger.whenActive(
 
+      m_primaryController_RightTrigger.whenHeld(  // bt using whenHeld, the command gets canceled when the 'button' is released
       new SequentialCommandGroup(
         // Turn on green LED
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
