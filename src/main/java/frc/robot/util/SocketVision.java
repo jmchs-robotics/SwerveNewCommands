@@ -233,8 +233,8 @@ public class SocketVision extends Thread {
 
 		if (direction_ != null) {
 			tmp = direction_;
-			direction_ = NADA;
-		}
+    }
+    
 		return tmp;
 	}
 
@@ -246,7 +246,6 @@ public class SocketVision extends Thread {
 	 */
 	public synchronized double get_degrees_x() {
     double tmp = degrees_x;		
-    degrees_x = 0;
 		return tmp;
 	}
 
@@ -260,7 +259,6 @@ public class SocketVision extends Thread {
 	@Deprecated
 	public synchronized double get_degrees_y() {
 		double tmp = degrees_y;
-		degrees_y = 0;
 		return tmp;
 	}
 
@@ -270,7 +268,6 @@ public class SocketVision extends Thread {
 	 */
 	public synchronized double get_width() {
 		double tmp = degrees_width;
-		degrees_width = 0;
 		return tmp;
 	}
 
