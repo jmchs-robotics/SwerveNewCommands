@@ -9,6 +9,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANSparkMax;
@@ -31,6 +33,8 @@ public class ThrowerSubsystem extends SubsystemBase {
   private CANPIDController m_throwController;
   private CANEncoder m_throwEncoder;
 
+  private final DigitalOutput m_led;
+
   private double kP = ThrowerPIDs.kP;
   private double kI = ThrowerPIDs.kI;
   private double kD = ThrowerPIDs.kD;
@@ -46,6 +50,9 @@ public class ThrowerSubsystem extends SubsystemBase {
    * Creates a new Thrower Subsystem.
    */
   public ThrowerSubsystem(){
+    // led
+    m_led = new DigitalOutput(ThrowerMotor.LED_CHANNEL);
+
     // controllers for thrower motors
     m_Thrower = new CANSparkMax(ThrowerMotor.THROWER_MASTER_ID, MotorType.kBrushless);
     m_ThrowerFollower = new CANSparkMax(ThrowerMotor.THROWER_FOLLOWER_ID, MotorType.kBrushless);
@@ -152,5 +159,19 @@ public class ThrowerSubsystem extends SubsystemBase {
      */
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs(m_setpoint - m_throwEncoder.getVelocity()) <= Math.abs(m_setpoint*thresholdPercent);
+  }
+
+  /**
+   * Turns on the thrower targeting LED.
+   */
+  public void turnOnLED(){
+    m_led.set(true);
+  }
+
+  /**
+   * Turns off the thrower targeting LED.
+   */
+  public void turnOffLED(){
+    m_led.set(false);
   }
 }

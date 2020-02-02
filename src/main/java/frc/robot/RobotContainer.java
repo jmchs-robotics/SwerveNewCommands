@@ -10,6 +10,7 @@ package frc.robot;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.I2C;
@@ -185,16 +186,19 @@ public class RobotContainer {
       }
     //);
     m_primary_RightTrigger.whenActive(
+
       new SequentialCommandGroup(
-        // TODO: turn on green LED
+        // Turn on green LED
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
         // tell Vision Coprocessor to process RFT
         new SendVisionCommand(sender_, "R"),
         new SpinUpThrowerCommand(m_Thrower, rft_),
+        // TODO: drivetrain rotate to target.
         new ParallelRaceGroup(
           new ThrowToTargetCommand(m_Thrower, rft_),
           new MoveHopperCommand(m_Hopper, 6)
         )
-        // turn green LED off
+        // Turning off LED is handled by thrower default command
       )
     );
     
@@ -259,7 +263,7 @@ public class RobotContainer {
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
 
     // default thrower is to spin down to still
-    m_Thrower.setDefaultCommand(new StartEndCommand( m_Thrower::stopThrower, ()->{}, m_Thrower)); // Spin down thrower on startup, do nothing on end.
+    m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 
   }
 
