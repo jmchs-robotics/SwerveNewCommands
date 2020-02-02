@@ -105,6 +105,7 @@ public final class Constants {
     public static final int THROWER_MASTER_ID = 14;
     public static final int THROWER_FOLLOWER_ID = 15;
     public static final boolean INVERT_FOLLOWER = false;
+	public static final int LED_CHANNEL = 0;
   }
 
   public static final class ThrowerPIDs {
