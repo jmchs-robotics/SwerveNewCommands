@@ -282,7 +282,6 @@ public class SocketVision extends Thread {
 	 */
 	public synchronized double get_distance() {
 		double tmp = distance;
-		distance = 0;
 		return tmp;
 	}
 }
