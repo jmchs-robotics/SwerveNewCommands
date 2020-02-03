@@ -151,7 +151,7 @@ public class RobotContainer {
         new SequentialCommandGroup( // First lower the intake, then in parallel run the intake while checking for a new ball to enter the daisy.
           new InstantCommand(m_intake::lowerIntake, m_intake),
           new ParallelRaceGroup(
-            new StartEndCommand(()->{m_intake.setMotor(0.7);},()->{m_intake.setMotor(-0.2);}, m_hopper), // Note that there is no interrupted qualifier for the onEnd Runnable
+            new StartEndCommand(()->{m_intake.setMotor(0.7);},()->{m_intake.setMotor(-0.2);}, m_intake), // Note that there is no interrupted qualifier for the onEnd Runnable
             new WaitUntilCommand(()->{return m_hopper.ballLoaded();}) // Color sensor proximity is an 11 bit value that is low when the target is far and high when it is near.
           ),
           new FunctionalCommand(
