@@ -100,7 +100,7 @@ public class RobotContainer {
       XboxController.Button.kStickLeft.value); // runs sample color
   // want b to start Pat Sajack rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kB.value); // Sets the thrower Speed
+      XboxController.Button.kB.value);
   //want A to put Pat Sajak down
   private final JoystickButton m_secondaryController_A = new JoystickButton(m_secondaryController, 
       XboxController.Button.kA.value); //Launch all the power cells towards the high power port
