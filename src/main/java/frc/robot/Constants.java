@@ -122,6 +122,12 @@ public final class Constants {
     public static final boolean TUNE = true;
   }
 
+  public static final class IntakeActuators {
+    public static final int intakeVictorID = 9;
+    public static final int intakeSoleniodForward = 2;
+    public static final int intakeSoleniodBackward = 3;
+  }
+
 
   public static final class HopperConstants {
     public static final int HOPPER_MOTOR_ID = 20;
