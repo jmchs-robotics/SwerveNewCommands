@@ -126,6 +126,9 @@ public final class Constants {
     public static final int intakeVictorID = 9;
     public static final int intakeSoleniodForward = 2;
     public static final int intakeSoleniodBackward = 3;
+
+    // set to true to put motor speed and other data on the smart dashboard
+    public static final boolean TUNE = true;
   }
 
 

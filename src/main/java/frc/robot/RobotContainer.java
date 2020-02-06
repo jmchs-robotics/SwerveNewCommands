@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
+import frc.robot.commands.IntakeRecieveCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SetThrowerSpeedCommand;
@@ -40,6 +41,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.commands.MoveHopperCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;;
 
@@ -62,6 +64,7 @@ public class RobotContainer {
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
   private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
+  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
@@ -98,6 +101,8 @@ public class RobotContainer {
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value); // runs sample color
+  private final JoystickButton m_secondaryController_StickRight = new JoystickButton(m_secondaryController,
+     XboxController.Button.kStickRight.value); // runs the intake
   // want b to start Pat Sajack rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
@@ -172,7 +177,8 @@ public class RobotContainer {
 
     m_secondaryController_StickLeft.whileHeld(
       new SampleColorCommand(m_colorSensor)
-    );
+      
+      );
 
     m_primaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
@@ -206,6 +212,9 @@ public class RobotContainer {
           // Turning off LED is handled by thrower default command
         )
       );  
+
+      m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
+      m_secondaryController_RightBumper.whenReleased( m_Intake::stopMotor, m_Intake);
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(

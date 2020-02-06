@@ -11,9 +11,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeActuators;
 
@@ -34,6 +34,10 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (IntakeActuators.TUNE){
+      SmartDashboard.putNumber("Intake Motor Speed", m_motor.getMotorOutputPercent());
+      SmartDashboard.putBoolean("Intake Lowered????", isLowered());
+    }
   }
 
   /**
@@ -73,5 +77,9 @@ public class IntakeSubsystem extends SubsystemBase {
    */
   public void setMotor(double speed){
     m_motor.set(ControlMode.PercentOutput,speed);
+  }
+
+  public void stopMotor (){
+    m_motor.set(ControlMode.PercentOutput, 0.0);
   }
 }
