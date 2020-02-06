@@ -217,7 +217,7 @@ public class RobotContainer {
       // testing intake
       m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
       m_secondaryController_RightBumper.whenReleased( m_Intake::stopMotor, m_Intake);
-      m_secondaryController_LeftBumper.whenPressed(new IntakeReversePulseCommand(m_Intake));
+      m_secondaryController_A.whenPressed(new IntakeReversePulseCommand(m_Intake));
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
