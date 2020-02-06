@@ -22,6 +22,9 @@ public class IntakeSubsystem extends SubsystemBase {
   private VictorSPX m_motor;
 
   private boolean m_lowered;
+  private double m_forwardSpeed;
+  private double m_reverseSpeed;
+  private double m_reversePulse;
 
   /**
    * Creates a new IntakeSubsystem.
@@ -29,14 +32,41 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem() {
     m_solenoid = new DoubleSolenoid(IntakeActuators.intakeSoleniodForward, IntakeActuators.intakeSoleniodBackward);
     m_motor = new VictorSPX(IntakeActuators.intakeVictorID);
+    m_forwardSpeed = IntakeActuators.forwardSpeed;
+    m_reverseSpeed = IntakeActuators.reverseSpeed;
+    m_reversePulse = IntakeActuators.reversePulse;
+
+    if (IntakeActuators.TUNE){
+      SmartDashboard.putNumber("Intake Motor Output Percent", m_motor.getMotorOutputPercent());
+      SmartDashboard.putBoolean("Intake Lowered????", isLowered());
+      SmartDashboard.putNumber("Intake Motor Forward Speed", m_forwardSpeed);
+      SmartDashboard.putNumber("Intake Motor Reverse Speed", m_reverseSpeed);
+      SmartDashboard.putNumber("Intake Motor Reverse Pulse Time", m_reversePulse);
+    }
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (IntakeActuators.TUNE){
-      SmartDashboard.putNumber("Intake Motor Speed", m_motor.getMotorOutputPercent());
+      double fs, rs, rp;
+      SmartDashboard.putNumber("Intake Motor Output Percent", m_motor.getMotorOutputPercent());
       SmartDashboard.putBoolean("Intake Lowered????", isLowered());
+      fs = SmartDashboard.getNumber("Intake Motor Forward Speed", m_forwardSpeed);
+      rs = SmartDashboard.getNumber("Intake Motor Reverse Speed", m_reverseSpeed);
+      rp = SmartDashboard.getNumber("Intake Motor Reverse Pulse Time", m_reversePulse);
+
+      if( fs != m_forwardSpeed) {
+        m_forwardSpeed = fs;
+          setMotor(fs);
+      }
+      if( rs != m_reverseSpeed) {
+        m_reverseSpeed = rs;
+          setMotor(rs);
+      }
+      if( rp != m_reversePulse) {
+        m_reversePulse = rp;
+      }
     }
   }
 
@@ -81,5 +111,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public void stopMotor (){
     m_motor.set(ControlMode.PercentOutput, 0.0);
+  }
+
+  public void motorForward() {
+    setMotor(m_forwardSpeed);
+  }
+
+  public void motorReverse() {
+    setMotor( m_reverseSpeed);
+  }
+
+  public double getReversePulse() {
+    return m_reversePulse;
+  }
+
+  public double getReverseSpeed() {
+    return m_reverseSpeed;
   }
 }

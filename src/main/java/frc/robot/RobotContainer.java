@@ -18,9 +18,18 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.IntakeRecieveCommand;
+import frc.robot.commands.IntakeReversePulseCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SetThrowerSpeedCommand;
@@ -28,23 +37,15 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
+import frc.robot.commands.MoveHopperCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
-import frc.robot.util.SocketVisionSendWrapper;
-import frc.robot.util.SocketVisionWrapper;
-import frc.robot.util.JoystickAnalogButton;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.ControlPanelSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.commands.MoveHopperCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;;
-
+import frc.robot.util.SocketVisionSendWrapper;
+import frc.robot.util.SocketVisionWrapper;
+import frc.robot.util.JoystickAnalogButton;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -213,8 +214,10 @@ public class RobotContainer {
         )
       );  
 
+      // testing intake
       m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
       m_secondaryController_RightBumper.whenReleased( m_Intake::stopMotor, m_Intake);
+      m_secondaryController_LeftBumper.whenPressed(new IntakeReversePulseCommand(m_Intake));
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
@@ -271,6 +274,10 @@ public class RobotContainer {
     m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
+  /**
+   * Configure default commands for various subsystems - what each subsystem should do when they're not being
+   * commanded to do something specific by a button or an autonomous command.
+   */
   private void configureDefaultCommands() {
     // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
     // default swerve drive is to read from joysticks
@@ -279,6 +286,8 @@ public class RobotContainer {
     // default thrower is to spin down to still
     m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 
+    // default intake is spin down to still
+    m_Intake.setDefaultCommand(new StartEndCommand( ()->{m_Intake.stopMotor();}, ()->{}, m_Intake));
   }
 
   /**
