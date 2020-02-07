@@ -15,12 +15,12 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ColorTargets;
-import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
 
 
 public class MatchColorsCommand extends CommandBase {
   
-  private ControlPanelSubsystem m_cPanelSubsystem;
+  private PatSajakSubsystem m_cPanelSubsystem;
   private ColorSensorV3 m_colorSensor;
   private RobotContainer m_container;
   private ColorMatch m_colorMatch = new ColorMatch();
@@ -30,7 +30,7 @@ public class MatchColorsCommand extends CommandBase {
   /**
    * Creates a new MatchColorsCommand.
    */
-  public MatchColorsCommand(ControlPanelSubsystem subsystem, ColorSensorV3 sensor, RobotContainer container) {
+  public MatchColorsCommand(PatSajakSubsystem subsystem, ColorSensorV3 sensor, RobotContainer container) {
     
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);

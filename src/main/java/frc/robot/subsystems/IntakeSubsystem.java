@@ -52,9 +52,9 @@ public class IntakeSubsystem extends SubsystemBase {
       double fs, rs, rp;
       SmartDashboard.putNumber("Intake Motor Output Percent", m_motor.getMotorOutputPercent());
       SmartDashboard.putBoolean("Intake Lowered????", isLowered());
-      fs = SmartDashboard.getNumber("Intake Motor Forward Speed", m_forwardSpeed);
-      rs = SmartDashboard.getNumber("Intake Motor Reverse Speed", m_reverseSpeed);
-      rp = SmartDashboard.getNumber("Intake Motor Reverse Pulse Time", m_reversePulse);
+      fs = SmartDashboard.getNumber("Intake Motor Forward Speed", 0);
+      rs = SmartDashboard.getNumber("Intake Motor Reverse Speed", 0);
+      rp = SmartDashboard.getNumber("Intake Motor Reverse Pulse Time", 0);
 
       if( fs != m_forwardSpeed) {
         m_forwardSpeed = fs;

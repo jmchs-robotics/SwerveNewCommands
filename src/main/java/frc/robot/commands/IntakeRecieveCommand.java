@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ColorTargets;
-import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeRecieveCommand extends CommandBase {
@@ -51,7 +51,7 @@ public class IntakeRecieveCommand extends CommandBase {
      * This will lower the intake and starts the intake motor
      */
 
-    m_intake.raiseIntake();
+    //m_intake.raiseIntake();
     m_intake.setMotor(0.7);
 
 
@@ -61,7 +61,7 @@ public class IntakeRecieveCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_intake.setMotor(0.0);
-    m_intake.lowerIntake();
+    //m_intake.lowerIntake();
   }
 
   // Returns true when the command should end.

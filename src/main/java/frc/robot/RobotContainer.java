@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -40,7 +40,7 @@ import frc.robot.commands.VisionLineUpWithTarget;
 import frc.robot.commands.MoveHopperCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
-import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
@@ -64,7 +64,7 @@ public class RobotContainer {
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
-  private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
+  private final PatSajakSubsystem m_PatSajak = new PatSajakSubsystem();
   private final IntakeSubsystem m_Intake = new IntakeSubsystem();
 
   // Color Sensor
@@ -117,9 +117,9 @@ public class RobotContainer {
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
   private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperLeft.value); // Intake up
+      XboxController.Button.kBumperLeft.value); // Intake raised (inactive)
   private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperRight.value); // Intake down
+      XboxController.Button.kBumperRight.value); // Intake lowered(active)
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
@@ -211,12 +211,14 @@ public class RobotContainer {
             new MoveHopperCommand(m_Hopper, 6)
           )
           // Turning off LED is handled by thrower default command
-        )
+        ) 
       );  
 
       // testing intake
-      m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
-      m_secondaryController_RightBumper.whenReleased( m_Intake::stopMotor, m_Intake);
+      //m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
+      //Want the Right Bumper to LowerIntake and Left Bumper tp Raise Intake
+      m_secondaryController_RightBumper.whenPressed(m_Intake :: lowerIntake, m_Intake);
+      m_secondaryController_LeftBumper.whenPressed(m_Intake :: raiseIntake, m_Intake);
       m_secondaryController_A.whenPressed(new IntakeReversePulseCommand(m_Intake));
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time

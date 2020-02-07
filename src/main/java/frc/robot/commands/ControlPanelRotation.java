@@ -17,12 +17,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ColorTargets;
-import frc.robot.subsystems.ControlPanelSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
 
 public class ControlPanelRotation extends CommandBase {
   //private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private ControlPanelSubsystem m_patSajak;
+  private PatSajakSubsystem m_patSajak;
 
   private final ColorSensorV3 m_colorSensor;
   private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -33,7 +33,7 @@ public class ControlPanelRotation extends CommandBase {
   /**
    * Creates a new SampleColor.
    */
-  public ControlPanelRotation(ControlPanelSubsystem patSajak, ColorSensorV3 sensor) {
+  public ControlPanelRotation(PatSajakSubsystem patSajak, ColorSensorV3 sensor) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Requires the ControlPanel Subsystem
     addRequirements(patSajak);

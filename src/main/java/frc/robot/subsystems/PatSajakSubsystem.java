@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ControlPanelActuators;
 import frc.robot.Constants.ColorTargets;
 
-public class ControlPanelSubsystem extends SubsystemBase {
+public class PatSajakSubsystem extends SubsystemBase {
   //private Spark  m_controlPanelSpinner;
   private VictorSPX m_controlPanelSpinner;
   private DoubleSolenoid m_controlPanelSolenoid;
@@ -33,9 +33,9 @@ public class ControlPanelSubsystem extends SubsystemBase {
   private boolean m_raised;
 
   /**
-   * Creates a new ControlPanelSubsystem.
+   * Creates a new PatSajakSubsystem.
    */
-  public ControlPanelSubsystem() {
+  public PatSajakSubsystem() {
     m_controlPanelSpinner = new VictorSPX(ControlPanelActuators.victorID);
     m_controlPanelSolenoid = new DoubleSolenoid(ControlPanelActuators.soleniodForward, ControlPanelActuators.soleniodBackward);
     m_controlPanelColorSensorV3 = new ColorSensorV3(ControlPanelActuators.sensorPort);

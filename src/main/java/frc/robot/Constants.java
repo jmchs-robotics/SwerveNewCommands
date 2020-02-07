@@ -130,7 +130,7 @@ public final class Constants {
     // motor run characteristics
     public static final double forwardSpeed = 0.7;
     public static final double reverseSpeed = -0.7;
-    public static final double reversePulse = 0.5; 
+    public static final double reversePulse = .5; 
 
     // set to true to put motor speed and other data on the smart dashboard
     public static final boolean TUNE = true;
