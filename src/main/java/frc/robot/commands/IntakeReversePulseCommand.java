@@ -29,7 +29,6 @@ public class IntakeReversePulseCommand extends CommandBase {
 
     m_intake = intake;
     m_timer = new Timer();
-    m_time = m_intake.getReversePulse();
   }
 
   // Called when the command is initially scheduled.
@@ -37,6 +36,7 @@ public class IntakeReversePulseCommand extends CommandBase {
   public void initialize() {
     m_timer.reset();
     m_timer.start();
+    m_time = m_intake.getReversePulse();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
