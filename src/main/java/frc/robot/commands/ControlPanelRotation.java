@@ -62,7 +62,7 @@ public class ControlPanelRotation extends CommandBase {
      * measurements and make it difficult to accurately determine its color.
      */
 
-    m_patSajak.raiseSpinner();
+    //m_patSajak.raiseSpinner();
     m_patSajak.setSpinMotor(0.7);
 
 
@@ -102,7 +102,7 @@ public class ControlPanelRotation extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_patSajak.turnSpinnerMotorOff();
-    m_patSajak.lowerSpinner();
+    //m_patSajak.lowerSpinner();
   }
 
   // Returns true when the command should end.

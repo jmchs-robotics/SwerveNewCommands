@@ -18,18 +18,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import frc.robot.commands.ClimbWinchDownCommand;
+import frc.robot.commands.ClimbWinchUpCommand;
+import frc.robot.commands.ControlPanelPosition;
 import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.IntakeRecieveCommand;
-import frc.robot.commands.IntakeReversePulseCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SetThrowerSpeedCommand;
@@ -37,15 +31,24 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
-import frc.robot.commands.MoveHopperCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
-import frc.robot.subsystems.PatSajakSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import frc.robot.util.JoystickAnalogButton;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
+import frc.robot.commands.MoveHopperCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -62,6 +65,7 @@ public class RobotContainer {
 
   // Define subsystems here
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
+  private final ClimbSubsystem m_Climb = new ClimbSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
   private final PatSajakSubsystem m_PatSajak = new PatSajakSubsystem();
@@ -88,6 +92,8 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController, 
       XboxController.Button.kBumperRight.value); // Brake Mode Activate
   // want climber arm up
+  private final JoystickButton m_primaryController_X = new JoystickButton(m_primaryController,
+      XboxController.Button.kX.value);
   private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
       XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
@@ -99,12 +105,12 @@ public class RobotContainer {
       XboxController.Axis.kLeftTrigger.value);
   private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, 
       XboxController.Button.kStart.value);
+  private final JoystickButton m_primaryController_Back = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBack.value);
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value); // runs sample color
-  private final JoystickButton m_secondaryController_StickRight = new JoystickButton(m_secondaryController,
-     XboxController.Button.kStickRight.value); // runs the intake
-  // want b to start Pat Sajack rotation control
+  // want b to start Pat Sajak rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
   //want A to put Pat Sajak down
@@ -117,9 +123,13 @@ public class RobotContainer {
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
   private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperLeft.value); // Intake raised (inactive)
+      XboxController.Button.kBumperLeft.value); // Intake up
   private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperRight.value); // Intake lowered(active)
+      XboxController.Button.kBumperRight.value); // Intake down
+  private final JoystickButton m_secondaryController_Start = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kStart.value);
+  private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBack.value);
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
@@ -150,10 +160,26 @@ public class RobotContainer {
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new VisionLineUpWithTarget(m_swerve, rft_), 
         new SendVisionCommand(sender_, "_")
-      )
+      ) 
     );
 
-    m_primaryController_B.whenPressed( // Inline command group!
+    m_primaryController_X.whenPressed(
+      new InstantCommand(m_Climb::raiseArm, m_Climb)
+    );
+
+    m_primaryController_B.whenPressed(
+      new InstantCommand(m_Climb::lowerArm, m_Climb)
+    );
+
+    m_primaryController_Start.whileHeld(
+      new ClimbWinchUpCommand(m_Climb)
+    );
+
+    m_primaryController_Back.whileHeld(
+      new ClimbWinchDownCommand(m_Climb)
+    );
+
+    m_primaryController_X.whenPressed( // Inline command group!
       new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new SendVisionCommand(sender_, "G"), // Can't be a lambda because Sender's aren't subsystems
@@ -176,18 +202,19 @@ public class RobotContainer {
         new InstantCommand(m_swerve::setBrakeOff, m_swerve)
       );
 
-    m_secondaryController_StickLeft.whileHeld(
-      new SampleColorCommand(m_colorSensor)
-      
-      );
+    
 
-    m_primaryController_Y.whenPressed(
+    /*m_secondaryController_StickLeft.whileHeld(
+      new SampleColorCommand(m_colorSensor)
+    );*/
+
+    /*m_primaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
-    );
+    );*/
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
-      m_primaryController_LeftTrigger.whenHeld(
+      /*m_primaryController_LeftTrigger.whenHeld(
         new SequentialCommandGroup(
           new SetThrowerSpeedCommand(m_Thrower, 700), //.perpetually() // m_Thrower.getThrowerSpeed())
           new ParallelCommandGroup( 
@@ -195,12 +222,12 @@ public class RobotContainer {
             new MoveHopperCommand(m_Hopper, 6)
           )
         )
-      );
+      );*/
 
       // Thrower on primary controller, Right Trigger throw with vision
       // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
       // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
-      m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
+      /*m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
         new SequentialCommandGroup(
           new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
           new SendVisionCommand(sender_, "R"), // tell Vision Coprocessor to track RFT
@@ -211,16 +238,23 @@ public class RobotContainer {
             new MoveHopperCommand(m_Hopper, 6)
           )
           // Turning off LED is handled by thrower default command
-        ) 
-      );  
-
-      // testing intake
-      //m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
-      //Want the Right Bumper to LowerIntake and Left Bumper tp Raise Intake
-      m_secondaryController_RightBumper.whenPressed(m_Intake :: lowerIntake, m_Intake);
-      m_secondaryController_LeftBumper.whenPressed(m_Intake :: raiseIntake, m_Intake);
-      m_secondaryController_A.whenPressed(new IntakeReversePulseCommand(m_Intake));
+        )
+      );*/  
     
+    // Pat Sajak commands.
+    m_secondaryController_A.whenPressed(new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak));
+    m_secondaryController_Y.whenPressed(new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak));
+    m_secondaryController_B.whenPressed(new ControlPanelRotation(m_PatSajak, m_colorSensor));
+    m_secondaryController_X.whenPressed(new ControlPanelPosition(m_PatSajak, m_colorSensor));
+
+    // Intake
+    m_secondaryController_Start.whenPressed(new IntakeRecieveCommand(m_Intake));
+
+    // Hopper (Daisy)
+    m_secondaryController_Back.whenPressed(new MoveHopperCommand(m_Hopper, 1));
+
+
+
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
       new SequentialCommandGroup(
@@ -242,12 +276,12 @@ public class RobotContainer {
     );  
     */
 
-    m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
+    /*m_secondaryController_X.whenPressed(new MoveHopperCommand(m_Hopper, 1));
     m_secondaryController_X.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
     // for testing, to check whether to invert the motor or the sensor
     m_secondaryController_Y.whenHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
     m_secondaryController_Y.whenReleased(new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
-    //The sequence for loading 5 powercells into the daisy
+    *///The sequence for loading 5 powercells into the daisy
     /*m_secondaryController_X.whileHeld(
         new SequentialCommandGroup(
           //if the ball count is less than five
@@ -273,13 +307,9 @@ public class RobotContainer {
     );*/
 
     //Tells the output of the light sensor used for telling if powercell is in daisy
-    m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
+    //m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
-  /**
-   * Configure default commands for various subsystems - what each subsystem should do when they're not being
-   * commanded to do something specific by a button or an autonomous command.
-   */
   private void configureDefaultCommands() {
     // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
     // default swerve drive is to read from joysticks
@@ -288,8 +318,6 @@ public class RobotContainer {
     // default thrower is to spin down to still
     m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 
-    // default intake is spin down to still
-    m_Intake.setDefaultCommand(new StartEndCommand( ()->{m_Intake.stopMotor();}, ()->{}, m_Intake));
   }
 
   /**

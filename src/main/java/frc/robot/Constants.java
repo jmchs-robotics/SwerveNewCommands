@@ -101,6 +101,23 @@ public final class Constants {
     public static final Port sensorPort = I2C.Port.kOnboard;
   }
 
+  /**
+   * Constants for the climb
+   */
+  public static final class ClimbConstants {
+    public static final int climbVictorID = 8;
+    public static final int soleniodForward = 4;
+    public static final int soleniodBackward = 5;
+
+    // motor run characteristics
+    public static final double forwardSpeed = 0.7;
+    public static final double reverseSpeed = -0.7;
+
+    // set to true to put motor speed and other data on the smart dashboard
+    public static final boolean TUNE = true;
+  }
+
+
   public static final class ThrowerMotor {
     public static final int THROWER_MASTER_ID = 14;
     public static final int THROWER_FOLLOWER_ID = 15;
