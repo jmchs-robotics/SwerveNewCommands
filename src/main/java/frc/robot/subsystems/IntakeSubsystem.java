@@ -11,10 +11,12 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeActuators;
+import frc.robot.commands.DefaultIntakeCommand;
 
 public class IntakeSubsystem extends SubsystemBase {
   private DoubleSolenoid m_solenoid;
@@ -24,6 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private double m_forwardSpeed;
   private double m_reverseSpeed;
   private double m_reversePulse;
+  private XboxController m_secondaryController = new XboxController(1);
 
   /**
    * Creates a new IntakeSubsystem.
@@ -47,6 +50,7 @@ public class IntakeSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
     if (IntakeActuators.TUNE){
       double fs, rs, rp;
       SmartDashboard.putNumber("Intake Motor Output Percent", m_motor.getMotorOutputPercent());
@@ -66,6 +70,10 @@ public class IntakeSubsystem extends SubsystemBase {
       if( rp != m_reversePulse) {
         m_reversePulse = rp;
       }
+      
+      new DefaultIntakeCommand(this, m_secondaryController);
+
+
     }
   }
 
