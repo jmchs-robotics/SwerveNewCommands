@@ -3,6 +3,7 @@ package frc.robot.util;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
@@ -13,7 +14,9 @@ public class XBoxGamepad {
   private XboxController m_joystick;
 
   private JoystickButton m_A, m_B, m_X, m_Y, m_bumperLeft, m_bumperRight, m_stickLeft, m_stickRight, m_start, m_back;
-  private JoystickAnalogButton m_left, m_right;
+  private JoystickAnalogButton m_leftTrigger, m_rightTrigger;
+  private JoystickAnalogButton m_leftJoystickX, m_leftJoystickY;
+  private JoystickAnalogButton m_rightJoystickX, m_rightJoystickY;
 
   private final double m_defaultTriggerLevel;
 
@@ -81,16 +84,72 @@ public class XBoxGamepad {
     }
   }
 
-  public JoystickAnalogButton getTriggerAsButton(Hand hand){
-    switch(hand){
-      case kLeft:
-        if(m_left == null)
-          m_left = new JoystickAnalogButton(m_joystick, hand, m_defaultTriggerLevel);
-        return m_left;
-      case kRight:
-      if(m_right == null)
-          m_right = new JoystickAnalogButton(m_joystick, hand, m_defaultTriggerLevel);
-        return m_right;
+  /**
+   * Get an {@link Axis} as a button with the default trigger level.
+   * @param axis The {@link Axis} to generate a button from.
+   * @return The first {@link JoystickAnalogButton} created for the axis on this joystick.
+   */
+  public JoystickAnalogButton getTriggerAsButton(Axis axis){
+    switch(axis){
+      case kLeftTrigger:
+        if(m_leftTrigger == null)
+          m_leftTrigger = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+        return m_leftTrigger;
+      case kRightTrigger:
+      if(m_rightTrigger == null)
+          m_rightTrigger = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+        return m_rightTrigger;
+      case kLeftX:
+        if(m_leftJoystickX == null)
+          m_leftJoystickX = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+        return m_leftJoystickX;
+      case kRightX:
+        if(m_rightJoystickX == null)
+          m_rightJoystickX = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+        return m_rightJoystickX;
+      case kLeftY:
+        if(m_leftJoystickY == null)
+          m_leftJoystickY = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+        return m_leftJoystickY;
+      case kRightY:
+        if(m_rightJoystickY == null)
+          m_rightJoystickY = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Get an {@link Axis} as a button with a custom trigger level.
+   * @param axis The {@link Axis} to generate a button from.
+   * @param triggerLevel A number between -1 and 1. If the axis moves beyond that level, the button will trigger.
+   * @return The first {@link JoystickAnalogButton} created for the axis on this joystick.
+   */
+  public JoystickAnalogButton getTriggerAsButton(Axis axis, double triggerLevel){
+    switch(axis){
+      case kLeftTrigger:
+        if(m_leftTrigger == null)
+          m_leftTrigger = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
+        return m_leftTrigger;
+      case kRightTrigger:
+      if(m_rightTrigger == null)
+          m_rightTrigger = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
+        return m_rightTrigger;
+      case kLeftX:
+        if(m_leftJoystickX == null)
+          m_leftJoystickX = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
+        return m_leftJoystickX;
+      case kRightX:
+        if(m_rightJoystickX == null)
+          m_rightJoystickX = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
+        return m_rightJoystickX;
+      case kLeftY:
+        if(m_leftJoystickY == null)
+          m_leftJoystickY = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
+        return m_leftJoystickY;
+      case kRightY:
+        if(m_rightJoystickY == null)
+          m_rightJoystickY = new JoystickAnalogButton(m_joystick, axis, triggerLevel);
       default:
         return null;
     }
