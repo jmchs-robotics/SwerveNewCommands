@@ -18,8 +18,18 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
 import frc.robot.commands.ControlPanelRotation;
 import frc.robot.commands.DefaultSwerveCommand;
+import frc.robot.commands.IntakeRecieveCommand;
+import frc.robot.commands.IntakeReversePulseCommand;
 import frc.robot.commands.SampleColorCommand;
 import frc.robot.commands.SendVisionCommand;
 import frc.robot.commands.SetThrowerSpeedCommand;
@@ -27,22 +37,15 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
+import frc.robot.commands.MoveHopperCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
+import frc.robot.subsystems.PatSajakSubsystem;
+import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
 import frc.robot.util.SocketVisionWrapper;
 import frc.robot.util.JoystickAnalogButton;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.subsystems.ControlPanelSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.commands.MoveHopperCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -61,7 +64,8 @@ public class RobotContainer {
   private final SwerveDriveSubsystem m_swerve = new SwerveDriveSubsystem();
   private final ThrowerSubsystem m_Thrower = new ThrowerSubsystem();
   private final HopperSubsystem m_Hopper = new HopperSubsystem();
-  private final ControlPanelSubsystem m_PatSajak = new ControlPanelSubsystem();
+  private final PatSajakSubsystem m_PatSajak = new PatSajakSubsystem();
+  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
@@ -98,6 +102,8 @@ public class RobotContainer {
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
       XboxController.Button.kStickLeft.value); // runs sample color
+  private final JoystickButton m_secondaryController_StickRight = new JoystickButton(m_secondaryController,
+     XboxController.Button.kStickRight.value); // runs the intake
   // want b to start Pat Sajack rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
@@ -111,9 +117,9 @@ public class RobotContainer {
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
   private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperLeft.value); // Intake up
+      XboxController.Button.kBumperLeft.value); // Intake raised (inactive)
   private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperRight.value); // Intake down
+      XboxController.Button.kBumperRight.value); // Intake lowered(active)
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
@@ -172,7 +178,8 @@ public class RobotContainer {
 
     m_secondaryController_StickLeft.whileHeld(
       new SampleColorCommand(m_colorSensor)
-    );
+      
+      );
 
     m_primaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
@@ -204,8 +211,15 @@ public class RobotContainer {
             new MoveHopperCommand(m_Hopper, 6)
           )
           // Turning off LED is handled by thrower default command
-        )
+        ) 
       );  
+
+      // testing intake
+      //m_secondaryController_RightBumper.whenHeld(new IntakeRecieveCommand(m_Intake));
+      //Want the Right Bumper to LowerIntake and Left Bumper tp Raise Intake
+      m_secondaryController_RightBumper.whenPressed(m_Intake :: lowerIntake, m_Intake);
+      m_secondaryController_LeftBumper.whenPressed(m_Intake :: raiseIntake, m_Intake);
+      m_secondaryController_A.whenPressed(new IntakeReversePulseCommand(m_Intake));
     
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
     m_secondaryController_A.whenPressed(
@@ -262,6 +276,10 @@ public class RobotContainer {
     m_secondaryController_Y.whileHeld(new InstantCommand(()->{SmartDashboard.putNumber("LightSensor output voltage", m_lightSensor.getVoltage());}));
   }
 
+  /**
+   * Configure default commands for various subsystems - what each subsystem should do when they're not being
+   * commanded to do something specific by a button or an autonomous command.
+   */
   private void configureDefaultCommands() {
     // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
     // default swerve drive is to read from joysticks
@@ -270,6 +288,8 @@ public class RobotContainer {
     // default thrower is to spin down to still
     m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 
+    // default intake is spin down to still
+    m_Intake.setDefaultCommand(new StartEndCommand( ()->{m_Intake.stopMotor();}, ()->{}, m_Intake));
   }
 
   /**
