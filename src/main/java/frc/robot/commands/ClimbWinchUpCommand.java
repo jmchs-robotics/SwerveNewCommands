@@ -7,26 +7,29 @@
 
 package frc.robot.commands;
 
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorSensorV3;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;;
 
-public class IntakeRecieveCommand extends CommandBase {
-  //private final ColorMatch m_colorMatcher = new ColorMatch();
+public class ClimbWinchUpCommand extends CommandBase {
 
-  private IntakeSubsystem m_intake;
+  private ClimbSubsystem m_climb;
 
   /**
    * Creates a new SampleColor.
    */
-  public IntakeRecieveCommand(IntakeSubsystem intake) {
+  public ClimbWinchUpCommand(ClimbSubsystem climb) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Requires the ControlPanel Subsystem
-    addRequirements(intake);
+    addRequirements(climb);
 
-    m_intake = intake;
-
+    m_climb = climb;
   }
 
   // Called when the command is initially scheduled.
@@ -38,22 +41,18 @@ public class IntakeRecieveCommand extends CommandBase {
   @Override
   public void execute() {
     /**
-     * The Command will work mostly with whileHeld and whenReleased in RobotContainer
+     * The Command will set the Wince motor to set percentage output
      * 
-     * This will lower the intake and starts the intake motor
      */
 
-    //m_intake.raiseIntake();
-    m_intake.setMotor(0.7);
-
+    m_climb.setWinchMotor(0.7);
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_intake.setMotor(0.0);
-    //m_intake.lowerIntake();
+    m_climb.turnWinchMotorOff();
   }
 
   // Returns true when the command should end.
