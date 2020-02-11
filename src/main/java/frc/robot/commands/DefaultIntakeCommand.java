@@ -68,7 +68,7 @@ public class DefaultIntakeCommand extends CommandBase {
  
   // Called once the command ends or is interrupted.
   @Override
-  public void end(final boolean interrupted) {
+  public void end(boolean interrupted) {
     m_intake.stopMotor();
   }
  
