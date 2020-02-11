@@ -10,6 +10,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
  
 import edu.wpi.first.wpilibj.Joystick;
@@ -32,6 +33,7 @@ public class DefaultIntakeCommand extends CommandBase {
  
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
+    System.out.println("creating ");
   }
  
   // Called when the command is initially scheduled.
@@ -45,12 +47,14 @@ public class DefaultIntakeCommand extends CommandBase {
   public void execute() {
  
     final double yAxis = m_controller.getY(Hand.kLeft);
-    final double xAxis = m_controller.getX(Hand.kRight);
- 
-    if(yAxis > 0){
+    final double xAxis = m_controller.getX(Hand.kLeft);
+    System.out.println("1");
+    if(yAxis >= 0){
      new IntakeRecieveCommand(m_intake);
+     System.out.println("2");
     } else if(yAxis < 0){
       new IntakeReversePulseCommand(m_intake);
+      System.out.println("3");
      }
  
   }

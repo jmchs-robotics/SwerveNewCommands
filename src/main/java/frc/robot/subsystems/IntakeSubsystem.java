@@ -26,7 +26,8 @@ public class IntakeSubsystem extends SubsystemBase {
   private double m_forwardSpeed;
   private double m_reverseSpeed;
   private double m_reversePulse;
-  private XboxController m_secondaryController = new XboxController(1);
+  private XboxController m_secondaryController = new XboxController(2);
+  public static int m_int = 0;
 
   /**
    * Creates a new IntakeSubsystem.
@@ -37,6 +38,7 @@ public class IntakeSubsystem extends SubsystemBase {
     m_forwardSpeed = IntakeActuators.forwardSpeed;
     m_reverseSpeed = IntakeActuators.reverseSpeed;
     m_reversePulse = IntakeActuators.reversePulse;
+    SmartDashboard.putNumber("class created", m_int);
 
     if (IntakeActuators.TUNE){
       SmartDashboard.putNumber("Intake Motor Output Percent", m_motor.getMotorOutputPercent());
@@ -70,9 +72,6 @@ public class IntakeSubsystem extends SubsystemBase {
       if( rp != m_reversePulse) {
         m_reversePulse = rp;
       }
-      
-      new DefaultIntakeCommand(this, m_secondaryController);
-
 
     }
   }
