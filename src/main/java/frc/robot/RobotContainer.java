@@ -317,7 +317,7 @@ public class RobotContainer {
     // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
     // default swerve drive is to read from joysticks
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
-    //m_Intake.setDefaultCommand(new DefaultIntakeCommand(m_Intake, m_secondaryController));
+    m_Intake.setDefaultCommand(new DefaultIntakeCommand(m_Intake, m_secondaryController));
     // default thrower is to spin down to still
     m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 

@@ -27,7 +27,7 @@ public class IntakeRecieveCommand extends CommandBase {
     addRequirements(intake);
 
     m_intake = intake;
-    m_int = m_int + 1;
+    //m_int = m_int + 1;
 
   }
 
