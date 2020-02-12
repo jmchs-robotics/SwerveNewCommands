@@ -22,6 +22,7 @@ import frc.robot.commands.ClimbWinchDownCommand;
 import frc.robot.commands.ClimbWinchUpCommand;
 import frc.robot.commands.ControlPanelPosition;
 import frc.robot.commands.ControlPanelRotation;
+import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.IntakeRecieveCommand;
 import frc.robot.commands.SampleColorCommand;
@@ -125,10 +126,10 @@ public class RobotContainer {
   // want x to start Pat Sajak position control
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
-  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperLeft.value); // Intake up
-  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-      XboxController.Button.kBumperRight.value); // Intake down
+  //private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
+  //    XboxController.Button.kBumperLeft.value); // Intake up
+  //private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
+  //    XboxController.Button.kBumperRight.value); // Intake down
   private final JoystickButton m_secondaryController_Start = new JoystickButton(m_secondaryController, 
       XboxController.Button.kStart.value);
   private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, 
@@ -167,6 +168,8 @@ public class RobotContainer {
         new SendVisionCommand(sender_, "_")
       ) 
     );
+
+    
 
     m_primaryController_X.whenPressed(
       new InstantCommand(m_Climb::raiseArm, m_Climb)
@@ -351,7 +354,7 @@ public class RobotContainer {
     // Using StartEnd commands because by default they do not have isFinished return true, unlike InsantCommands. Alternative is to use the perpetually() decorator.
     // default swerve drive is to read from joysticks
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
-
+    m_Intake.setDefaultCommand(new DefaultIntakeCommand(m_Intake, m_secondaryController));
     // default thrower is to spin down to still
     m_Thrower.setDefaultCommand(new StartEndCommand( ()->{m_Thrower.stopThrower(); m_Thrower.turnOffLED();}, ()->{}, m_Thrower)); // Spin down thrower and turn off LED on startup, do nothing on end.
 

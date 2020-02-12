@@ -16,6 +16,7 @@ public class IntakeRecieveCommand extends CommandBase {
   //private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private IntakeSubsystem m_intake;
+ 
 
   /**
    * Creates a new SampleColor.
@@ -26,6 +27,7 @@ public class IntakeRecieveCommand extends CommandBase {
     addRequirements(intake);
 
     m_intake = intake;
+    //m_int = m_int + 1;
 
   }
 
