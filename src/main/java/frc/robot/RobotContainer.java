@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -98,12 +99,14 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
       XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
+  private final POVButton m_primaryController_DPad_Up = new POVButton(m_secondaryController, 0);
+  private final POVButton m_primaryController_DPad_Down = new POVButton(m_secondaryController, 180);
   // right trigger for shooter sequence with vision
-  private final JoystickButton m_primary_RightTrigger = new JoystickButton(m_primaryController,
-  XboxController.Axis.kRightTrigger.value);
+  private final JoystickAnalogButton m_primaryController_RightTrigger = new JoystickAnalogButton(m_primaryController, 
+      Hand.kRight, 0.5);
   // left trigger for shooter without vision
-  private final JoystickButton m_primary_LeftTrigger = new JoystickButton(m_primaryController,
-      XboxController.Axis.kLeftTrigger.value);
+  private final JoystickAnalogButton m_primaryController_LeftTrigger = new JoystickAnalogButton(m_primaryController,
+      Hand.kLeft, 0.5);
   private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, 
       XboxController.Button.kStart.value);
   private final JoystickButton m_primaryController_Back = new JoystickButton(m_secondaryController, 
@@ -132,10 +135,12 @@ public class RobotContainer {
   private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, 
       XboxController.Button.kBack.value);
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
+  private final POVButton m_secondaryController_DPad_Up = new POVButton(m_secondaryController, 0);
+  private final POVButton m_secondaryController_DPad_Down = new POVButton(m_secondaryController, 180);
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
-  private final JoystickAnalogButton m_primaryController_LeftTrigger = new JoystickAnalogButton( m_primaryController, Hand.kLeft, 0.5);
-  private final JoystickAnalogButton m_primaryController_RightTrigger = new JoystickAnalogButton( m_primaryController, Hand.kRight, 0.5);
+  private final JoystickAnalogButton m_secondaryController_LeftTrigger = new JoystickAnalogButton( m_primaryController, Hand.kLeft, 0.5);
+  private final JoystickAnalogButton m_secondaryController_RightTrigger = new JoystickAnalogButton( m_primaryController, Hand.kRight, 0.5);
   
 
   /**
@@ -217,7 +222,7 @@ public class RobotContainer {
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
-      /*m_primaryController_LeftTrigger.whenHeld(
+      m_primaryController_LeftTrigger.whenHeld(
         new SequentialCommandGroup(
           new SetThrowerSpeedCommand(m_Thrower, 700), //.perpetually() // m_Thrower.getThrowerSpeed())
           new ParallelCommandGroup( 
@@ -225,12 +230,12 @@ public class RobotContainer {
             new MoveHopperCommand(m_Hopper, 6)
           )
         )
-      );*/
+      );
 
       // Thrower on primary controller, Right Trigger throw with vision
       // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
       // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
-      /*m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
+      m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
         new SequentialCommandGroup(
           new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
           new SendVisionCommand(sender_, "R"), // tell Vision Coprocessor to track RFT
@@ -242,20 +247,52 @@ public class RobotContainer {
           )
           // Turning off LED is handled by thrower default command
         )
-      );*/  
+      );  
     
     // Pat Sajak commands.
-    m_secondaryController_A.whenPressed(new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak));
-    m_secondaryController_Y.whenPressed(new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak));
-    m_secondaryController_B.whenPressed(new ControlPanelRotation(m_PatSajak, m_colorSensor));
-    m_secondaryController_X.whenPressed(new ControlPanelPosition(m_PatSajak, m_colorSensor));
+    m_secondaryController_A.whenPressed(
+      new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak)
+    );
+    m_secondaryController_Y.whenPressed(
+      new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak)
+    );
+    m_secondaryController_B.whenPressed(
+      new ControlPanelRotation(m_PatSajak, m_colorSensor)
+    );
+    m_secondaryController_X.whenPressed(
+      new ControlPanelPosition(m_PatSajak, m_colorSensor)
+    );
 
     // Intake
-    m_secondaryController_Start.whenPressed(new IntakeRecieveCommand(m_Intake));
+    m_secondaryController_Start.whenPressed(
+      new IntakeRecieveCommand(m_Intake)
+    );
+    // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
+    m_secondaryController_RightTrigger.whenPressed(
+      new SequentialCommandGroup(
+          new InstantCommand(m_Intake :: lowerIntake, m_Intake),
+          new ParallelCommandGroup( 
+            new IntakeRecieveCommand(m_Intake),
+            new MoveHopperCommand(m_Hopper, 5)
+          )
+        )
+      );
 
     // Hopper (Daisy)
-    //m_secondaryController_Back.whenPressed(new MoveHopperCommand(m_Hopper, 1));
+    m_secondaryController_Back.whenPressed(
+      new MoveHopperCommand(m_Hopper, 1)
+    );
+    m_secondaryController_LeftTrigger.whenHeld(
+      new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
+    ); 
+    m_secondaryController_LeftTrigger.whenReleased(
+      new InstantCommand( m_Hopper::stopMotor, m_Hopper)
+    ); // stop
+    //m_secondaryController_DPad_Up.whenHeld(m_Hopper :: ); // Index ?
 
+    //Climb
+    m_primaryController_DPad_Up.whenHeld(new ClimbWinchUpCommand(m_Climb));
+    m_primaryController_DPad_Down.whenHeld(new ClimbWinchDownCommand(m_Climb));
 
 
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
