@@ -253,10 +253,10 @@ public class RobotContainer {
     m_secondaryController_A.whenPressed(
       new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak)
     );
-    m_secondaryController_Y.whenPressed(
+    m_secondaryController_B.whenPressed(
       new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak)
     );
-    m_secondaryController_B.whenPressed(
+    m_secondaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
     m_secondaryController_X.whenPressed(
@@ -266,9 +266,9 @@ public class RobotContainer {
     // Intake
     m_secondaryController_Start.whenPressed(
       new IntakeRecieveCommand(m_Intake)
-    );
+    ).whenReleased(m_Intake :: stopMotor, m_Intake);
     // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
-    m_secondaryController_RightTrigger.whenPressed(
+    m_secondaryController_RightTrigger.whileHeld(
       new SequentialCommandGroup(
           new InstantCommand(m_Intake :: lowerIntake, m_Intake),
           new ParallelCommandGroup( 
