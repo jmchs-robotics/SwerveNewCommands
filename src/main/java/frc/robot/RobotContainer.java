@@ -33,6 +33,7 @@ import frc.robot.commands.SpinUpThrowerCommand;
 import frc.robot.commands.ThrowToTargetCommand;
 import frc.robot.commands.VisionApproachTarget;
 import frc.robot.commands.VisionLineUpWithTarget;
+import frc.robot.commands.VisionAim;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.ThrowerSubsystem;
 import frc.robot.util.SocketVisionSendWrapper;
@@ -401,7 +402,13 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
+    // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
+    // Angle the robot toward the retroflective tape
+    Command autoCommand = new SequentialCommandGroup(
+      new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+      new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+      new VisionAim( m_swerve, rft_, 18, 18)
+    );
     
     return autoCommand;
   }
