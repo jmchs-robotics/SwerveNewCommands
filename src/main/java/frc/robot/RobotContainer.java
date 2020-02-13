@@ -99,8 +99,8 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
       XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
-  private final POVButton m_primaryController_DPad_Up = new POVButton(m_secondaryController, 0);
-  private final POVButton m_primaryController_DPad_Down = new POVButton(m_secondaryController, 180);
+  private final POVButton m_primaryController_DPad_Up = new POVButton(m_primaryController,0);
+  private final POVButton m_primaryController_DPad_Down = new POVButton(m_primaryController, 180);
   // right trigger for shooter sequence with vision
   private final JoystickAnalogButton m_primaryController_RightTrigger = new JoystickAnalogButton(m_primaryController, 
       Hand.kRight, 0.5);
@@ -126,10 +126,10 @@ public class RobotContainer {
   // want x to start Pat Sajak position control
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
-  //private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-  //    XboxController.Button.kBumperLeft.value); // Intake up
-  //private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-  //    XboxController.Button.kBumperRight.value); // Intake down
+  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperLeft.value); // Intake up
+  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperRight.value); // Intake down
   private final JoystickButton m_secondaryController_Start = new JoystickButton(m_secondaryController, 
       XboxController.Button.kStart.value);
   private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, 
@@ -160,6 +160,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //Complex commands
     m_primaryController_A.whenPressed(      
       new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
@@ -167,24 +168,6 @@ public class RobotContainer {
         new VisionLineUpWithTarget(m_swerve, rft_), 
         new SendVisionCommand(sender_, "_")
       ) 
-    );
-
-    
-
-    m_primaryController_X.whenPressed(
-      new InstantCommand(m_Climb::raiseArm, m_Climb)
-    );
-
-    m_primaryController_B.whenPressed(
-      new InstantCommand(m_Climb::lowerArm, m_Climb)
-    );
-
-    m_primaryController_Start.whileHeld(
-      new ClimbWinchUpCommand(m_Climb)
-    );
-
-    m_primaryController_Back.whileHeld(
-      new ClimbWinchDownCommand(m_Climb)
     );
 
     m_primaryController_X.whenPressed( // Inline command group!
@@ -277,6 +260,12 @@ public class RobotContainer {
           )
         )
       );
+    m_secondaryController_RightBumper.whenPressed(
+      new InstantCommand(m_Intake :: lowerIntake, m_Intake)
+    );
+    m_secondaryController_LeftBumper.whenPressed(
+      new InstantCommand(m_Intake :: raiseIntake, m_Intake)
+    );
 
     // Hopper (Daisy)
     m_secondaryController_Back.whenPressed(
@@ -291,8 +280,24 @@ public class RobotContainer {
     //m_secondaryController_DPad_Up.whenHeld(m_Hopper :: ); // Index ?
 
     //Climb
-    m_primaryController_DPad_Up.whenHeld(new ClimbWinchUpCommand(m_Climb));
-    m_primaryController_DPad_Down.whenHeld(new ClimbWinchDownCommand(m_Climb));
+    m_primaryController_DPad_Up.whileHeld(new ClimbWinchUpCommand(m_Climb));
+    m_primaryController_DPad_Down.whileHeld(new ClimbWinchDownCommand(m_Climb));
+    
+    m_primaryController_B.whenPressed(
+      new InstantCommand(m_Climb::raiseArm, m_Climb)
+    );
+
+    m_primaryController_A.whenPressed(
+      new InstantCommand(m_Climb::lowerArm, m_Climb)
+    );
+
+    /*m_primaryController_Start.whileHeld(
+      new ClimbWinchUpCommand(m_Climb)
+    );
+
+    m_primaryController_Back.whileHeld(
+      new ClimbWinchDownCommand(m_Climb)
+    ); */ 
 
 
     /* example how to aim the robot at the RFT and spin up the thrower at the same time

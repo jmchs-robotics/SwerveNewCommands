@@ -46,7 +46,6 @@ public class ClimbWinchUpCommand extends CommandBase {
      */
 
     m_climb.setWinchMotor(0.7);
-
   }
 
   // Called once the command ends or is interrupted.

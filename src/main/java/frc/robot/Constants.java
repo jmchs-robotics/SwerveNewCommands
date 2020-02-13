@@ -158,6 +158,13 @@ public final class Constants {
     public static final int HOPPER_MOTOR_ID = 20;
     public static final double ONE_ROTATION = 4096;
     public static final int ALLOWABLE_ERROR = 0;
+
+    public static final double DAISY_OFFSET = 0;
+    public static final double DARK_THRESH = 0.5;
+    public static final double PHOTO_DURATION = 0.25; // duration (seconds) over which we want to 
+      //average the photodiode’s input to make sure we only trigger when a ball’s really there
+    public static final double PHOTO_ALPHA =  0.02 / PHOTO_DURATION; // periodic() runs every 0.02 seconds
+    
   }
 
   public static final class HopperPIDs {

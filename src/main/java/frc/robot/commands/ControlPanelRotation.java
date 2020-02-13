@@ -103,6 +103,7 @@ public class ControlPanelRotation extends CommandBase {
   public void end(boolean interrupted) {
     m_patSajak.turnSpinnerMotorOff();
     //m_patSajak.lowerSpinner();
+    m_numRevolutions = 0;
   }
 
   // Returns true when the command should end.

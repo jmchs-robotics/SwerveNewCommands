@@ -20,6 +20,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
+import edu.wpi.first.wpilibj.Timer;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
@@ -35,6 +36,16 @@ public class HopperSubsystem extends SubsystemBase {
   private double kMaxOutput = HopperPIDs.MAX_OUTPUT;
   private double kMinOutput = HopperPIDs.MIN_OUTPUT;
   private double m_setpoint = 0;
+
+  private long m_desiredDaisyPosition = 0;
+  private Boolean m_daisyMoving = false;
+  private Timer daisyTimeMoving;
+  private Timer daisyTimeInPosition;
+  private Timer daisyJammedTimer;
+  private boolean daisyJammed = false;
+  private Boolean photoIsDark = false;
+  private double photoY;
+
   
   /**
    * Creates a new HopperSubsystem.
@@ -48,7 +59,8 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
 
     /* Factory Default all hardware to prevent unexpected behaviour */
-		m_hopperMotor.configFactoryDefault();
+    m_hopperMotor.configFactoryDefault();
+    
 		
     /* Config the sensor used for Primary PID and sensor direction */
     // CTRE's sample code uses _Relative, but as of 1/26 finding _Absolute works better for us.
