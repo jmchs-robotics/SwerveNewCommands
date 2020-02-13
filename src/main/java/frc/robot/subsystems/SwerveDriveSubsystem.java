@@ -193,7 +193,14 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             mSwerveModules[i].setTargetSpeed(speeds[i]);
         }
     }
-
+    
+    /**
+     * Control Swerve Drive with 3 PID controllers, one for each of the axes.
+     * @param forwardError The error term (from the input device) for forward movement.
+     * @param strafeError The error term (from the input device) for strafe movement.
+     * @param angleError The error term (from the input device, generally gyroscope) for rotation.
+     * @param fieldOriented Whether the frame of reference for Forward and Strafe is the field (true) or the robot (false).
+     */
     public void pidMove(double forwardError, double strafeError, double angleError, boolean fieldOriented){
       double forward = forwardController.calculate(forwardError);
       double strafe = strafeController.calculate(strafeError);
