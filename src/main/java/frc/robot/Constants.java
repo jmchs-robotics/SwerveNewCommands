@@ -22,15 +22,17 @@ import edu.wpi.first.wpilibj.util.Color;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean SHOW_DEBUG_VISION = false;
+  // Declare inner public classes to segment constants
+
+  /**
+   * for vision sockets, comms with Vision Co-processor, and using vision within the rest of the subsystems.
+   */
   public static final class Vision {
     public static final boolean SHOW_DEBUG = false;
-    public static final long RFT_X_OFFSET = 0;
+    public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
     public static final double RFT_PIXELS_TO_DEGREES = 320.0 / 30.0; // approximation/guess 2/13/20
   }
   
-  // Declare inner public classes to segment constants
-
   /**
   * Contains the CAN IDs of the Drivetrian SparkMax motors
   */ 

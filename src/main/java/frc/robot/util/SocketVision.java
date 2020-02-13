@@ -106,7 +106,7 @@ public class SocketVision extends Thread {
 				// standardize everything. Just in case.
 				stuffInThePacket = stuffInThePacket.toLowerCase();
 
-				if (Constants.SHOW_DEBUG_VISION) {
+				if (Constants.Vision.SHOW_DEBUG) {
 					System.out.println("Stuff in the packet is: " + stuffInThePacket);
 				}
 
@@ -163,7 +163,7 @@ public class SocketVision extends Thread {
 					ldirection_ = CENTER;
 
 				} else {
-					if (Constants.SHOW_DEBUG_VISION) {
+					if (Constants.Vision.SHOW_DEBUG) {
 						System.err.println("My mayonnaise went bad!! :(");
 					}
 					ldirection_ = NADA;
@@ -179,7 +179,7 @@ public class SocketVision extends Thread {
 					direction_ = ldirection_;
 				}
 
-				if (Constants.SHOW_DEBUG_VISION) {
+				if (Constants.Vision.SHOW_DEBUG) {
 					System.out.println("Done got that data! " + stuffInThePacket);
 					// SmartDashboard.putString("Port " + port_ + " output: ", stuffInThePacket);
 
@@ -187,7 +187,7 @@ public class SocketVision extends Thread {
 				return true;
 			}
 		} catch (Exception e) {
-			if (Constants.SHOW_DEBUG_VISION) {
+			if (Constants.Vision.SHOW_DEBUG) {
 				System.err.println(e);
 			}
 			return false;
