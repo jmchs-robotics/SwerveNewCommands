@@ -49,9 +49,9 @@ public class VisionAim extends CommandBase {
     m_drivetrain.resetPID();
 
     // Rotation PID (has continuous input)
-    m_drivetrain.setRotationWraparoundInputRange(0, 360);
-    m_drivetrain.setRotationSetpoint(m_drivetrain.getGyroAngle());
-    m_drivetrain.setRotationTolerance(m_aimTolerance, m_aimVelTolerance); 
+    m_drivetrain.setRotationWraparoundInputRange(0, 360); // Still need wraparound to translate negative values to positive degrees
+    // m_drivetrain.setRotationSetpoint(m_drivetrain.getGyroAngle()); // Use 0 as the rotation setpoint so we can let the camera use the target as the center of the robot's coordinate system
+    m_drivetrain.setRotationTolerance(m_aimTolerance, m_aimVelTolerance);
     m_drivetrain.setRotationOutputRange(-1, 1);
     
     // Set up strafe pid:
@@ -59,7 +59,7 @@ public class VisionAim extends CommandBase {
     m_drivetrain.setStrafeOutputRange(-1, 1);
 
     // Set up forward pid:
-    m_drivetrain.setForwardSetpoint(m_proximity);
+    m_drivetrain.setForwardSetpoint(m_proximity); // Hold the robot at some distance from the target
     m_drivetrain.setForwardTolerance(m_tolerance, m_velTolerance);
     m_drivetrain.setForwardOutputRange(-1, 1);
   }
@@ -69,7 +69,7 @@ public class VisionAim extends CommandBase {
   public void execute() {
     // Check vision error for valid result
     if(m_vision.get().get_direction() != "nada"){
-      previousXCoord = (m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET) * Vision.RFT_PIXELS_TO_DEGREES; // pixels converted to approximate degrees of field of view of camera
+      previousXCoord = m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET; // pixels converted to approximate degrees of field of view of camera
       previousDistance = m_vision.get().get_distance();
     } else {
       // Assume robot continued to move at same rate
@@ -77,8 +77,10 @@ public class VisionAim extends CommandBase {
       previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
     }
 
-    //m_drivetrain.pidMove(previousDistance, previousXCoord, m_drivetrain.getGyroAngle(), false);
-    m_drivetrain.pidMove(0, 0, previousXCoord, false);
+    // Pass each error term into the appropriate parameter: forwardError <=> distance, strafeError <=> XCoord, angleError <=> gyroAngle OR visionAngle
+    // Don't use fieldOriented so the robot operates radially, centered on the target. This is OK because both strafe & rotation targets are 0. This would break if
+    // either target was nonzero and both relied on vision for the error term
+    m_drivetrain.pidMove(previousDistance, previousXCoord, previousXCoord * Vision.RFT_PIXELS_TO_DEGREES, false);
   }
 
   // Called once the command ends or is interrupted.
@@ -91,6 +93,6 @@ public class VisionAim extends CommandBase {
   @Override
   public boolean isFinished() {
     // TODO: make finish timer
-    return m_drivetrain.rotationAtSetpoint();
+    return m_drivetrain.rotationAtSetpoint() && m_drivetrain.strafeAtSetpoint() && m_drivetrain.forwardAtSetpoint(); // Wait for all PIDs to be satisfied
   }
 }
