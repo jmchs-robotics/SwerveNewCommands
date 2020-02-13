@@ -13,6 +13,7 @@ public class ThrowerLUT {
     // keep the table organized from closest to farthest
     private static final double[][] LUT = {
       // from testing 2/8 with 53 degrees hood angle = 37 degrees departure angle from horizontal
+      {0, 3000}, // Default RPM
       { 84, 5400 },
       { 300, 5480}
       /* 
@@ -38,23 +39,12 @@ public class ThrowerLUT {
      * @param inches the distance from the thrower to the goal
      */
     public static double distanceToRPMs(double inches){
-        if( inches < LUT[0][0]) { // we can't score if we're closer than first  entry in our table
-          return DEFAULT_RPM;
-        }
 
-        int index = 0;
-        while (index < LUT.length - 1) {
-          if (inches < LUT[index + 1][0]) {
-            break;
-          }
-          ++index;
-        }
-    
-        if (index + 1 >= LUT.length) {
-          if (ThrowerPIDs.TUNE)
-            System.err.println("ThrowerLUT: Ran off the end of the ThrowerLUT");
-          return LUT[index][1];  // return our fastest throw RPM
-        }
+        int index = LUT.length - 2; // Start at the highest meaningful index for a right-handed discrete derivative
+        while(inches < LUT[index][0]){ index--; } // iterate down. Safe if the lowest index contains {0, DEFAULT_RPM}
+        // No need to check if we're off the deep end, because the worst that could happen
+        // is the motor gets set to full forward. This would replace the loop & following if-statement.
+        
         // the slope intercept formulas
         // m = y2 - y1 / x2 - x1
         // b = y - mx
