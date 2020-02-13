@@ -99,6 +99,7 @@ public final class Constants {
     public static final int soleniodForward = 0;
     public static final int soleniodBackward = 1;
     public static final Port sensorPort = I2C.Port.kOnboard;
+    public static final boolean TUNE = true;
   }
 
   /**

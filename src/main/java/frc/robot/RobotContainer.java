@@ -22,6 +22,7 @@ import frc.robot.commands.ClimbWinchDownCommand;
 import frc.robot.commands.ClimbWinchUpCommand;
 import frc.robot.commands.ControlPanelPosition;
 import frc.robot.commands.ControlPanelRotation;
+import frc.robot.commands.ControlPanelSpinSimple;
 import frc.robot.commands.DefaultIntakeCommand;
 import frc.robot.commands.DefaultSwerveCommand;
 import frc.robot.commands.IntakeRecieveCommand;
@@ -243,7 +244,8 @@ public class RobotContainer {
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
     m_secondaryController_X.whenPressed(
-      new ControlPanelPosition(m_PatSajak, m_colorSensor)
+      new ControlPanelSpinSimple(m_PatSajak) // simple for testing
+      // new ControlPanelPosition(m_PatSajak, m_colorSensor)
     );
 
     // Intake
