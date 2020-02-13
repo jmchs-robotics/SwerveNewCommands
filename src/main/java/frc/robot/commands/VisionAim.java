@@ -80,6 +80,9 @@ public class VisionAim extends CommandBase {
     // Pass each error term into the appropriate parameter: forwardError <=> distance, strafeError <=> XCoord, angleError <=> gyroAngle OR visionAngle
     // Don't use fieldOriented so the robot operates radially, centered on the target. This is OK because both strafe & rotation targets are 0. This would break if
     // either target was nonzero and both relied on vision for the error term
+    // Using gyro for rotation and vision for X (fieldOriented off) would be cartesian coordinates perpendicular (forward) and parallel (strafe) to target orientation.
+    // Using fieldOriented would be cartesian in forward & strafe; useful for moving some set distance forward and tracking a target in strafe & rotation (i.e. picking up a ball)
+    // We may want to provide different sets of PID constants for encoder error inputs vs. image inputs for strafe & forward, and vision vs. gyro for rotation.
     m_drivetrain.pidMove(previousDistance, previousXCoord, previousXCoord * Vision.RFT_PIXELS_TO_DEGREES, false);
   }
 
