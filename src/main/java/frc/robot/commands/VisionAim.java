@@ -83,6 +83,8 @@ public class VisionAim extends CommandBase {
     // Using gyro for rotation and vision for X (fieldOriented off) would be cartesian coordinates perpendicular (forward) and parallel (strafe) to target orientation.
     // Using fieldOriented would be cartesian in forward & strafe; useful for moving some set distance forward and tracking a target in strafe & rotation (i.e. picking up a ball)
     // We may want to provide different sets of PID constants for encoder error inputs vs. image inputs for strafe & forward, and vision vs. gyro for rotation.
+    
+    // It is theoretically possible to add (scaled) joystick values to previousDistance or previousXCoord, allowing the driver to 'lock on' to a target and then orbit it.
     m_drivetrain.pidMove(previousDistance, previousXCoord, previousXCoord * Vision.RFT_PIXELS_TO_DEGREES, false);
   }
 
