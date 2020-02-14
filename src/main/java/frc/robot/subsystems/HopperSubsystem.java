@@ -47,9 +47,10 @@ public class HopperSubsystem extends SubsystemBase {
   private double photoY;
 
   /**
-   * The index
+   * The index is to see the rotation position on the robot
+   * 
    */
-  private int daisyIndex = 0;
+  private int daisyIndex;
   
   /**
    * Creates a new HopperSubsystem.
@@ -61,7 +62,8 @@ public class HopperSubsystem extends SubsystemBase {
     kF = HopperPIDs.kF;
     
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
-    
+  
+    daisyIndex = 0;
 
     /* Factory Default all hardware to prevent unexpected behaviour */
     m_hopperMotor.configFactoryDefault();
@@ -205,6 +207,13 @@ public class HopperSubsystem extends SubsystemBase {
   public void nextSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    if(daisyIndex < 6) {
+      daisyIndex ++;
+    }
+    else{
+      daisyIndex = 0;
+    }
+    
   }
 
   /**
@@ -213,6 +222,12 @@ public class HopperSubsystem extends SubsystemBase {
   public void previousSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    if(daisyIndex > 0) {
+      daisyIndex --;
+    }
+    else{
+      daisyIndex = 6;
+    }
   }
 
   public void moveForwardSlowly() {
@@ -226,5 +241,10 @@ public class HopperSubsystem extends SubsystemBase {
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs( m_hopperMotor.getClosedLoopError()) < HopperConstants.ONE_ROTATION * thresholdPercent;
     // return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
+  }
+
+  public void smartDashIndex()
+  {
+    SmartDashboard.putNumber("Daisy Index", daisyIndex);
   }
 }
