@@ -46,6 +46,10 @@ public class HopperSubsystem extends SubsystemBase {
   private Boolean photoIsDark = false;
   private double photoY;
 
+  /**
+   * The index
+   */
+  private int daisyIndex = 0;
   
   /**
    * Creates a new HopperSubsystem.
@@ -57,6 +61,7 @@ public class HopperSubsystem extends SubsystemBase {
     kF = HopperPIDs.kF;
     
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
+    
 
     /* Factory Default all hardware to prevent unexpected behaviour */
     m_hopperMotor.configFactoryDefault();
@@ -98,7 +103,7 @@ public class HopperSubsystem extends SubsystemBase {
     
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
-    // resetReference();  // not used as of 1/26/20.
+    resetReference();  // not used as of 1/26/20.
     
     if(HopperPIDs.TUNE){
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
@@ -110,6 +115,8 @@ public class HopperSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Hopper Feed Forward", kF);
       SmartDashboard.putNumber("Hopper Max Output", kMaxOutput);
       SmartDashboard.putNumber("Hopper Min Output", kMinOutput);
+
+      SmartDashboard.putNumber("Daisy Index", daisyIndex); // Puts the dasiy index on SmartDash
     }
     
   }
@@ -176,6 +183,9 @@ public class HopperSubsystem extends SubsystemBase {
         kMinOutput = min;
     		m_hopperMotor.configPeakOutputReverse(kMinOutput, HopperPIDs.kTimeoutMs);
       }
+
+      //Want the Index to be updated every 20 milliseconds
+      SmartDashboard.putNumber("Daisy Index", daisyIndex);
     }
   }
   

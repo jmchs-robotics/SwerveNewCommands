@@ -247,6 +247,9 @@ public class RobotContainer {
       new ControlPanelSpinSimple(m_PatSajak) // simple for testing
       // new ControlPanelPosition(m_PatSajak, m_colorSensor)
     );
+    m_secondaryController_X.whenReleased(
+      new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
+    );
 
     // Intake
     m_secondaryController_Start.whenPressed(
