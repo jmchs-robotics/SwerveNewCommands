@@ -33,9 +33,9 @@ public class Paths { // extends CommandBase {
       return new SequentialCommandGroup(
         new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
         
-        new SetWheelAngleCommand( m_swerve, -45), // FIX angle
+        new SetWheelAngleCommand( m_swerve, 45), // FIX angle
         new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
-        new DriveForDistanceCommand( m_swerve, 15, 15)  // FIX where we want to move to
+        new DriveForDist2910Command( m_swerve, 15, 15)  // FIX where we want to move to
       );
     }
     /**

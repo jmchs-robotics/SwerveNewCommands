@@ -225,5 +225,6 @@ public final class Constants {
 
   public static final class AUTO {
     public static final double DISTANCE_CHECK_TIME = 0.25;
+    public static final boolean TUNE = true;
   }
 }
