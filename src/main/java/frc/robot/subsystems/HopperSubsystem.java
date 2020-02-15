@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
@@ -37,8 +38,13 @@ public class HopperSubsystem extends SubsystemBase {
   private Timer daisyTimeInPosition;
   private Timer daisyJammedTimer;
   private boolean daisyJammed = false;
+
+  // photdiode work
+  private final AnalogInput m_lightSensor = new AnalogInput(0);
   private Boolean photoIsDark = false;
   private double photoY;
+  private double photoSamples[];
+  private int photoSamplesI = 0;
 
   /**
    * The index is to see the rotation position on the robot
@@ -58,7 +64,8 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
   
     daisyIndex = 0;
-
+    photoSamples = new double [ HopperConstants.PHOTO_NUM_SAMPLES];
+    
     /* Factory Default all hardware to prevent unexpected behaviour */
     m_hopperMotor.configFactoryDefault();
     
@@ -99,7 +106,8 @@ public class HopperSubsystem extends SubsystemBase {
     
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
-    //resetReference();  // not used as of 1/26/20.
+    //resetReference();  // not used between 1/26/20 and 2/14/20.
+    //m_hopperMotor.set(ControlMode.Position, HopperConstants.DAISY_OFFSET);
     
     if(HopperPIDs.TUNE){
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
@@ -201,16 +209,15 @@ public class HopperSubsystem extends SubsystemBase {
   public void nextSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    if( HopperPIDs.TUNE) {
-      SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION", "YAHOOOO!!!!!!");
-    }
     if(daisyIndex < 6) {
       daisyIndex ++;
     }
     else{
       daisyIndex = 0;
     }
-    
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
+    }    
   }
 
   /**
@@ -219,19 +226,20 @@ public class HopperSubsystem extends SubsystemBase {
   public void previousSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    if( HopperPIDs.TUNE) {
-      SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION BACKWARD", "!!!!!!OOOOHAY");
-    }
     if(daisyIndex > 0) {
       daisyIndex --;
     }
     else{
       daisyIndex = 6;
     }
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION BACKWARD, to index", daisyIndex);
+    }
+
   }
 
   public void moveForwardSlowly() {
-    m_hopperMotor.set(ControlMode.PercentOutput, .1);
+    m_hopperMotor.set(ControlMode.PercentOutput, .2);
     if( HopperPIDs.TUNE) {
       SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
     }
@@ -251,16 +259,25 @@ public class HopperSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Daisy Index", daisyIndex);
   }
 
-  /** approximate a moving average of the photodiode’s instant value using a first order IIR digital filter.  
-   * See https://dsp.stackexchange.com/questions/378/what-is-the-best-first-order-iir-ar-filter-approximation-to-a-moving-average-f
+  /** 
+   * compute a moving average of photodiode sensor voltage.
   */
-  /*
   public void avePhotoDiode() { 
-    double x = getAnalog() // read the photodiode
-    photoY= (1 - PHOTO_ALPHA) * photoY + PHOTO_ALPHA * x
-    if photoY < PHOTO_DARK { photoIsDark = true }
-    else { photoIsDark = false}
+    photoSamples[ photoSamplesI] = m_lightSensor.getVoltage();
+    double s = 0;
+    for( int i=0; i<HopperConstants.PHOTO_NUM_SAMPLES; i++) {
+      s += photoSamples[ i];
     }
-    */
+    
+    if( s / HopperConstants.PHOTO_NUM_SAMPLES < HopperConstants.DARK_THRESH) { 
+      photoIsDark = true; 
+    }
+    else { 
+      photoIsDark = false;
+    }
+    photoSamplesI ++;
+    photoSamplesI = photoSamplesI % HopperConstants.PHOTO_NUM_SAMPLES;
+  }
+    
     
 }
