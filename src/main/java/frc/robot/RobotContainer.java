@@ -225,6 +225,9 @@ public class RobotContainer {
       new ControlPanelSpinSimple(m_PatSajak) // simple for testing
       // new ControlPanelPosition(m_PatSajak, m_colorSensor)
     );
+    m_secondaryController_X.whenReleased(
+      new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
+    );
 
     // Intake
     m_secondaryController_Start.whenPressed(
@@ -249,15 +252,16 @@ public class RobotContainer {
 
     // Hopper (Daisy)
     m_secondaryController_Back.whenPressed(
-      new MoveHopperCommand(m_Hopper, 1)
+      new MoveHopperCommand(m_Hopper, -1)
     );
+    m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 1));
     m_secondaryController_LeftTrigger.whenHeld(
       new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
     ); 
     m_secondaryController_LeftTrigger.whenReleased(
       new InstantCommand( m_Hopper::stopMotor, m_Hopper)
     ); // stop
-    //m_secondaryController_DPad_Up.whenHeld(m_Hopper :: ); // Index ?
+    m_secondaryController_DPad_Up.whileHeld(m_Hopper :: smartDashIndex, m_Hopper ); // Index ?
 
     //Climb
     m_primaryController_DPad_Up.whileHeld(new ClimbWinchUpCommand(m_Climb));
