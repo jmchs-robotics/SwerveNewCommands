@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Axis;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 /**
  * Wrapper to create the XBoxController and all of its buttons at once. Buttons are only created (new'd) when they are first accessed.
@@ -17,6 +18,7 @@ public class XBoxGamepad {
   private JoystickAnalogButton m_leftTrigger, m_rightTrigger;
   private JoystickAnalogButton m_leftJoystickX, m_leftJoystickY;
   private JoystickAnalogButton m_rightJoystickX, m_rightJoystickY;
+  private POVButton m_N, m_NE, m_E, m_SE, m_S, m_SW, m_W, m_NW, m_POVunpressed;
 
   private final double m_defaultTriggerLevel;
 
@@ -114,6 +116,45 @@ public class XBoxGamepad {
       case kRightY:
         if(m_rightJoystickY == null)
           m_rightJoystickY = new JoystickAnalogButton(m_joystick, axis, m_defaultTriggerLevel);
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Get a POV as a button.
+   * @param angle The angle [0, 360) of the POV to tie a button to.
+   * @return The first {@link POVButton} created for that POV angle.
+   */
+  public POVButton getPOVAsButton(int angle){
+    switch(angle){
+      case 0:
+        if(m_N == null) m_N = new POVButton(m_joystick, angle);
+        return m_N;
+      case 45:
+        if(m_NE == null) m_NE = new POVButton(m_joystick, angle);
+        return m_NE;
+      case 90:
+        if(m_E == null) m_E = new POVButton(m_joystick, angle);
+        return m_E;
+      case 135:
+        if(m_SE == null) m_SE = new POVButton(m_joystick, angle);
+        return m_SE;
+      case 180:
+        if(m_S == null) m_S = new POVButton(m_joystick, angle);
+        return m_S;
+      case 225:
+        if(m_SW == null) m_SW = new POVButton(m_joystick, angle);
+        return m_SW;
+      case 270:
+        if(m_W == null) m_W = new POVButton(m_joystick, angle);
+        return m_W;
+      case 315:
+        if(m_NW == null) m_NW = new POVButton(m_joystick, angle);
+        return m_NW;
+      case -1:
+        if(m_POVunpressed == null) m_POVunpressed = new POVButton(m_joystick, angle);
+        return m_POVunpressed;
       default:
         return null;
     }
