@@ -18,27 +18,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ClimbWinchDownCommand;
-import frc.robot.commands.ClimbWinchUpCommand;
-import frc.robot.commands.ControlPanelPosition;
-import frc.robot.commands.ControlPanelRotation;
-import frc.robot.commands.ControlPanelSpinSimple;
-import frc.robot.commands.DefaultIntakeCommand;
-import frc.robot.commands.DefaultSwerveCommand;
-import frc.robot.commands.IntakeRecieveCommand;
-import frc.robot.commands.SampleColorCommand;
-import frc.robot.commands.SendVisionCommand;
-import frc.robot.commands.SetThrowerSpeedCommand;
-import frc.robot.commands.SpinUpThrowerCommand;
-import frc.robot.commands.ThrowToTargetCommand;
-import frc.robot.commands.VisionApproachTarget;
-import frc.robot.commands.VisionLineUpWithTarget;
-import frc.robot.commands.VisionAim;
-import frc.robot.subsystems.SwerveDriveSubsystem;
-import frc.robot.subsystems.ThrowerSubsystem;
-import frc.robot.util.SocketVisionSendWrapper;
-import frc.robot.util.SocketVisionWrapper;
-import frc.robot.util.JoystickAnalogButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -46,13 +25,11 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PatSajakSubsystem;
-import frc.robot.commands.MoveHopperCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;;
-
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.subsystems.*;
+import frc.robot.commands.*;
+import frc.robot.commands.autonomous.*;
+import frc.robot.util.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -77,7 +54,7 @@ public class RobotContainer {
 
   // Color Sensor
   private final ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
-  private final AnalogInput m_lightSensor = new AnalogInput(0);
+ //private final AnalogInput m_lightSensor = new AnalogInput(0);
   // DriveStation for GameSpecificMessage
   DriverStation m_station = DriverStation.getInstance();
 
@@ -206,13 +183,13 @@ public class RobotContainer {
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_LeftTrigger.whenHeld(
-        new SequentialCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, 700), //.perpetually() // m_Thrower.getThrowerSpeed())
-          new ParallelCommandGroup( 
-            new SetThrowerSpeedCommand( m_Thrower, 700),
-            new MoveHopperCommand(m_Hopper, 6)
-          )
-        )
+        //new SequentialCommandGroup(
+          new SetThrowerSpeedCommand(m_Thrower, -700)//, //.perpetually() // m_Thrower.getThrowerSpeed())
+          //new ParallelCommandGroup( 
+           // new SetThrowerSpeedCommand( m_Thrower, 700),
+            //new MoveHopperCommand(m_Hopper, 6)
+          //)
+        //)
       );
 
       // Thrower on primary controller, Right Trigger throw with vision
@@ -224,10 +201,10 @@ public class RobotContainer {
           new SendVisionCommand(sender_, "R"), // tell Vision Coprocessor to track RFT
           // TODO: drivetrain rotate to target, Parallel Command Group (simultaneously) with spin up thrower.
           new SpinUpThrowerCommand(m_Thrower, rft_),
-          new ParallelRaceGroup(
-            new ThrowToTargetCommand(m_Thrower, rft_),
-            new MoveHopperCommand(m_Hopper, 6)
-          )
+         // new ParallelRaceGroup(
+            new ThrowToTargetCommand(m_Thrower, rft_)//,
+            //new MoveHopperCommand(m_Hopper, 6)
+          //)
           // Turning off LED is handled by thrower default command
         )
       );  
@@ -404,7 +381,42 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
+    // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
+    // Angle the robot toward the retroflective tape
+    Paths p = new Paths( m_swerve,m_Thrower, sender_);
+    Command autoCommand = p.Path1Command();
+      // Path1, our simplest move and score path
+/*
+      new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve) //, // Brake mode on!
+        */
+        // to add: 
+        /*
+        // spin up the thrower to anticipated speed, in parallel.  
+        // turn wheels to the angle we're about to drive, then drive where we want to shoot from
+        // set thrower speed to vision disance
+        new ParallelCommandGroup(  
+          new SetThrowerSpeedCommand( m_Thrower, 5000), // FIX rpm.  speed from our table to score at this distance
+          new SequentialCommandGroup(
+            new SetWheelAngleCommand( m_swerve, -15), // FIX angle
+            new WaitCommand( 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+            new DriveForDistanceCommand( m_swerve, -15, -15)  // FIX where we want to move to
+          )
+        ),
+        
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance
+        */
+        /*
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new WaitCommand( 0.1), // give the vision coprocessor a chance to compute
+        new VisionAim( m_swerve, rft_, 18, 18)
+*/
+        // to add:
+        // ThrowToTarget while spinning Diasy 1 full rotation
+    //  );
     
     return autoCommand;
   }

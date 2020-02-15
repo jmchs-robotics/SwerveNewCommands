@@ -47,18 +47,18 @@ public class DefaultIntakeCommand extends CommandBase {
   public void execute() {
  
     final double yAxis = m_controller.getY(Hand.kLeft);
-    final double xAxis = m_controller.getX(Hand.kLeft);
-    System.out.println("1");
+    //final double xAxis = m_controller.getX(Hand.kLeft);
+    // System.out.println("1");
 
     // run the motor, if the joystick is past a deadband
     if(yAxis >= 0.2){
     //     new IntakeRecieveCommand(m_intake);
     m_intake.setMotor( yAxis);
-     System.out.println("2");
+    // System.out.println("2");
     } else if(yAxis < -0.2){
       m_intake.setMotor( yAxis);
       //new IntakeReversePulseCommand(m_intake);
-      System.out.println("3");
+      // System.out.println("3");
      }
      else {
        m_intake.stopMotor();

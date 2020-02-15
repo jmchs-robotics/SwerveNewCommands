@@ -50,10 +50,10 @@ public class ThrowToTargetCommand extends CommandBase {
     }
     // Make sure that the vision data is valid
     if(m_vision.get().get_direction() != SocketVision.NADA){
-      setpoint = ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
+      setpoint = -ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
     }
     else {
-        setpoint = ThrowerLUT.DEFAULT_RPM;
+        setpoint = -ThrowerLUT.DEFAULT_RPM;
     }
     
     m_subsystem.setThrowerSpeed(setpoint);

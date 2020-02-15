@@ -52,6 +52,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   public ThrowerSubsystem(){
     // led
     m_led = new DigitalOutput(ThrowerMotor.LED_CHANNEL);
+    turnOffLED();
 
     // controllers for thrower motors
     m_Thrower = new CANSparkMax(ThrowerMotor.THROWER_MASTER_ID, MotorType.kBrushless);
@@ -162,7 +163,7 @@ public class ThrowerSubsystem extends SubsystemBase {
   }
 
   /**
-   * Turns on the thrower targeting LED.
+   * Turns on the thrower targeting LED. equal to true
    */
   public void turnOnLED(){
     m_led.set(true);

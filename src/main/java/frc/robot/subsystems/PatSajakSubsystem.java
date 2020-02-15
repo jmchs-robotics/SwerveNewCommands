@@ -149,24 +149,4 @@ public class PatSajakSubsystem extends SubsystemBase {
   public void turnSpinnerMotorOff() {
     m_controlPanelSpinner.set(ControlMode.PercentOutput, 0.0);
   }
-
-  //Sets the Control Panel Spinner to the given percentage
-  public void setSpinnerMotor(double percentOut) {
-    m_controlPanelSpinner.set(ControlMode.PercentOutput, percentOut);
-  }
-
-  //Set the Double Solenoid to extended
-  public void setPanelPistonExtended() {
-    m_controlPanelSolenoid.set(DoubleSolenoid.Value.kForward);
-  }
-
-  //Set the Double Solenoid to retracted
-  public void setPanelPistonRetracted() {
-    m_controlPanelSolenoid.set(DoubleSolenoid.Value.kReverse);
-  }
-
-  //Set the Double Solenoid to off
-  public void setPanelPistonOff() {
-    m_controlPanelSolenoid.set(DoubleSolenoid.Value.kOff);
-  }
 }

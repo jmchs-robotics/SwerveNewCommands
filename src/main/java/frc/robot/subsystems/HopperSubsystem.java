@@ -218,6 +218,13 @@ public class HopperSubsystem extends SubsystemBase {
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
     }    
+    if(daisyIndex < 6) {
+      daisyIndex ++;
+    }
+    else{
+      daisyIndex = 0;
+    }
+    
   }
 
   /**
@@ -240,7 +247,13 @@ public class HopperSubsystem extends SubsystemBase {
 
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION BACKWARD, to index", daisyIndex);
+    if(daisyIndex > 0) {
+      daisyIndex --;
     }
+    else{
+      daisyIndex = 6;
+    }
+  }
   }
 
   public void moveForwardSlowly() {

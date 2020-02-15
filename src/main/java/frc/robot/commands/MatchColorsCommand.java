@@ -66,46 +66,46 @@ public class MatchColorsCommand extends CommandBase {
     
     if (match.color == ColorTargets.kGreenTarget) {
       if (m_targetColor.equalsIgnoreCase("Y")){
-        m_cPanelSubsystem.setSpinnerMotor(0);
+        m_cPanelSubsystem.setSpinMotor(0);
       } else if(m_targetColor.equalsIgnoreCase("R")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("G")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("B")){
-        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(-ColorTargets.cpSpinnerSpeed);
     }
 
     if (match.color == ColorTargets.kBlueTarget) {
       if (m_targetColor.equalsIgnoreCase("Y")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("R")){
-        m_cPanelSubsystem.setSpinnerMotor(0);
+        m_cPanelSubsystem.setSpinMotor(0);
       } else if(m_targetColor.equalsIgnoreCase("G")){
-        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(-ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("B")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
     }
 
     if (match.color == ColorTargets.kYellowTarget) {
       if (m_targetColor.equalsIgnoreCase("Y")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("R")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("G")){
-        m_cPanelSubsystem.setSpinnerMotor(0);
+        m_cPanelSubsystem.setSpinMotor(0);
       } else if(m_targetColor.equalsIgnoreCase("B")){
-        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(-ColorTargets.cpSpinnerSpeed);
     }
 
     if (match.color == ColorTargets.kRedTarget) {
       if (m_targetColor.equalsIgnoreCase("Y")){
-        m_cPanelSubsystem.setSpinnerMotor(-ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(-ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("R")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("G")){
-        m_cPanelSubsystem.setSpinnerMotor(ColorTargets.cpSpinnerSpeed);
+        m_cPanelSubsystem.setSpinMotor(ColorTargets.cpSpinnerSpeed);
       } else if(m_targetColor.equalsIgnoreCase("B")){
-        m_cPanelSubsystem.setSpinnerMotor(0);
+        m_cPanelSubsystem.setSpinMotor(0);
     }
   }
 }

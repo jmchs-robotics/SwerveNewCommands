@@ -39,10 +39,10 @@ public class SpinUpThrowerCommand extends CommandBase {
   @Override
   public void initialize() {
     if(m_vision.get().get_direction() != SocketVision.NADA){
-      setpoint = ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
+      setpoint = -ThrowerLUT.distanceToRPMs(m_vision.get().get_distance());
     }
     else {
-        setpoint = ThrowerLUT.DEFAULT_RPM;
+        setpoint = -ThrowerLUT.DEFAULT_RPM;
     }
     
     m_subsystem.setThrowerSpeed(setpoint);
