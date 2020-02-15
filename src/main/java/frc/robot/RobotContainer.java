@@ -184,7 +184,7 @@ public class RobotContainer {
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_LeftTrigger.whenHeld(
         //new SequentialCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, -700)//, //.perpetually() // m_Thrower.getThrowerSpeed())
+          new SetThrowerSpeedCommand(m_Thrower, -700).perpetually() // m_Thrower.getThrowerSpeed())
           //new ParallelCommandGroup( 
            // new SetThrowerSpeedCommand( m_Thrower, 700),
             //new MoveHopperCommand(m_Hopper, 6)
@@ -383,7 +383,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
     // Angle the robot toward the retroflective tape
-    Paths p = new Paths( m_swerve,m_Thrower, sender_);
+    Paths p = new Paths( m_swerve,m_Thrower, sender_, rft_);
     Command autoCommand = p.Path1Command();
       // Path1, our simplest move and score path
 /*

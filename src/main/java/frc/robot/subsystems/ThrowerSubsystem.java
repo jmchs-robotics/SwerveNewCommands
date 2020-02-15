@@ -163,16 +163,16 @@ public class ThrowerSubsystem extends SubsystemBase {
   }
 
   /**
-   * Turns on the thrower targeting LED. equal to true
+   * Turns on the thrower targeting LED. equal to false
    */
   public void turnOnLED(){
-    m_led.set(true);
+    m_led.set(false);
   }
 
   /**
    * Turns off the thrower targeting LED.
    */
   public void turnOffLED(){
-    m_led.set(false);
+    m_led.set(true);
   }
 }

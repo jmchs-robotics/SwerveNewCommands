@@ -19,11 +19,13 @@ public class Paths { // extends CommandBase {
     SwerveDriveSubsystem m_swerve;
     ThrowerSubsystem m_Thrower;
     SocketVisionSendWrapper sender_;
+    SocketVisionWrapper rft_;
 
-    public Paths( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, SocketVisionSendWrapper sender) {
+    public Paths( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, SocketVisionSendWrapper sender, SocketVisionWrapper rft) {
         m_swerve = swerve;
         m_Thrower = thrower;
-        sender_ = sender;           
+        sender_ = sender;   
+        rft_ = rft;        
     }
 
     /**
@@ -31,11 +33,17 @@ public class Paths { // extends CommandBase {
      */
     public Command Path1Command() {
       return new SequentialCommandGroup(
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
+        new VisionAim( m_swerve, rft_, 18, 18),
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
         
+        /*
         new SetWheelAngleCommand( m_swerve, 45), // FIX angle
         new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
         new DriveForDist2910Command( m_swerve, 15, 15)  // FIX where we want to move to
+        */
       );
     }
     /**
