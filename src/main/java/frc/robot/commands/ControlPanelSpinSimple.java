@@ -17,38 +17,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.ColorTargets;
-import frc.robot.Constants.ControlPanelActuators;
 import frc.robot.subsystems.PatSajakSubsystem;
+import frc.robot.Constants.ControlPanelActuators;
 
-public class ControlPanelRotation extends CommandBase {
+public class ControlPanelSpinSimple extends CommandBase {
   //private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private PatSajakSubsystem m_patSajak;
 
-  private final ColorSensorV3 m_colorSensor;
-  private final ColorMatch m_colorMatcher = new ColorMatch();
+  //  private final ColorSensorV3 m_colorSensor;
+  // private final ColorMatch m_colorMatcher = new ColorMatch();
 
-  private Color m_startColor, m_lastColor;
-  private int m_numRevolutions;
+  // private Color m_startColor, m_lastColor;
+  // private int m_numRevolutions;
 
   /**
    * Creates a new SampleColor.
    */
-  public ControlPanelRotation(PatSajakSubsystem patSajak, ColorSensorV3 sensor) {
+  public ControlPanelSpinSimple(PatSajakSubsystem patSajak) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Requires the ControlPanel Subsystem
     addRequirements(patSajak);
 
     m_patSajak = patSajak;
-    m_colorSensor = sensor;
+    // m_colorSensor = sensor;
 
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    /*
     m_startColor = m_patSajak.readColor();
     m_lastColor = m_startColor;
+    */
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -68,13 +70,13 @@ public class ControlPanelRotation extends CommandBase {
 
 
     //Smart Dashboard for testing
-    Color detectedColor = m_colorSensor.getColor();
+    // Color detectedColor = m_colorSensor.getColor();
 
     /**
      * Run the color match algorithm on our detected color
      */
-    String colorString;
-    ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
+    /* String colorString;
+     ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
     if (match.color == ColorTargets.kBlueTarget) {
       colorString = "Blue";
@@ -87,17 +89,20 @@ public class ControlPanelRotation extends CommandBase {
     } else {
       colorString = "Unknown";
     }
+    */
 
     /**
      * Open Smart Dashboard or Shuffleboard to see the color detected by the 
      * sensor.
      */
-    if ( ControlPanelActuators.TUNE) {
+    if( ControlPanelActuators.TUNE) {
+      /*
       SmartDashboard.putNumber("Red", detectedColor.red);
       SmartDashboard.putNumber("Green", detectedColor.green);
       SmartDashboard.putNumber("Blue", detectedColor.blue);
       SmartDashboard.putNumber("Confidence", match.confidence);
       SmartDashboard.putString("Detected Color", colorString);
+      */
     }
   }
 
@@ -106,12 +111,14 @@ public class ControlPanelRotation extends CommandBase {
   public void end(boolean interrupted) {
     m_patSajak.turnSpinnerMotorOff();
     //m_patSajak.lowerSpinner();
-    m_numRevolutions = 0;
+    //m_numRevolutions = 0;
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    return false;
+    /*
      // Don't read the same panel multiple times!
      if(m_patSajak.readColor() != m_lastColor){
       m_lastColor = m_patSajak.readColor();
@@ -120,5 +127,6 @@ public class ControlPanelRotation extends CommandBase {
     }
     
     return m_numRevolutions > 6; // Turn at least 3 but no more than 5 times. The color swatches will pass by twice, so > 6 gives 3.5+ turns.
+    */
   }
 }

@@ -50,7 +50,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(0, 
                 new CANSparkMax(FRONT_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(FRONT_LEFT_DRIVE, MotorType.kBrushless),
-                325.25 + 6 + 290), 
+                325.25 + 6 + 290 - 360), 
 
             new SwerveDriveModule(1, 
                 new CANSparkMax(FRONT_RIGHT_ANGLE, MotorType.kBrushless),
@@ -65,7 +65,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(3,
                 new CANSparkMax(BACK_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_LEFT_DRIVE, MotorType.kBrushless),
-                319.357 + 17 + 55),
+                319.357 + 17 + 55 - 360),
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top   
         };
 
@@ -194,6 +194,13 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         }
     }
 
+    /**
+     * Control Swerve Drive with 3 PID controllers, one for each of the axes.
+     * @param forwardError The error term (from the input device) for forward movement.
+     * @param strafeError The error term (from the input device) for strafe movement.
+     * @param angleError The error term (from the input device, generally gyroscope) for rotation.
+     * @param fieldOriented Whether the frame of reference for Forward and Strafe is the field (true) or the robot (false).
+     */
     public void pidMove(double forwardError, double strafeError, double angleError, boolean fieldOriented){
       double forward = forwardController.calculate(forwardError);
       double strafe = strafeController.calculate(strafeError);

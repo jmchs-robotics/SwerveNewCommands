@@ -18,25 +18,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ClimbWinchDownCommand;
-import frc.robot.commands.ClimbWinchUpCommand;
-import frc.robot.commands.ControlPanelPosition;
-import frc.robot.commands.ControlPanelRotation;
-import frc.robot.commands.DefaultIntakeCommand;
-import frc.robot.commands.DefaultSwerveCommand;
-import frc.robot.commands.IntakeRecieveCommand;
-import frc.robot.commands.SampleColorCommand;
-import frc.robot.commands.SendVisionCommand;
-import frc.robot.commands.SetThrowerSpeedCommand;
-import frc.robot.commands.SpinUpThrowerCommand;
-import frc.robot.commands.ThrowToTargetCommand;
-import frc.robot.commands.VisionApproachTarget;
-import frc.robot.commands.VisionLineUpWithTarget;
-import frc.robot.subsystems.SwerveDriveSubsystem;
-import frc.robot.subsystems.ThrowerSubsystem;
-import frc.robot.util.SocketVisionSendWrapper;
-import frc.robot.util.SocketVisionWrapper;
-import frc.robot.util.JoystickAnalogButton;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -44,13 +25,11 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.HopperSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PatSajakSubsystem;
-import frc.robot.commands.MoveHopperCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;;
-
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.subsystems.*;
+import frc.robot.commands.*;
+import frc.robot.commands.autonomous.*;
+import frc.robot.util.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -99,8 +78,8 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
       XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
-  private final POVButton m_primaryController_DPad_Up = new POVButton(m_secondaryController, 0);
-  private final POVButton m_primaryController_DPad_Down = new POVButton(m_secondaryController, 180);
+  private final POVButton m_primaryController_DPad_Up = new POVButton(m_primaryController,0);
+  private final POVButton m_primaryController_DPad_Down = new POVButton(m_primaryController, 180);
   // right trigger for shooter sequence with vision
   private final JoystickAnalogButton m_primaryController_RightTrigger = new JoystickAnalogButton(m_primaryController, 
       Hand.kRight, 0.5);
@@ -126,10 +105,10 @@ public class RobotContainer {
   // want x to start Pat Sajak position control
   private final JoystickButton m_secondaryController_X = new JoystickButton(m_secondaryController, 
       XboxController.Button.kX.value); // Move Daisy one slot
-  //private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
-  //    XboxController.Button.kBumperLeft.value); // Intake up
-  //private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
-  //    XboxController.Button.kBumperRight.value); // Intake down
+  private final JoystickButton m_secondaryController_LeftBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperLeft.value); // Intake up
+  private final JoystickButton m_secondaryController_RightBumper = new JoystickButton(m_secondaryController, 
+      XboxController.Button.kBumperRight.value); // Intake down
   private final JoystickButton m_secondaryController_Start = new JoystickButton(m_secondaryController, 
       XboxController.Button.kStart.value);
   private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, 
@@ -160,6 +139,7 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    //Complex commands
     m_primaryController_A.whenPressed(      
       new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
@@ -167,24 +147,6 @@ public class RobotContainer {
         new VisionLineUpWithTarget(m_swerve, rft_), 
         new SendVisionCommand(sender_, "_")
       ) 
-    );
-
-    
-
-    m_primaryController_X.whenPressed(
-      new InstantCommand(m_Climb::raiseArm, m_Climb)
-    );
-
-    m_primaryController_B.whenPressed(
-      new InstantCommand(m_Climb::lowerArm, m_Climb)
-    );
-
-    m_primaryController_Start.whileHeld(
-      new ClimbWinchUpCommand(m_Climb)
-    );
-
-    m_primaryController_Back.whileHeld(
-      new ClimbWinchDownCommand(m_Climb)
     );
 
     m_primaryController_X.whenPressed( // Inline command group!
@@ -253,22 +215,23 @@ public class RobotContainer {
     m_secondaryController_A.whenPressed(
       new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak)
     );
-    m_secondaryController_Y.whenPressed(
+    m_secondaryController_B.whenPressed(
       new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak)
     );
-    m_secondaryController_B.whenPressed(
+    m_secondaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
     m_secondaryController_X.whenPressed(
-      new ControlPanelPosition(m_PatSajak, m_colorSensor)
+      new ControlPanelSpinSimple(m_PatSajak) // simple for testing
+      // new ControlPanelPosition(m_PatSajak, m_colorSensor)
     );
 
     // Intake
     m_secondaryController_Start.whenPressed(
       new IntakeRecieveCommand(m_Intake)
-    );
+    ).whenReleased(m_Intake :: stopMotor, m_Intake);
     // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
-    m_secondaryController_RightTrigger.whenPressed(
+    m_secondaryController_RightTrigger.whileHeld(
       new SequentialCommandGroup(
           new InstantCommand(m_Intake :: lowerIntake, m_Intake),
           new ParallelCommandGroup( 
@@ -277,6 +240,12 @@ public class RobotContainer {
           )
         )
       );
+    m_secondaryController_RightBumper.whenPressed(
+      new InstantCommand(m_Intake :: lowerIntake, m_Intake)
+    );
+    m_secondaryController_LeftBumper.whenPressed(
+      new InstantCommand(m_Intake :: raiseIntake, m_Intake)
+    );
 
     // Hopper (Daisy)
     m_secondaryController_Back.whenPressed(
@@ -291,8 +260,24 @@ public class RobotContainer {
     //m_secondaryController_DPad_Up.whenHeld(m_Hopper :: ); // Index ?
 
     //Climb
-    m_primaryController_DPad_Up.whenHeld(new ClimbWinchUpCommand(m_Climb));
-    m_primaryController_DPad_Down.whenHeld(new ClimbWinchDownCommand(m_Climb));
+    m_primaryController_DPad_Up.whileHeld(new ClimbWinchUpCommand(m_Climb));
+    m_primaryController_DPad_Down.whileHeld(new ClimbWinchDownCommand(m_Climb));
+    
+    m_primaryController_B.whenPressed(
+      new InstantCommand(m_Climb::raiseArm, m_Climb)
+    );
+
+    m_primaryController_A.whenPressed(
+      new InstantCommand(m_Climb::lowerArm, m_Climb)
+    );
+
+    /*m_primaryController_Start.whileHeld(
+      new ClimbWinchUpCommand(m_Climb)
+    );
+
+    m_primaryController_Back.whileHeld(
+      new ClimbWinchDownCommand(m_Climb)
+    ); */ 
 
 
     /* example how to aim the robot at the RFT and spin up the thrower at the same time
@@ -394,7 +379,42 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
+    // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
+    // Angle the robot toward the retroflective tape
+    Paths p = new Paths( m_swerve,m_Thrower, sender_);
+    Command autoCommand = p.Path1Command();
+      // Path1, our simplest move and score path
+/*
+      new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve) //, // Brake mode on!
+        */
+        // to add: 
+        /*
+        // spin up the thrower to anticipated speed, in parallel.  
+        // turn wheels to the angle we're about to drive, then drive where we want to shoot from
+        // set thrower speed to vision disance
+        new ParallelCommandGroup(  
+          new SetThrowerSpeedCommand( m_Thrower, 5000), // FIX rpm.  speed from our table to score at this distance
+          new SequentialCommandGroup(
+            new SetWheelAngleCommand( m_swerve, -15), // FIX angle
+            new WaitCommand( 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+            new DriveForDistanceCommand( m_swerve, -15, -15)  // FIX where we want to move to
+          )
+        ),
+        
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance
+        */
+        /*
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new WaitCommand( 0.1), // give the vision coprocessor a chance to compute
+        new VisionAim( m_swerve, rft_, 18, 18)
+*/
+        // to add:
+        // ThrowToTarget while spinning Diasy 1 full rotation
+    //  );
     
     return autoCommand;
   }

@@ -73,7 +73,7 @@ public class SocketVisionSender extends Thread {
 				data = data_;
 			}
 			
-			if(Constants.SHOW_DEBUG_VISION) {
+			if(Constants.Vision.SHOW_DEBUG) {
 				System.out.println("Sending: \"" + getData() + "\"...");
 			}
 
@@ -87,7 +87,7 @@ public class SocketVisionSender extends Thread {
 				return false;
 			}
 
-			if(Constants.SHOW_DEBUG_VISION) {
+			if(Constants.Vision.SHOW_DEBUG) {
 				System.out.println("Sent: \"" + getData() + ".\"");
 			}
 		} catch (Exception e){

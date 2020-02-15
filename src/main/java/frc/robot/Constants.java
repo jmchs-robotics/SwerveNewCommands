@@ -22,10 +22,17 @@ import edu.wpi.first.wpilibj.util.Color;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static final boolean SHOW_DEBUG_VISION = false;
-  
   // Declare inner public classes to segment constants
 
+  /**
+   * for vision sockets, comms with Vision Co-processor, and using vision within the rest of the subsystems.
+   */
+  public static final class Vision {
+    public static final boolean SHOW_DEBUG = false;
+    public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
+    public static final double RFT_PIXELS_TO_DEGREES = 320.0 / 30.0; // approximation/guess 2/13/20
+  }
+  
   /**
   * Contains the CAN IDs of the Drivetrian SparkMax motors
   */ 
@@ -99,6 +106,7 @@ public final class Constants {
     public static final int soleniodForward = 0;
     public static final int soleniodBackward = 1;
     public static final Port sensorPort = I2C.Port.kOnboard;
+    public static final boolean TUNE = true;
   }
 
   /**
@@ -158,6 +166,13 @@ public final class Constants {
     public static final int HOPPER_MOTOR_ID = 20;
     public static final double ONE_ROTATION = 4096;
     public static final int ALLOWABLE_ERROR = 0;
+
+    public static final double DAISY_OFFSET = 0;
+    public static final double DARK_THRESH = 0.5;
+    public static final double PHOTO_DURATION = 0.25; // duration (seconds) over which we want to 
+      //average the photodiode’s input to make sure we only trigger when a ball’s really there
+    public static final double PHOTO_ALPHA =  0.02 / PHOTO_DURATION; // periodic() runs every 0.02 seconds
+    
   }
 
   public static final class HopperPIDs {
@@ -206,5 +221,9 @@ public final class Constants {
   public static final class LED {
     public static final int GREEN = 0;
     public static final int SPOTLIGHT = 1;
+  }
+
+  public static final class AUTO {
+    public static final double DISTANCE_CHECK_TIME = 0.25;
   }
 }
