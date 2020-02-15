@@ -222,4 +222,8 @@ public final class Constants {
     public static final int GREEN = 0;
     public static final int SPOTLIGHT = 1;
   }
+
+  public static final class AUTO {
+    public static final double DISTANCE_CHECK_TIME = 0.25;
+  }
 }
