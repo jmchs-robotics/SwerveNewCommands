@@ -96,10 +96,8 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_RightBumper = new JoystickButton(m_primaryController, 
       XboxController.Button.kBumperRight.value); // Brake Mode Activate
   // want climber arm up
-  private final JoystickButton m_primaryController_X = new JoystickButton(m_primaryController,
-      XboxController.Button.kX.value);
-  private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, 
-      XboxController.Button.kY.value); // Test on Control Panel Rotation
+  // private final JoystickButton m_primaryController_X = new JoystickButton(m_primaryController, XboxController.Button.kX.value);
+  // private final JoystickButton m_primaryController_Y = new JoystickButton(m_primaryController, XboxController.Button.kY.value); // Test on Control Panel Rotation
   // add d-pad up and for winch
   private final POVButton m_primaryController_DPad_Up = new POVButton(m_primaryController,0);
   private final POVButton m_primaryController_DPad_Down = new POVButton(m_primaryController, 180);
@@ -114,8 +112,7 @@ public class RobotContainer {
   private final JoystickButton m_primaryController_Back = new JoystickButton(m_primaryController, 
       XboxController.Button.kBack.value);
 
-  private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
-      XboxController.Button.kStickLeft.value); // runs sample color
+  // private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController, XboxController.Button.kStickLeft.value); // runs sample color
   // want b to start Pat Sajak rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
       XboxController.Button.kB.value);
@@ -171,7 +168,7 @@ public class RobotContainer {
         new SendVisionCommand(sender_, "_")
       ) 
     );
-
+/*
     m_primaryController_X.whenPressed( // Inline command group!
       new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
@@ -180,6 +177,7 @@ public class RobotContainer {
         new SendVisionCommand(sender_, "_")
       )
     );
+    */
 
     //left bumper is field orientated // has a fun lambda
     m_primaryController_LeftBumper.whenPressed(

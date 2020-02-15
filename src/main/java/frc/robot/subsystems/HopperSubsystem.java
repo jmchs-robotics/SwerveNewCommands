@@ -10,17 +10,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-// import com.revrobotics.CANSparkMax;
-//import com.revrobotics.ControlType;
-//import com.revrobotics.CANSparkMax.IdleMode;
-//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-//import com.revrobotics.CANEncoder;
-//import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
@@ -43,12 +38,16 @@ public class HopperSubsystem extends SubsystemBase {
   private Timer daisyTimeInPosition;
   private Timer daisyJammedTimer;
   private boolean daisyJammed = false;
+
+  // photdiode work
+  private final AnalogInput m_lightSensor = new AnalogInput(0);
   private Boolean photoIsDark = false;
-  private double photoY;
+  private double photoSamples[];
+  private int photoSamplesI = 0;
 
   /**
    * The index is to see the rotation position on the robot
-   * 
+   * This will count up throughout the match, so if you want only the 0-6 range, use (daisyIndex%6)
    */
   private int daisyIndex;
   
@@ -64,6 +63,7 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
   
     daisyIndex = 0;
+    photoSamples = new double [ HopperConstants.PHOTO_NUM_SAMPLES];
 
     /* Factory Default all hardware to prevent unexpected behaviour */
     m_hopperMotor.configFactoryDefault();
@@ -105,7 +105,8 @@ public class HopperSubsystem extends SubsystemBase {
     
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
-    //resetReference();  // not used as of 1/26/20.
+    resetReference();  // not used between 1/26/20 and 2/14/20.
+    //m_hopperMotor.set(ControlMode.Position, HopperConstants.DAISY_OFFSET);
     
     if(HopperPIDs.TUNE){
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
@@ -196,8 +197,12 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy one full rotation, from current position
    */
   public void dischargeAll(){
-    m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION;
-    System.out.println("HopperSubsystem Setting the hopper setpoint to " + m_setpoint);
+    // m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION;
+    daisyIndex += 6;
+    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    if( HopperPIDs.TUNE) {
+      System.out.println("HopperSubsystem Setting the hopper setpoint to " + m_setpoint);
+    }
     m_hopperMotor.set(ControlMode.Position, m_setpoint); 
   }
 
@@ -205,36 +210,44 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy 1/6 rotation forward, from current position
    */
   public void nextSlot(){
-    m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
+    // m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
+    // daisyIndex = (daisyIndex+1) % 6;
+    daisyIndex++;
+    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION", "YAHOOOO!!!!!!");
-    if(daisyIndex < 6) {
-      daisyIndex ++;
-    }
-    else{
-      daisyIndex = 0;
-    }
-    
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
+    }    
   }
 
   /**
    *  Move the daisy 1/6 rotation backward, from current position
    */
-  public void previousSlot(){
+  public void previousSlot() {
+    daisyIndex++;
+    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    /*
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
-    m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION BACKWARD", "!!!!!!OOOOHAY");
+ 
     if(daisyIndex > 0) {
       daisyIndex --;
     }
     else{
       daisyIndex = 6;
     }
+    */
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION BACKWARD, to index", daisyIndex);
+    }
   }
 
   public void moveForwardSlowly() {
-    m_hopperMotor.set(ControlMode.PercentOutput, .1);
-    SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
+    m_hopperMotor.set(ControlMode.PercentOutput, .2);
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
+    }
   }
   // stop
   public void stopMotor() {
@@ -248,6 +261,55 @@ public class HopperSubsystem extends SubsystemBase {
 
   public void smartDashIndex()
   {
-    SmartDashboard.putNumber("Daisy Index", daisyIndex);
+    SmartDashboard.putNumber("Daisy Index.IndexMod6", daisyIndex + (daisyIndex%6)/10.0);
   }
+
+  /**
+   * keep the most recent (HopperConstants.PHOTO_NUM_SAMPLES) photodiode samples
+   */
+  public void photodiodeMovingWindow() {
+    photoSamples[ photoSamplesI] = m_lightSensor.getVoltage();
+    photoSamplesI++;
+    photoSamplesI = photoSamplesI % HopperConstants.PHOTO_NUM_SAMPLES;
+  }
+  /** 
+   * compute the average of photodiode sensor voltages as kept in the moving average.
+  */
+  public void avePhotodiode() { 
+    double s = 0;
+    for( int i=0; i<HopperConstants.PHOTO_NUM_SAMPLES; i++) {
+      s += photoSamples[ i];
+    }
+    
+    if( s / HopperConstants.PHOTO_NUM_SAMPLES < HopperConstants.DARK_THRESH) { 
+      photoIsDark = true; 
+    }
+    else { 
+      photoIsDark = false;
+    }
+  }
+    
+  /**
+   * get whether the photodiode's average is dark
+   * @return true if the average value of the photodiode over recent samples is less than the threshold (HopperConstants.DARK_THRESH)
+   */
+  public boolean photoDiodeAveIsDark() {
+    avePhotodiode();
+    return photoIsDark;
+  }
+
+  /**
+   * returns the position (index) of Daisy, in the range [0..5]
+   */
+  public int getIndexMod6() {
+    return daisyIndex % 6;
+  }
+
+  /**
+   * returns true if we have indexed 5 balls
+   */
+  public boolean daisyIsFull() {
+    return (daisyIndex % 6) >= 5;
+  }
+    
 }
