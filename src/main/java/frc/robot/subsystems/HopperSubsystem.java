@@ -46,6 +46,11 @@ public class HopperSubsystem extends SubsystemBase {
   private Boolean photoIsDark = false;
   private double photoY;
 
+  /**
+   * The index is to see the rotation position on the robot
+   * 
+   */
+  private int daisyIndex;
   
   /**
    * Creates a new HopperSubsystem.
@@ -57,6 +62,8 @@ public class HopperSubsystem extends SubsystemBase {
     kF = HopperPIDs.kF;
     
     m_hopperMotor = new TalonSRX(HopperConstants.HOPPER_MOTOR_ID);
+  
+    daisyIndex = 0;
 
     /* Factory Default all hardware to prevent unexpected behaviour */
     m_hopperMotor.configFactoryDefault();
@@ -98,7 +105,7 @@ public class HopperSubsystem extends SubsystemBase {
     
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
-    // resetReference();  // not used as of 1/26/20.
+    //resetReference();  // not used as of 1/26/20.
     
     if(HopperPIDs.TUNE){
       SmartDashboard.putNumber("Hopper setpoint", m_setpoint);
@@ -110,6 +117,8 @@ public class HopperSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Hopper Feed Forward", kF);
       SmartDashboard.putNumber("Hopper Max Output", kMaxOutput);
       SmartDashboard.putNumber("Hopper Min Output", kMinOutput);
+
+      SmartDashboard.putNumber("Daisy Index", daisyIndex); // Puts the dasiy index on SmartDash
     }
     
   }
@@ -176,6 +185,9 @@ public class HopperSubsystem extends SubsystemBase {
         kMinOutput = min;
     		m_hopperMotor.configPeakOutputReverse(kMinOutput, HopperPIDs.kTimeoutMs);
       }
+
+      //Want the Index to be updated every 20 milliseconds
+      SmartDashboard.putNumber("Daisy Index", daisyIndex);
     }
   }
   
@@ -195,6 +207,14 @@ public class HopperSubsystem extends SubsystemBase {
   public void nextSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION", "YAHOOOO!!!!!!");
+    if(daisyIndex < 6) {
+      daisyIndex ++;
+    }
+    else{
+      daisyIndex = 0;
+    }
+    
   }
 
   /**
@@ -203,10 +223,18 @@ public class HopperSubsystem extends SubsystemBase {
   public void previousSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
+    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION BACKWARD", "!!!!!!OOOOHAY");
+    if(daisyIndex > 0) {
+      daisyIndex --;
+    }
+    else{
+      daisyIndex = 6;
+    }
   }
 
   public void moveForwardSlowly() {
     m_hopperMotor.set(ControlMode.PercentOutput, .1);
+    SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
   }
   // stop
   public void stopMotor() {
@@ -216,5 +244,10 @@ public class HopperSubsystem extends SubsystemBase {
   public boolean atSetpoint(double thresholdPercent) {
     return Math.abs( m_hopperMotor.getClosedLoopError()) < HopperConstants.ONE_ROTATION * thresholdPercent;
     // return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
+  }
+
+  public void smartDashIndex()
+  {
+    SmartDashboard.putNumber("Daisy Index", daisyIndex);
   }
 }

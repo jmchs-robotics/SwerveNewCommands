@@ -111,7 +111,7 @@ public class RobotContainer {
       Hand.kLeft, 0.5);
   private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, 
       XboxController.Button.kStart.value);
-  private final JoystickButton m_primaryController_Back = new JoystickButton(m_secondaryController, 
+  private final JoystickButton m_primaryController_Back = new JoystickButton(m_primaryController, 
       XboxController.Button.kBack.value);
 
   private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController,
@@ -141,8 +141,8 @@ public class RobotContainer {
   private final POVButton m_secondaryController_DPad_Down = new POVButton(m_secondaryController, 180);
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
-  private final JoystickAnalogButton m_secondaryController_LeftTrigger = new JoystickAnalogButton( m_primaryController, Hand.kLeft, 0.5);
-  private final JoystickAnalogButton m_secondaryController_RightTrigger = new JoystickAnalogButton( m_primaryController, Hand.kRight, 0.5);
+  private final JoystickAnalogButton m_secondaryController_LeftTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kLeft, 0.5);
+  private final JoystickAnalogButton m_secondaryController_RightTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kRight, 0.5);
   
 
   /**
@@ -248,6 +248,9 @@ public class RobotContainer {
       new ControlPanelSpinSimple(m_PatSajak) // simple for testing
       // new ControlPanelPosition(m_PatSajak, m_colorSensor)
     );
+    m_secondaryController_X.whenReleased(
+      new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
+    );
 
     // Intake
     m_secondaryController_Start.whenPressed(
@@ -272,15 +275,16 @@ public class RobotContainer {
 
     // Hopper (Daisy)
     m_secondaryController_Back.whenPressed(
-      new MoveHopperCommand(m_Hopper, 1)
+      new MoveHopperCommand(m_Hopper, -1)
     );
-    m_secondaryController_LeftTrigger.whenHeld(
+    m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 1));
+    m_secondaryController_LeftTrigger.whileHeld(
       new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
     ); 
     m_secondaryController_LeftTrigger.whenReleased(
       new InstantCommand( m_Hopper::stopMotor, m_Hopper)
     ); // stop
-    //m_secondaryController_DPad_Up.whenHeld(m_Hopper :: ); // Index ?
+    m_secondaryController_DPad_Up.whileHeld(m_Hopper :: smartDashIndex, m_Hopper ); // Index ?
 
     //Climb
     m_primaryController_DPad_Up.whileHeld(new ClimbWinchUpCommand(m_Climb));
@@ -402,13 +406,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
-    // Angle the robot toward the retroflective tape
-    Command autoCommand = new SequentialCommandGroup(
-      new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
-      new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-      new VisionAim( m_swerve, rft_, 18, 18)
-    );
+    Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5);
     
     return autoCommand;
   }
