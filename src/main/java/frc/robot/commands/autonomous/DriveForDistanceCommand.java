@@ -21,7 +21,7 @@ public class DriveForDistanceCommand extends CommandBase {
     private final Timer finishTimer = new Timer();
     private boolean isTimerStarted = false;
 
-    private double encoderStart [];
+    private double [] encoderStart = {0,0,0,0};
 
 
     /**
@@ -67,6 +67,7 @@ public class DriveForDistanceCommand extends CommandBase {
         for( int i=0; i<4; i++) {
             encoderStart[i] = m_drivetrain.getSwerveModule(i).getDriveDistance();
         }
+
     }
 
     @Override

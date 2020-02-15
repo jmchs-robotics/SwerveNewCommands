@@ -13,7 +13,7 @@ import frc.robot.subsystems.SwerveDriveModule;
 /** 
  * Point all the wheels toward a given angle.  Don't drive anywhere or move the chassis at all.
  */
-public class Paths extends CommandBase {
+public class Paths { // extends CommandBase {
 
     //private SwerveDriveSubsystem m_swerve;
     SwerveDriveSubsystem m_swerve;
@@ -23,12 +23,25 @@ public class Paths extends CommandBase {
     public Paths( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, SocketVisionSendWrapper sender) {
         m_swerve = swerve;
         m_Thrower = thrower;
-        sender_ = sender;
-
-                
+        sender_ = sender;           
     }
 
+    /**
+     * Test 
+     */
     public Command Path1Command() {
+      return new SequentialCommandGroup(
+        new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
+        
+        new SetWheelAngleCommand( m_swerve, -45), // FIX angle
+        new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
+        new DriveForDistanceCommand( m_swerve, 15, 15)  // FIX where we want to move to
+      );
+    }
+    /**
+     * Main path - drive from the fence and start line, aim, score
+     */
+    public Command Path2Command() {
         // this.m_swerve = m_swerve;
 
         return new SequentialCommandGroup(
@@ -65,10 +78,8 @@ public class Paths extends CommandBase {
         // to add:
         // ThrowToTarget while spinning Diasy 1 full rotation
       );
-    
-    
     }
-
+/*
     @Override
     public void initialize() {   
     }
@@ -83,4 +94,5 @@ public class Paths extends CommandBase {
     public void end( boolean interrupted) {
 
     }
+    */
 }
