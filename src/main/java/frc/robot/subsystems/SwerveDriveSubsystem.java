@@ -60,7 +60,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(2,
                 new CANSparkMax(BACK_RIGHT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_RIGHT_DRIVE, MotorType.kBrushless),
-                74.095),//175.095 + 6 + 73), // offset needs to be between 0 and 360
+                74.095),//175.095 + 6 + 73 - 180), // offset needs to be between 0 and 360
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top
             new SwerveDriveModule(3,
                 new CANSparkMax(BACK_LEFT_ANGLE, MotorType.kBrushless),
