@@ -10,12 +10,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-// import com.revrobotics.CANSparkMax;
-//import com.revrobotics.ControlType;
-//import com.revrobotics.CANSparkMax.IdleMode;
-//import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-//import com.revrobotics.CANEncoder;
-//import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
@@ -207,7 +201,9 @@ public class HopperSubsystem extends SubsystemBase {
   public void nextSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION", "YAHOOOO!!!!!!");
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION", "YAHOOOO!!!!!!");
+    }
     if(daisyIndex < 6) {
       daisyIndex ++;
     }
@@ -223,7 +219,9 @@ public class HopperSubsystem extends SubsystemBase {
   public void previousSlot(){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
-    SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION BACKWARD", "!!!!!!OOOOHAY");
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putString("DAISY MOVES ONE SIXTH ROTATION BACKWARD", "!!!!!!OOOOHAY");
+    }
     if(daisyIndex > 0) {
       daisyIndex --;
     }
@@ -234,7 +232,9 @@ public class HopperSubsystem extends SubsystemBase {
 
   public void moveForwardSlowly() {
     m_hopperMotor.set(ControlMode.PercentOutput, .1);
-    SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
+    }
   }
   // stop
   public void stopMotor() {
@@ -250,4 +250,17 @@ public class HopperSubsystem extends SubsystemBase {
   {
     SmartDashboard.putNumber("Daisy Index", daisyIndex);
   }
+
+  /** approximate a moving average of the photodiode’s instant value using a first order IIR digital filter.  
+   * See https://dsp.stackexchange.com/questions/378/what-is-the-best-first-order-iir-ar-filter-approximation-to-a-moving-average-f
+  */
+  /*
+  public void avePhotoDiode() { 
+    double x = getAnalog() // read the photodiode
+    photoY= (1 - PHOTO_ALPHA) * photoY + PHOTO_ALPHA * x
+    if photoY < PHOTO_DARK { photoIsDark = true }
+    else { photoIsDark = false}
+    }
+    */
+    
 }
