@@ -386,7 +386,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
 
     /**
      * Returns the average position of the swerve drive modules.
-     * @return
+     * @return double[2] = {x, y}; average x, y of the swerve modules
      */
     public double[] getPosition(){
       double[] vector = {0,0};
