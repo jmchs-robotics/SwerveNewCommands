@@ -72,10 +72,11 @@ public final class Constants {
     public static final double FORWARD_kI = 0.0;
     public static final double FORWARD_kD = 0.0;
 
-    // PID constants for whole-drivetrain strafe control
-    public static final double ROTATION_kP = 0.01;
+    // PID constants for whole-drivetrain strafe control.
+    // 0.03, 0, 0.075 are from 2910's pose angle code
+    public static final double ROTATION_kP = 0.03;
     public static final double ROTATION_kI = 0.0;
-    public static final double ROTATION_kD = 0.0;
+    public static final double ROTATION_kD = 0.075;
   }
 
   /**

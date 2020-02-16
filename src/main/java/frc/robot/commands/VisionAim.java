@@ -51,15 +51,17 @@ public class VisionAim extends CommandBase {
     // Rotation PID (has continuous input)
     m_drivetrain.setRotationWraparoundInputRange(0, 360); // Still need wraparound to translate negative values to positive degrees
     // m_drivetrain.setRotationSetpoint(m_drivetrain.getGyroAngle()); // Use 0 as the rotation setpoint so we can let the camera use the target as the center of the robot's coordinate system
+    m_drivetrain.setRotationSetpoint(0); // targeting zero 'degrees' i.e. center of vision processing targeting
     m_drivetrain.setRotationTolerance(m_aimTolerance, m_aimVelTolerance);
     m_drivetrain.setRotationOutputRange(-1, 1);
     
     // Set up strafe pid:
     m_drivetrain.setStrafeTolerance(16, 16); // +/- 5% of setpoint is OK for pos and vel.
     m_drivetrain.setStrafeOutputRange(-1, 1);
+    m_drivetrain.setStrafeSetpoint(0); // go nowhere
 
     // Set up forward pid:
-    m_drivetrain.setForwardSetpoint(m_proximity); // Hold the robot at some distance from the target
+    m_drivetrain.setForwardSetpoint(0); // go nowhere
     m_drivetrain.setForwardTolerance(m_tolerance, m_velTolerance);
     m_drivetrain.setForwardOutputRange(-1, 1);
   }
@@ -70,11 +72,11 @@ public class VisionAim extends CommandBase {
     // Check vision error for valid result
     if(m_vision.get().get_direction() != "nada"){
       previousXCoord = m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET; // pixels converted to approximate degrees of field of view of camera
-      previousDistance = m_vision.get().get_distance();
+      //previousDistance = m_vision.get().get_distance();
     } else {
       // Assume robot continued to move at same rate
       previousXCoord = previousXCoord - m_drivetrain.getStrafeErrorDerivative();
-      previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
+      //previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
     }
 
     // Pass each error term into the appropriate parameter: forwardError <=> distance, strafeError <=> XCoord, angleError <=> gyroAngle OR visionAngle
@@ -85,7 +87,7 @@ public class VisionAim extends CommandBase {
     // We may want to provide different sets of PID constants for encoder error inputs vs. image inputs for strafe & forward, and vision vs. gyro for rotation.
     
     // It is theoretically possible to add (scaled) joystick values to previousDistance or previousXCoord, allowing the driver to 'lock on' to a target and then orbit it.
-    m_drivetrain.pidMove(previousDistance, previousXCoord, previousXCoord * Vision.RFT_PIXELS_TO_DEGREES, false);
+    m_drivetrain.pidMove(0, 0, previousXCoord * Vision.RFT_PIXELS_TO_DEGREES, false);
   }
 
   // Called once the command ends or is interrupted.
