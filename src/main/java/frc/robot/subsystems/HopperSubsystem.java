@@ -287,8 +287,9 @@ public class HopperSubsystem extends SubsystemBase {
   }
   /** 
    * compute the average of photodiode sensor voltages as kept in the moving average.
+   * @return true if the average value of the photodiode over recent samples is less than the threshold (HopperConstants.DARK_THRESH)
   */
-  public void avePhotodiode() { 
+  public boolean photoDiodeAveIsDark() { 
     double s = 0;
     for( int i=0; i<HopperConstants.PHOTO_NUM_SAMPLES; i++) {
       s += photoSamples[ i];
@@ -300,15 +301,16 @@ public class HopperSubsystem extends SubsystemBase {
     else { 
       photoIsDark = false;
     }
-  }
-    
-  /**
-   * get whether the photodiode's average is dark
-   * @return true if the average value of the photodiode over recent samples is less than the threshold (HopperConstants.DARK_THRESH)
-   */
-  public boolean photoDiodeAveIsDark() {
-    avePhotodiode();
+
     return photoIsDark;
+  }
+
+  /**
+   * is a ball loaded?
+   * @return true if a ball is loaded
+   */
+  public boolean ballLoaded() {
+    return photoDiodeAveIsDark();
   }
 
   /**

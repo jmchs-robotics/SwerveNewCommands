@@ -26,6 +26,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
 import frc.robot.commands.autonomous.*;
@@ -231,20 +234,13 @@ public class RobotContainer {
       new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
     );
 
+    //
     // Intake
+    //
     m_secondaryController_Start.whenPressed(
       new IntakeRecieveCommand(m_Intake)
     ).whenReleased(m_Intake :: stopMotor, m_Intake);
-    // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
-    m_secondaryController_RightTrigger.whileHeld(
-      new SequentialCommandGroup(
-          new InstantCommand(m_Intake :: lowerIntake, m_Intake),
-          new ParallelCommandGroup( 
-            new IntakeRecieveCommand(m_Intake),
-            new MoveHopperCommand(m_Hopper, 5)
-          )
-        )
-      );
+
     m_secondaryController_RightBumper.whenPressed(
       new InstantCommand(m_Intake :: lowerIntake, m_Intake)
     );
@@ -252,7 +248,43 @@ public class RobotContainer {
       new InstantCommand(m_Intake :: raiseIntake, m_Intake)
     );
 
+    //
+    // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
+    // if Daisy isn't full, run intake beater bar inward until a ball is in the loading slot,
+    //   and then pulse the beater bar in reverse and move Daisy one index forward
+    // if Daisy is full, run intake beater bar in reverse
+    //
+    m_secondaryController_RightTrigger.whileHeld(
+      new ConditionalCommand(
+        new SequentialCommandGroup(
+            //new InstantCommand(m_Intake :: lowerIntake, m_Intake),
+            new ParallelRaceGroup(
+              new IntakeRecieveCommand(m_Intake),
+              new WaitUntilCommand(()->{ return m_Hopper.ballLoaded();}) 
+            ),
+            //new ConditionalCommand(
+                new SequentialCommandGroup(
+                  new IntakeReversePulseCommand( m_Intake),
+                  new MoveHopperCommand(m_Hopper, 1)
+                ) //,
+                //do not advance the daisy
+                //, // if there were already 4 balls
+            //)
+          ),
+        new IntakeReverseCommand( m_Intake),
+        () -> {return m_Hopper.daisyIsFull();} // The conditional: if there are less than 5 balls, intake; else, backdrive
+      )
+    ) /*.whenReleased( // On release lift the intake, then outtake at 0.7 power for 1.5 seconds. Note that beforeStarting is a decorator that is written after the command body...
+      new ParallelRaceGroup(
+        new RunCommand(()->{m_intake.setMotor(-0.7);}, m_intake),
+        new WaitCommand(1.5)
+      ).beforeStarting(m_intake::raiseIntake, m_intake)
+    ) */;
+
+
+    //
     // Hopper (Daisy)
+    //
     m_secondaryController_Back.whenPressed(
       new MoveHopperCommand(m_Hopper, -1)
     );

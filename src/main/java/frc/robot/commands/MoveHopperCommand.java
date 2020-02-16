@@ -19,7 +19,7 @@ public class MoveHopperCommand extends CommandBase {
   private HopperSubsystem m_subsystem;
   private double m_moveToWhere = 0;
   /**
-   * Creates a new SetHopperSpeedCommand.
+   * Move the hopper either (1) one slot forward, (-1) one slot backward, or (6) one full rotation forward.
    */
   public MoveHopperCommand(HopperSubsystem subsystem, double moveToWhere) {
     // Use addRequirements() here to declare subsystem dependencies.

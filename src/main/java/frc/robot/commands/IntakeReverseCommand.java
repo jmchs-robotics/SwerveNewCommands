@@ -12,16 +12,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class IntakeRecieveCommand extends CommandBase {
+public class IntakeReverseCommand extends CommandBase {
   //private final ColorMatch m_colorMatcher = new ColorMatch();
 
   private IntakeSubsystem m_intake;
  
 
   /**
-   * Run the intake beater bar 'forward,' for collecting game pices (balls).
+   * Run the intake beater bar 'reverse,' for ejecting game pices (balls)
    */
-  public IntakeRecieveCommand(IntakeSubsystem intake) {
+  public IntakeReverseCommand(IntakeSubsystem intake) {
     // Use addRequirements() here to declare subsystem dependencies.
     // Requires the ControlPanel Subsystem
     addRequirements(intake);
@@ -39,14 +39,8 @@ public class IntakeRecieveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /**
-     * The Command will work mostly with whileHeld and whenReleased in RobotContainer
-     * 
-     * This will lower the intake and starts the intake motor
-     */
-
-    //m_intake.raiseIntake();
-    m_intake.setMotor(0.7);
+    // run the intake motor     
+    m_intake.setMotor(-0.7);
 
 
   }
