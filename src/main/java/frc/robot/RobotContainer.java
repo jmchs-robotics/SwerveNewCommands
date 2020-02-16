@@ -193,9 +193,12 @@ public class RobotContainer {
       );
 
       // Thrower on primary controller, Right Trigger throw with vision
+
       // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
       // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
       m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
+        new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_)
+        /*
         new SequentialCommandGroup(
           new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
           new SendVisionCommand(sender_, "R"), // tell Vision Coprocessor to track RFT
@@ -207,6 +210,7 @@ public class RobotContainer {
           //)
           // Turning off LED is handled by thrower default command
         )
+        */
       );  
     
     // Pat Sajak commands.
