@@ -35,9 +35,11 @@ public class Paths { // extends CommandBase {
       return new SequentialCommandGroup(
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
-        new VisionAim( m_swerve, rft_, 18, 18),
-        new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
+        new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
+        new DriveForDistanceCommand( m_swerve, -12, -37), //path1 from fense to scoring position
+        //new VisionAim( m_swerve, rft_, 18, 18),
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn off green LED
+        
         
         /*
         new SetWheelAngleCommand( m_swerve, 45), // FIX angle
@@ -57,7 +59,8 @@ public class Paths { // extends CommandBase {
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new WaitCommand( 03), // give the vision coprocessor a chance to compute
-        new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower)// Turn on green LED
+         
         
         // to add: 
         /*
