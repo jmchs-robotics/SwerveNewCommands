@@ -200,7 +200,7 @@ public class RobotContainer {
       // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
       // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
       m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
-        new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_)
+        new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_, 0.5)
         /*
         new SequentialCommandGroup(
           new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED

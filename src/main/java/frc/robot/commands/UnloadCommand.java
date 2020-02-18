@@ -29,6 +29,10 @@ public class UnloadCommand extends CommandBase {
     SocketVisionWrapper rft_;
     private HopperSubsystem m_Hopper;
 
+    /**
+     * Collection of commands to shoot all balls into the target.
+     * @param waitATick seconds to pause to give vision coprocessor a chance to track the RFT before VisionAim or SpinUpThrower
+     */
     public UnloadCommand( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, HopperSubsystem m_Hopper, SocketVisionSendWrapper sender, SocketVisionWrapper rft, double waitATick) {
         m_swerve = swerve;
         m_Thrower = thrower;
