@@ -194,6 +194,13 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         }
     }
 
+    /**
+     * As of 2/17/20, don't use pidMove.  It doesn't yet work.
+     * @param forwardError
+     * @param strafeError
+     * @param angleError
+     * @param fieldOriented
+     */
     public void pidMove(double forwardError, double strafeError, double angleError, boolean fieldOriented){
       double forward = forwardController.calculate(forwardError);
       double strafe = strafeController.calculate(strafeError);

@@ -29,7 +29,7 @@ public class UnloadCommand extends CommandBase {
     SocketVisionWrapper rft_;
     private HopperSubsystem m_Hopper;
 
-    public UnloadCommand( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, HopperSubsystem m_Hopper, SocketVisionSendWrapper sender, SocketVisionWrapper rft) {
+    public UnloadCommand( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, HopperSubsystem m_Hopper, SocketVisionSendWrapper sender, SocketVisionWrapper rft, double waitATick) {
         m_swerve = swerve;
         m_Thrower = thrower;
         sender_ = sender;   
@@ -38,10 +38,10 @@ public class UnloadCommand extends CommandBase {
         new SequentialCommandGroup(
             new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
             new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-            new WaitCommand( 0.25), // give the vision processor a chance to find the RFT
+            new WaitCommand( waitATick), // give the vision processor a chance to find the RFT
             new ParallelCommandGroup( // waits for both to end
                 new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance, end when it's there
-                new VisionAim( m_swerve, rft_, 9, 18)
+                new VisionAimCommand( m_swerve, rft_) // aim the robot
             ),
             new ParallelRaceGroup(
                 new ThrowToTargetCommand(m_Thrower, rft_),  // never ends

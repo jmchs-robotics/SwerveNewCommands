@@ -68,6 +68,8 @@ public class DriveForDist2910Command extends CommandBase {
         this.distance = Math.sqrt(distRight * distRight + distForward * distForward);
         // 191206 this PID isn't working... probably needs more P.  Original is 0.02, 0, 0
         angleErrorController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
+        angleErrorController.enableContinuousInput(0, 360);
+        angleErrorController.reset();
         /*
          new PIDController(0.02, 0, 0, new PIDSource() {
             @Override
@@ -134,7 +136,8 @@ public class DriveForDist2910Command extends CommandBase {
         double forwardFactor = distForward / distance;
         double strafeFactor = -distRight / distance;
         double rotation = angleErrorController.calculate(drivetrain.getGyroAngle());
-
+       
+        // rotation = Math.min( -0.5, Math.max( 0.5, rotation));  // clamp
 
         double[] moduleAngles = drivetrain.calculateSwerveModuleAngles(forwardFactor, strafeFactor, rotation);  // -rotationFactor); // 191206
 

@@ -20,6 +20,7 @@ public class SetPoseAngleCommand extends CommandBase {
     private boolean isTimerStarted = false;
 
     /**
+     * As of 2/17/20, don't use this.  Use SetPoseAngle2910Command instead!
      * Point the robot toward a given pose angle.
      * Is field oriented
      * @param angle angle to point the robot at

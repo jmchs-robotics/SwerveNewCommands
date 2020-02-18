@@ -25,6 +25,7 @@ public class DriveForDistanceCommand extends CommandBase {
 
 
     /**
+     * As of 2/17/20, don't use this.  Use DriveForDist2910Command instead!
      * drive this many inches forward and to the right
      * @param fwd inches forward, or negative inches to go backward
      * @param strafe inches to the right, or negative inches to go to the left

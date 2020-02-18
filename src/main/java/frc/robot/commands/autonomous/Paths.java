@@ -29,62 +29,58 @@ public class Paths { // extends CommandBase {
     }
 
     /**
-     * Test 
+     * Testing
+     * Go from fence to scoring position, staying right of another robot striaght in front of goal 
+     * aim, score
      */
     public Command Path1Command() {
       return new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
+        //new SetWheelAngleCommand( m_swerve, -18),  // point the wheels in the direction we want to go
+        new WaitCommand( 2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+        //new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
+        //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
+        // TODO: UnloadCommand().  does its own VisionAim. Delete any last WaitCommand()
+        
+        new VisionAimCommand( m_swerve, rft_), // aim at RFT
         new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
-        new DriveForDistanceCommand( m_swerve, -12, -37), //path1 from fense to scoring position
-        //new VisionAim( m_swerve, rft_, 18, 18),
+
+        // very last thing
         new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn off green LED
-        
-        
-        /*
-        new SetWheelAngleCommand( m_swerve, 45), // FIX angle
-        new WaitCommand( 1), // give the drivetrain a chance to respond to the SetWheelAngle command
-        new DriveForDist2910Command( m_swerve, 15, 15)  // FIX where we want to move to
-        */
       );
     }
+
     /**
      * Main path - drive from the fence and start line, aim, score
+     * staying to the right of another robot striaght in front of goal
      */
     public Command Path2Command() {
-        // this.m_swerve = m_swerve;
-
-        return new SequentialCommandGroup(
+      return new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new WaitCommand( 03), // give the vision coprocessor a chance to compute
-        new InstantCommand(m_Thrower::turnOffLED, m_Thrower)// Turn on green LED
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower)// Testing
          
         
         // to add: 
         /*
-        // spin up the thrower to anticipated speed, in parallel.  
+        // spin up the thrower to expected speed, in parallel.  
         // turn wheels to the angle we're about to drive, then drive where we want to shoot from
-        // set thrower speed to vision disance
+        // set thrower speed to vision distance
         new ParallelCommandGroup(  
-          new SetThrowerSpeedCommand( m_Thrower, 5000), // FIX rpm.  speed from our table to score at this distance
+          new SetThrowerSpeedCommand( m_Thrower, 4900), // speed from our table to score at this distance
           new SequentialCommandGroup(
-            new SetWheelAngleCommand( m_swerve, -15), // FIX angle
+            new SetWheelAngleCommand( m_swerve, -18), // FIX angle
             new WaitCommand( 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
-            new DriveForDistanceCommand( m_swerve, -15, -15)  // FIX where we want to move to
+            new DriveForDistanceCommand( m_swerve, -37, -12)  // FIX where we want to move to
           )
         ),
         
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance
-        */
-        /*
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new WaitCommand( 0.1), // give the vision coprocessor a chance to compute
-        new VisionAim( m_swerve, rft_, 18, 18)
+        new VisionAimCommand( m_swerve, rft_)
 */
         // to add:
         // ThrowToTarget while spinning Diasy 1 full rotation

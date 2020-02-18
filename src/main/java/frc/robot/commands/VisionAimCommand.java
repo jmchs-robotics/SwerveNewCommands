@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
@@ -9,13 +9,26 @@ import frc.robot.subsystems.SwerveDriveModule;
 import frc.robot.Constants.AUTO;
 import frc.robot.Constants.DrivetrainConstants;
 
+import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.controller.*;
+
+
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.util.SocketVisionWrapper;
+import frc.robot.Constants.Vision;
 /**
  * Command to turn the robot (set the robot's pose) to the desired angle
  * Constructor takes robot's drivetrain and desired angle
  */
-public class SetPoseAngle2910Command extends CommandBase {
-    private static final double ANGLE_CHECK_TIME = 0.1;
-    private static final double TARGET_ANGLE_BUFFER = 5.0;
+public class VisionAimCommand extends CommandBase {
+    
+    private static final double ANGLE_CHECK_TIME = 0.1; // seconds
+    private static final double TARGET_ANGLE_BUFFER = 5.0; // degrees
 
     private final SwerveDriveSubsystem drivetrain;
     private final double targetAngle;
@@ -23,21 +36,19 @@ public class SetPoseAngle2910Command extends CommandBase {
     private final Timer finishTimer = new Timer();
     private boolean isTimerStarted = false;
 
-    /**
 
-     * turn the robot to the targetAngle
-     Field oriented.
-     * @param drivetrain (SwerveDriveSubsystem)
-     * @param targetAngle angle to turn to, in degrees (double) Positive is CCW, negative is CW.
+  SwerveDriveSubsystem m_drivetrain;
+  SocketVisionWrapper m_vision;
+
+  private double previousXCoord = 0;
+
+    /**
+     * turn the robot to aim at the target
      */
-    public SetPoseAngle2910Command(SwerveDriveSubsystem drivetrain, double targetAngle) {
+    public VisionAimCommand(SwerveDriveSubsystem drivetrain, SocketVisionWrapper vision) {
         this.drivetrain = drivetrain;
 
-        /*if (targetAngle < 0)
-            targetAngle += 360;            
-        this.targetAngle = targetAngle;
-        */
-        this.targetAngle = (targetAngle + 360) % 360; // normalize to range [0,360)
+        this.targetAngle = 0;
         angleController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
@@ -93,27 +104,30 @@ public class SetPoseAngle2910Command extends CommandBase {
         for (int i = 0; i < 4; i++) {
             drivetrain.getSwerveModule(i).setTargetAngle(Math.toDegrees(angles[i]));
         }
-
-        //angleController.enable();
-        if( DrivetrainConstants.TUNE) {
-            System.out.printf("SetPoseAngle2910Command Turning to %.3f%n", targetAngle);
-        }
     }
 
     @Override
     public void execute() {
-        double output = angleController.calculate( drivetrain.getGyroAngle());
+        if(m_vision.get().get_direction() != "nada"){
+            previousXCoord = m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET; // pixels converted to approximate degrees of field of view of camera
+            //previousDistance = m_vision.get().get_distance();
+          } else {
+            // Assume robot continued to move at same rate
+            previousXCoord = 0; //previousXCoord - m_drivetrain.getStrafeErrorDerivative();
+            //previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
+          }
+        double rotation = angleController.calculate( previousXCoord * Vision.RFT_PIXELS_TO_DEGREES);
+        rotation = Math.min( -0.5, Math.max( 0.5, rotation));  // clamp
         for (int i = 0; i < 4; i++)
-            drivetrain.getSwerveModule(i).setTargetSpeed(output);
+            drivetrain.getSwerveModule(i).setTargetSpeed(rotation);
     }
 
     @Override
     public boolean isFinished() {
-        double currentAngle = drivetrain.getGyroAngle();
+        double currentAngle = (m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET) * Vision.RFT_PIXELS_TO_DEGREES;
         double currentError = currentAngle - targetAngle;
 
-        boolean inTargetBuffer = Math.abs(currentError) < TARGET_ANGLE_BUFFER
-                | 360 - Math.abs(currentError) < TARGET_ANGLE_BUFFER;
+        boolean inTargetBuffer = Math.abs(currentError) < TARGET_ANGLE_BUFFER;
 
         if (inTargetBuffer) {
             if (!isTimerStarted) {
@@ -132,7 +146,7 @@ public class SetPoseAngle2910Command extends CommandBase {
     @Override
     public void end( boolean isInterrupted) {
         if( DrivetrainConstants.TUNE) {
-            System.out.println("SetPoseAngle2910Command Done turning");
+            System.out.println("VisionAim turning ");
         }
         // angleController.disable();
         drivetrain.holonomicDrive(0, 0, 0);
