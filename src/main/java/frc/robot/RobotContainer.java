@@ -251,7 +251,8 @@ public class RobotContainer {
     //
     // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
     // if Daisy isn't full, run intake beater bar inward until a ball is in the loading slot,
-    //   and then pulse the beater bar in reverse and move Daisy one index forward
+    //   and then if have less than 5 balls pulse the beater bar in reverse and move Daisy one index forward
+    //     otherwise reverse the beater bar
     // if Daisy is full, run intake beater bar in reverse
     //
     m_secondaryController_RightTrigger.whileHeld(
@@ -262,14 +263,16 @@ public class RobotContainer {
               new IntakeRecieveCommand(m_Intake),
               new WaitUntilCommand(()->{ return m_Hopper.ballLoaded();}) 
             ),
-            //new ConditionalCommand(
+            new InstantCommand( m_Hopper::incBallCount, m_Hopper),
+            new ConditionalCommand( // if not full, advance Daisy; if full, reverse intake
                 new SequentialCommandGroup(
                   new IntakeReversePulseCommand( m_Intake),
-                  new MoveHopperCommand(m_Hopper, 1)
-                ) //,
-                //do not advance the daisy
-                //, // if there were already 4 balls
-            //)
+                  new MoveHopperCommand(m_Hopper, 1),
+                  new InstantCommand( m_Hopper::incBallCount, m_Hopper)
+                ),
+                new IntakeReverseCommand( m_Intake),
+                () -> {return m_Hopper.daisyIsFull();} 
+            )
           ),
         new IntakeReverseCommand( m_Intake),
         () -> {return m_Hopper.daisyIsFull();} // The conditional: if there are less than 5 balls, intake; else, backdrive
@@ -413,47 +416,16 @@ public class RobotContainer {
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
     // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
     // Angle the robot toward the retroflective tape
     Paths p = new Paths( m_swerve,m_Thrower, sender_, rft_);
-    Command autoCommand = p.Path1Command();
-      // Path1, our simplest move and score path
-/*
-      new SequentialCommandGroup(
-        new InstantCommand(m_swerve::setBrakeOn, m_swerve) //, // Brake mode on!
-        */
-        // to add: 
-        /*
-        // spin up the thrower to anticipated speed, in parallel.  
-        // turn wheels to the angle we're about to drive, then drive where we want to shoot from
-        // set thrower speed to vision disance
-        new ParallelCommandGroup(  
-          new SetThrowerSpeedCommand( m_Thrower, 5000), // FIX rpm.  speed from our table to score at this distance
-          new SequentialCommandGroup(
-            new SetWheelAngleCommand( m_swerve, -15), // FIX angle
-            new WaitCommand( 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
-            new DriveForDistanceCommand( m_swerve, -15, -15)  // FIX where we want to move to
-          )
-        ),
-        
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance
-        */
-        /*
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new WaitCommand( 0.1), // give the vision coprocessor a chance to compute
-        new VisionAim( m_swerve, rft_, 18, 18)
-*/
-        // to add:
-        // ThrowToTarget while spinning Diasy 1 full rotation
-    //  );
-    
+    Command autoCommand = new SequentialCommandGroup(
+      new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
+      p.Path1Command()
+    );
     return autoCommand;
   }
 }

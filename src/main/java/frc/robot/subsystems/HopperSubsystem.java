@@ -50,6 +50,8 @@ public class HopperSubsystem extends SubsystemBase {
    * This will count up throughout the match, so if you want only the 0-6 range, use (daisyIndex%6)
    */
   private int daisyIndex;
+  private int ballCount = 0; // how many balls are currently loaded
+  private int sdThrottlerCtr = 0;
   
   /**
    * Creates a new HopperSubsystem.
@@ -186,9 +188,13 @@ public class HopperSubsystem extends SubsystemBase {
         kMinOutput = min;
     		m_hopperMotor.configPeakOutputReverse(kMinOutput, HopperPIDs.kTimeoutMs);
       }
-
-      //Want the Index to be updated every 20 milliseconds
+    }
+    sdThrottlerCtr++;  // if we update the SmartDash every cycle it overruns and triggers the watchdog timer
+    if( sdThrottlerCtr > 50)
+    {
       SmartDashboard.putNumber("Daisy Index", daisyIndex);
+      SmartDashboard.putNumber("Daisy Ball Count", ballCount);
+      sdThrottlerCtr = HopperConstants.sdThrottleReset;
     }
   }
   
@@ -204,6 +210,7 @@ public class HopperSubsystem extends SubsystemBase {
       System.out.println("HopperSubsystem Setting the hopper setpoint to " + m_setpoint);
     }
     m_hopperMotor.set(ControlMode.Position, m_setpoint); 
+    resetBallCount();
   }
 
   /**
@@ -324,7 +331,36 @@ public class HopperSubsystem extends SubsystemBase {
    * returns true if we have indexed 5 balls
    */
   public boolean daisyIsFull() {
-    return (daisyIndex % 6) >= 5;
+    return ballCount >= 5;
+  }
+
+  /**
+   * returns true if there are fewer than 5 balls in Daisy
+   */
+  public boolean okToAdvance() {
+    return ballCount <= 4;
   }
     
+  /**
+   * set the ball count
+   * @param bc the number to set it to
+   */
+  public void setBallCount( int bc) {
+    ballCount = bc;
+  }
+  public void setBallCountTo3(){
+    setBallCount(3);
+  }
+
+  public int incBallCount() {
+    ballCount ++;
+    return ballCount;
+  }
+  public int decBallCount() {
+    ballCount--;
+    return ballCount;
+  }
+  public void resetBallCount() {
+    ballCount = 0;
+  }
 }

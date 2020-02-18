@@ -172,9 +172,10 @@ public final class Constants {
 
     public static final double DAISY_OFFSET = 0;
     public static final double DARK_THRESH = 0.5;
-    public static final int PHOTO_NUM_SAMPLES = 12; // number of samples (one every 0.02 seconds) over which we want to 
-      //average the photodiode’s input to make sure we only trigger when a ball’s really there
-    public static final double PHOTO_ALPHA =  1.0 / PHOTO_NUM_SAMPLES; // for IIR filtering of photodiode input
+    // number of samples (one every 0.02 seconds) over which we want to 
+    //average the photodiode’s input to make sure we only trigger when a ball’s really there
+    public static final int PHOTO_NUM_SAMPLES = 12; 
+    public static final int sdThrottleReset = 25; // start counting from here to 50 for how often to update the SmartDashboard
     
   }
 
