@@ -44,11 +44,11 @@ public class UnloadCommand extends CommandBase {
             new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
             new WaitCommand( waitATick), // give the vision processor a chance to find the RFT
             new ParallelCommandGroup( // waits for both to end
-                new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance, end when it's there
+                new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
                 new VisionAimCommand( m_swerve, rft_) // aim the robot
             ),
             new ParallelRaceGroup(
-                new ThrowToTargetCommand(m_Thrower, rft_),  // never ends
+                new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
                 new MoveHopperCommand(m_Hopper, 6)
             ),
             new SetThrowerSpeedCommand(m_Thrower, 0),

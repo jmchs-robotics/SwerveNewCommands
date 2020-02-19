@@ -42,7 +42,7 @@ public class Paths { // extends CommandBase {
         new WaitCommand( 2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
         //new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
         //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
-        // TODO: UnloadCommand().  does its own VisionAim. Delete any last WaitCommand()
+        // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
         
         new VisionAimCommand( m_swerve, rft_), // aim at RFT
         new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
@@ -79,7 +79,7 @@ public class Paths { // extends CommandBase {
           )
         ),
         
-        new SpinUpThrowerCommand(m_Thrower, rft_),  // set thrower speed to vision distance
+        new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance
         new VisionAimCommand( m_swerve, rft_)
 */
         // to add:

@@ -128,6 +128,14 @@ public final class Constants {
     public static final boolean TUNE = true;
   }
 
+  // vision coprocessor computes distance as inverse of width of target
+  // if robot is at an angle (i.e. not straight on) then the coprocessor will think the target is farther than it is
+  // by a factor of the cos(angle from straight on), i.e. the projection of the target
+  // set this to true to multiply the distance returned by vision to the angle of the robot's pose,
+  // i.e. to scale the distance back down
+  public static final class ThrowerVision {
+    public static final boolean ADAPT_SPEED_TO_POSE_ANGLE = true;
+  }
 
   public static final class ThrowerMotor {
     public static final int THROWER_MASTER_ID = 14;
@@ -217,18 +225,24 @@ public final class Constants {
 	  public static boolean kMotorInvert = false;
 
     // set to true to put PID and other data on the smart dashboard
-
     public static final boolean TUNE = true;
     
   }
 
+  /** 
+   * which DIO ports control which LEDs
+   */
   public static final class LED {
     public static final int GREEN = 0;
     public static final int SPOTLIGHT = 1;
   }
 
+  /** 
+   * autonomous 
+   */
   public static final class AUTO {
     public static final double DISTANCE_CHECK_TIME = 0.25;
     public static final boolean TUNE = true;
   }
+
 }
