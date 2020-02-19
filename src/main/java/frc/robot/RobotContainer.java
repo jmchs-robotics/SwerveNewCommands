@@ -187,7 +187,7 @@ public class RobotContainer {
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_LeftTrigger.whenHeld(
         //new SequentialCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, -700).perpetually() // m_Thrower.getThrowerSpeed())
+          new SetThrowerSpeedCommand(m_Thrower, -ThrowerLUT.DEFAULT_RPM).perpetually() // m_Thrower.getThrowerSpeed())
           //new ParallelCommandGroup( 
            // new SetThrowerSpeedCommand( m_Thrower, 700),
             //new MoveHopperCommand(m_Hopper, 6)
