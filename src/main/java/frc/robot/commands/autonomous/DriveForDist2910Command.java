@@ -67,7 +67,7 @@ public class DriveForDist2910Command extends CommandBase {
 
         this.distance = Math.sqrt(distRight * distRight + distForward * distForward);
         // 191206 this PID isn't working... probably needs more P.  Original is 0.02, 0, 0
-        angleErrorController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
+        angleErrorController = new PIDController(DrivetrainConstants.DFD_ROTATION_kP, DrivetrainConstants.DFD_ROTATION_kI, DrivetrainConstants.DFD_ROTATION_kD);
         angleErrorController.enableContinuousInput(0, 360);
         angleErrorController.reset();
         /*

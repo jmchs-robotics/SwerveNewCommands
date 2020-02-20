@@ -78,6 +78,12 @@ public final class Constants {
     public static final double ROTATION_kI = 0.0;
     public static final double ROTATION_kD = 0.0;
 
+    // PID for controlling rotation in DriveForDist2910Command
+    // they had set .02, 0, 0 
+    public static final double DFD_ROTATION_kP = 0.03;
+    public static final double DFD_ROTATION_kI = 0.0;
+    public static final double DFD_ROTATION_kD = 0.0;
+
     public static final boolean TUNE = true;
   }
 
