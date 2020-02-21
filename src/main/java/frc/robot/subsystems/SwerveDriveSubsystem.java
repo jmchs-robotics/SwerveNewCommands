@@ -84,6 +84,11 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         rotationController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
     }
 
+    public void periodic() {
+      if( DrivetrainConstants.TUNE) {
+        SmartDashboard.putNumber( "Module 0 Max PID output", mSwerveModules[0].getDriveMotor().getPIDController().getOutputMax());
+      }
+    }
     /**
      * compute the angles of the four modules and return a vector of them
      * uses private member isFieldOriented to decide to adjust based on gyro reading
@@ -264,8 +269,33 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       setBrake(true);
     }
 
-    // ALL the PID methods. Like, all of them. There are a lot.
+    /**
+     * set the min, max allowable output for all drive PIDs
+     * @param min
+     * @param max
+     */
+    public void setDrivePIDOutputRange( double min, double max) {
+      for( int i=0; i<4; i++) {
+        mSwerveModules[i].setDrivePIDOutputRange(min, max);
+      }
+    }
 
+    /**
+     * So can set the PID output range from an InstantCommand
+     */
+    public void setDrivePIDToSlow() {
+      double x = 0.3;
+      setDrivePIDOutputRange(-1 * x, x);
+    }
+
+    public void setDrivePIDToFast() {
+      double x = 1;
+      setDrivePIDOutputRange(-1 * x, x);
+    }
+    /*
+     # from Eric 1/2020
+     * ALL the PID methods. Like, all of them. There are a lot.
+     */
     public void setForwardSetpoint(double setpoint){
       forwardController.setSetpoint(setpoint);
     }

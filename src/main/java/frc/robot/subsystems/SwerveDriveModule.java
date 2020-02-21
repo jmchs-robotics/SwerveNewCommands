@@ -368,6 +368,14 @@ public class SwerveDriveModule extends SubsystemBase {
     }
 
     /**
+     * set the max and min output the PID can provide
+     * @param min minimum output
+     * @param max maximum output
+     */
+    public void setDrivePIDOutputRange(double min, double max) {
+        m_pidControllerDrive.setOutputRange(min, max);
+    }
+    /**
      *  Set the max acceleration and velocity for Smart Motion (Magic Motion for Talons)
      * TODO: Need to look up the Talon command and then find the equivalent Spark Max  
      * command (for current version of API), 

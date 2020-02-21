@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.util.*;
+// import jdk.vm.ci.code.InstalledCode;
 import frc.robot.commands.*;
 import frc.robot.commands.WaitCommand;
 import frc.robot.subsystems.SwerveDriveModule;
@@ -40,7 +41,9 @@ public class Paths { // extends CommandBase {
         new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
         //new SetWheelAngleCommand( m_swerve, -18),  // point the wheels in the direction we want to go
         new WaitCommand( 2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+        // new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
         //new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
+        // new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
         //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
         // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
         
