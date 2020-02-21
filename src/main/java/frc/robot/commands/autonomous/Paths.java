@@ -89,20 +89,32 @@ public class Paths { // extends CommandBase {
         // ThrowToTarget while spinning Diasy 1 full rotation
       );
     }
-/*
-    @Override
-    public void initialize() {   
-    }
-
-    @Override
-    public boolean isFinished() {
-
-        return false;
-    }
-
-    @Override
-    public void end( boolean interrupted) {
-
-    }
+    
+    /**
+     * PathG
+     * Start against left fence, with front of robot against the fence 
+     * and intake toward our driver station (-90 degrees from front-facing).
+     * Robot on our driver's side of initiation line
+     */
+    /*
+    PathG
+    // change field orientation offset by -90
+    // angle wheels at -95, to drive mostly left and a little backwards (robot oriented), i.e. backwards and a little right (field oreinted)
+    // 130 = initiation line to table edge.  31.5 = width of robot.  12.5 = beater bar outside the robot + buffer distance
+    // 8 = (56 - 40.5) / 2 = (table width - robot length) / 2
+    // field oriented, drive at full speed backwards (130 - 31.5 - 12.5) and right 8
+    // intake down
+    // turn robot -20 degrees (robot oriented), which makes ball nearer fence 3.4" closer to the beater bar and the ball closer to the center of the field 3.4" farther from the beater bar
+    // angle wheels at -70
+    // intake on (inward)
+    // 8 = buffer distance. 7 = ball diameter. 7 = 2nd ball diameter.
+    // drive at slow speed backwards ( 8+7+7) and zero to the right
+    // pause, to intake second ball
+    // ange wheels at 
+    // 162 = half field width. 8 = how far we already moved from fence. 20 = half the robot's length. 
+    // 65 = center of field to center of goal. 20 = half the robot's lenght. 14 = safety distance if alliance robot is aligned center of goal and still on initiation line.
+    // drive at full speed forward ((130 - 31.5 - 12.5) + ( 8+7+7) - 6) and right (162-8-20+65-20-14)
+    // turn robot +20 degrees (robot oriented) to face forwards
+    // VisionAim and Unload
     */
 }
