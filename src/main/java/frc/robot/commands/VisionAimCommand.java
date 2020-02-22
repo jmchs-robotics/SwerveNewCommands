@@ -49,9 +49,10 @@ public class VisionAimCommand extends CommandBase {
         this.drivetrain = drivetrain;
 
         this.targetAngle = 0;
-        angleController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
+        angleController = new PIDController(0.005, 0, 0); // DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
+        m_vision = vision;
         /*
         angleController = new PIDController(0.03, 0, 0.075, new PIDSource() {
             @Override
@@ -117,7 +118,7 @@ public class VisionAimCommand extends CommandBase {
             //previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
           }
         double rotation = angleController.calculate( previousXCoord * Vision.RFT_PIXELS_TO_DEGREES);
-        rotation = Math.min( -0.5, Math.max( 0.5, rotation));  // clamp
+        // rotation = Math.min( 0.5, Math.max( -0.5, rotation));  // clamp
         for (int i = 0; i < 4; i++)
             drivetrain.getSwerveModule(i).setTargetSpeed(rotation);
     }
