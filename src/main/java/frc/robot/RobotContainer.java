@@ -183,13 +183,13 @@ public class RobotContainer {
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     // spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_LeftTrigger.whenHeld(
-        //new SequentialCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, -700).perpetually() // m_Thrower.getThrowerSpeed())
+        new SequentialCommandGroup(
+          new SetThrowerSpeedCommand(m_Thrower, -700).perpetually(), // m_Thrower.getThrowerSpeed())
           //new ParallelCommandGroup( 
            // new SetThrowerSpeedCommand( m_Thrower, 700),
-            //new MoveHopperCommand(m_Hopper, 6)
+            new MoveHopperCommand(m_Hopper, 6)
           //)
-        //)
+        )
       );
 
       // Thrower on primary controller, Right Trigger throw with vision
@@ -202,8 +202,8 @@ public class RobotContainer {
           // TODO: drivetrain rotate to target, Parallel Command Group (simultaneously) with spin up thrower.
           new SpinUpThrowerCommand(m_Thrower, rft_),
          // new ParallelRaceGroup(
-            new ThrowToTargetCommand(m_Thrower, rft_)//,
-            //new MoveHopperCommand(m_Hopper, 6)
+            new ThrowToTargetCommand(m_Thrower, rft_),
+            new MoveHopperCommand(m_Hopper, 6)
           //)
           // Turning off LED is handled by thrower default command
         )
@@ -227,8 +227,8 @@ public class RobotContainer {
       new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
     );
 
-    // Intake
-    m_secondaryController_Start.whenPressed(
+    // Intake //Intake is good... right direction and everything 2/22
+    m_primaryController_Start.whenPressed(
       new IntakeRecieveCommand(m_Intake)
     ).whenReleased(m_Intake :: stopMotor, m_Intake);
     // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
@@ -248,7 +248,7 @@ public class RobotContainer {
       new InstantCommand(m_Intake :: raiseIntake, m_Intake)
     );
 
-    // Hopper (Daisy)
+    // Hopper (Daisy) // Goes too far and only once
     m_secondaryController_Back.whenPressed(
       new MoveHopperCommand(m_Hopper, -1)
     );

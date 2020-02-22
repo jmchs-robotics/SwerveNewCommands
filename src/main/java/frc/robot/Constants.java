@@ -51,11 +51,11 @@ public final class Constants {
   }
 
   public static final class DrivetrainConstants {
-    // set for SwerveyJr 191207
-    public static final double WHEELBASE = 22;
-    public static final double TRACKWIDTH = 19.5;
-    public static final double WIDTH = 25.75;
-    public static final double LENGTH = 28;
+    // set for SwerveyJr 191207 //change to Nutmeg
+    public static final double WHEELBASE = 27.5;
+    public static final double TRACKWIDTH = 18.5;
+    public static final double WIDTH = 25;
+    public static final double LENGTH = 34;
 
     // PID constants for swerve modules
     public static final double ANGLE_kP = 3.0;
@@ -187,7 +187,7 @@ public final class Constants {
 	  */
     public static final int kPIDLoopIdx = 0;
 
-    public static final double kP = 0.4; // 2e-2;
+    public static final double kP = 0.8; // 2e-2;
     public static final double kI = 0; // 1e-6;
     public static final double kD = 0.0;
     public static final double kF = 0; // 2e-6;
