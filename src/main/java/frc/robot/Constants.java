@@ -52,8 +52,8 @@ public final class Constants {
 
   public static final class DrivetrainConstants {
     // set for SwerveyJr 191207
-    public static final double WHEELBASE = 22;
-    public static final double TRACKWIDTH = 19.5;
+    public static final double WHEELBASE = 27.5;
+    public static final double TRACKWIDTH = 18.5;
     public static final double WIDTH = 25.75;
     public static final double LENGTH = 28;
 
