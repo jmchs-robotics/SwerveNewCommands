@@ -229,8 +229,11 @@ public class HopperSubsystem extends SubsystemBase {
   public void nextSlot(){
     // m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
     // daisyIndex = (daisyIndex+1) % 6;
-    daisyIndex++;
-    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    if(atSetpoint(0.01)){
+      daisyIndex++;
+      m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    }
+    
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
@@ -241,8 +244,10 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy 1/6 rotation backward, from current position
    */
   public void previousSlot() {
-    daisyIndex--;
-    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    if(atSetpoint(0.01)){
+      daisyIndex--;
+      m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+    }
 
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
 
@@ -252,7 +257,7 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   public void moveForwardSlowly() {
-    m_hopperMotor.set(ControlMode.PercentOutput, .2);
+    m_hopperMotor.set(ControlMode.PercentOutput, 0.2);
     if( HopperPIDs.TUNE) {
       SmartDashboard.putString("MOVING DAISY SLOWLY", "shooooooooosh!!");
     }
