@@ -28,7 +28,7 @@ import frc.robot.Constants.ColorTargets;
 public class ClimbSubsystem extends SubsystemBase {
   //private Spark  m_controlPanelSpinner;
   private VictorSPX m_climbVictor;
-  private DoubleSolenoid m_climbSolenoid;
+  private DoubleSolenoid m_climbSolenoid, m_extendSolenoid;
 
   private double m_forwardSpeed;
   private double m_reverseSpeed;
@@ -40,14 +40,15 @@ public class ClimbSubsystem extends SubsystemBase {
   public ClimbSubsystem() {
     m_climbVictor = new VictorSPX(ClimbConstants.climbVictorID);
     m_climbSolenoid = new DoubleSolenoid(ClimbConstants.soleniodForward, ClimbConstants.soleniodBackward);
+    m_extendSolenoid = new DoubleSolenoid(ClimbConstants.extendSolenoidForward, ClimbConstants.extendSolenoidReverse);
     m_forwardSpeed = ClimbConstants.forwardSpeed;
     m_reverseSpeed = ClimbConstants.reverseSpeed;
 
     if (ClimbConstants.TUNE){
-      SmartDashboard.putNumber("Winch Output Percent", m_climbVictor.getMotorOutputPercent());
-      SmartDashboard.putBoolean("Arm Raised????", isRaised());
-      SmartDashboard.putNumber("Intake Motor Forward Speed", m_forwardSpeed);
-      SmartDashboard.putNumber("Intake Motor Reverse Speed", m_reverseSpeed);
+      SmartDashboard.putNumber("Climb Motor Output Percent", m_climbVictor.getMotorOutputPercent());
+      SmartDashboard.putBoolean("Climb Raised", isRaised());
+      SmartDashboard.putNumber("Climb Motor Forward Speed", m_forwardSpeed);
+      SmartDashboard.putNumber("Climb Motor Reverse Speed", m_reverseSpeed);
     }
   }
 
@@ -56,10 +57,10 @@ public class ClimbSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     if (ClimbConstants.TUNE){
       double fs, rs;
-      SmartDashboard.putNumber("Intake Motor Output Percent", m_climbVictor.getMotorOutputPercent());
-      SmartDashboard.putBoolean("Intake Raised????", isRaised());
-      fs = SmartDashboard.getNumber("Intake Motor Forward Speed", 0);
-      rs = SmartDashboard.getNumber("Intake Motor Reverse Speed", 0);
+      SmartDashboard.putNumber("Climb Motor Output Percent", m_climbVictor.getMotorOutputPercent());
+      SmartDashboard.putBoolean("Climb Raised", isRaised());
+      fs = SmartDashboard.getNumber("Climb Motor Forward Speed", 0);
+      rs = SmartDashboard.getNumber("Climb Motor Reverse Speed", 0);
 
       if( fs != m_forwardSpeed) {
         m_forwardSpeed = fs;
@@ -72,13 +73,15 @@ public class ClimbSubsystem extends SubsystemBase {
     }
   }
 
-
   /**
    * Sets the soleoid to forward.
    */
   public void raiseArm(){
     m_climbSolenoid.set(Value.kForward);
     m_raised = true;
+  }
+  public void extendArm() {
+    m_extendSolenoid.set(Value.kForward);
   }
 
   /**
@@ -88,7 +91,9 @@ public class ClimbSubsystem extends SubsystemBase {
     m_climbSolenoid.set(Value.kReverse);
     m_raised = false;
   }
-
+  public void retractArm() {
+    m_extendSolenoid.set(Value.kReverse);
+  }
   /**
    * Sets the solenoid to off.
    */
@@ -97,7 +102,7 @@ public class ClimbSubsystem extends SubsystemBase {
   }
 
   /**
-   * Spin the control panel.
+   * Run winch
    * @param output The percent to set the output to.
    */
   public void setWinchMotor(double output){

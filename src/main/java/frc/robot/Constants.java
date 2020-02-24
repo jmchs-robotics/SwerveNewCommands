@@ -94,14 +94,6 @@ public final class Constants {
   }
 
   /**
-   * Contains the CAN IDs of the elevator SparkMax motors
-   */
-  public static final class CarriageMotors {
-    public static final int LEFT_MOTOR = 21;
-    public static final int RIGHT_MOTOR = 22;
-  }
-
-  /**
    * Constants for the color sensor targets, in RGB arrays
    */
   public static final class ColorTargets {
@@ -111,8 +103,7 @@ public final class Constants {
     public static final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     public static final double cpSpinnerSpeed = 0.5;
   }
-
-
+  
   /**
    * Constants for the control panel
    */
@@ -131,6 +122,8 @@ public final class Constants {
     public static final int climbVictorID = 8;
     public static final int soleniodForward = 4;
     public static final int soleniodBackward = 5;
+    public static final int extendSolenoidForward = 6;
+    public static final int extendSolenoidReverse = 7;
 
     // motor run characteristics
     public static final double forwardSpeed = 0.7;
