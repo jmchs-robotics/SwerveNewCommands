@@ -149,7 +149,13 @@ public class HopperSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
+    // keep track of photodiode
+    photodiodeMovingWindow();
+
+    // put PIDs on SmartDashboard and read them if the user changes them
     if(HopperPIDs.TUNE){
+      SmartDashboard.putString("MOVING DAISY SLOWLY", "");
       double p = SmartDashboard.getNumber("Hopper P", 0);
       double i = SmartDashboard.getNumber("Hopper I", 0);
       double d = SmartDashboard.getNumber("Hopper D", 0);
@@ -196,6 +202,11 @@ public class HopperSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Daisy Ball Count", ballCount);
       sdThrottlerCtr = HopperConstants.sdThrottleReset;
     }
+    if( sdThrottlerCtr == 2 || sdThrottlerCtr == 14 || sdThrottlerCtr == 27 || sdThrottlerCtr == 41 ) {
+      boolean b = photoDiodeAveIsDark();
+      SmartDashboard.putBoolean("Photodiode Is Dark", b);
+      SmartDashboard.putNumber("Photodiode Instant value", m_lightSensor.getVoltage());
+    }
   }
   
 
@@ -203,7 +214,6 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy one full rotation, from current position
    */
   public void dischargeAll(){
-    // m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION;
     daisyIndex += 6;
     m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
     if( HopperPIDs.TUNE) {
@@ -224,43 +234,21 @@ public class HopperSubsystem extends SubsystemBase {
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
-    }    
-    if(daisyIndex < 6) {
-      daisyIndex ++;
-    }
-    else{
-      daisyIndex = 0;
-    }
-    
+    }       
   }
 
   /**
    *  Move the daisy 1/6 rotation backward, from current position
    */
   public void previousSlot() {
-    daisyIndex++;
+    daisyIndex--;
     m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
-    /*
-    m_setpoint = m_hopperMotor.getSelectedSensorPosition() - HopperConstants.ONE_ROTATION / 6.0;
- 
-    if(daisyIndex > 0) {
-      daisyIndex --;
-    }
-    else{
-      daisyIndex = 6;
-    }
-    */
+
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
 
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION BACKWARD, to index", daisyIndex);
-    if(daisyIndex > 0) {
-      daisyIndex --;
     }
-    else{
-      daisyIndex = 6;
-    }
-  }
   }
 
   public void moveForwardSlowly() {

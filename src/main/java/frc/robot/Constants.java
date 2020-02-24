@@ -30,7 +30,8 @@ public final class Constants {
   public static final class Vision {
     public static final boolean SHOW_DEBUG = false;
     public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
-    public static final double RFT_PIXELS_TO_DEGREES = 320.0 / 30.0; // approximation/guess 2/13/20
+    public static final double RFT_PIXELS_TO_DEGREES = 30.0 / 320; 
+    public static final boolean TUNE = true;
   }
   
   /**
@@ -58,7 +59,7 @@ public final class Constants {
     public static final double LENGTH = 28;
 
     // PID constants for swerve modules
-    public static final double ANGLE_kP = 3.0;
+    public static final double ANGLE_kP = 1.5; // 3.0;
     public static final double ANGLE_kI = 0.0;
     public static final double ANGLE_kD = 0.0;    
 
@@ -83,6 +84,11 @@ public final class Constants {
     public static final double DFD_ROTATION_kP = 0.03;
     public static final double DFD_ROTATION_kI = 0.0;
     public static final double DFD_ROTATION_kD = 0.0;
+
+    // PID for controlling pose angle in SetPoseAngle2910 and VisionAim* commands.
+    public static final double POSE_ANGLE_kP = 0.03;
+    public static final double POSE_ANGLE_kI = 0.0;
+    public static final double POSE_ANGLE_kD = 0.0;
 
     public static final boolean TUNE = true;
   }
@@ -184,8 +190,8 @@ public final class Constants {
     public static final double ONE_ROTATION = 4096;
     public static final int ALLOWABLE_ERROR = 0;
 
-    public static final double DAISY_OFFSET = 0;
-    public static final double DARK_THRESH = 0.5;
+    public static final double DAISY_OFFSET = 10 * 4096/360;
+    public static final double DARK_THRESH = 3.2; // between 0 (pitch black) and 5 (bright light)
     // number of samples (one every 0.02 seconds) over which we want to 
     //average the photodiode’s input to make sure we only trigger when a ball’s really there
     public static final int PHOTO_NUM_SAMPLES = 12; 
@@ -205,7 +211,7 @@ public final class Constants {
 	  */
     public static final int kPIDLoopIdx = 0;
 
-    public static final double kP = 0.4; // 2e-2;
+    public static final double kP = 0.8; // 2e-2;
     public static final double kI = 0; // 1e-6;
     public static final double kD = 0.0;
     public static final double kF = 0; // 2e-6;

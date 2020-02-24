@@ -1,4 +1,4 @@
-package frc.robot.commands.autonomous;
+package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
@@ -8,36 +8,39 @@ import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.SwerveDriveModule;
 import frc.robot.Constants.AUTO;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.util.SocketVisionWrapper;
+import frc.robot.Constants.Vision;
 
 /**
  * Command to turn the robot (set the robot's pose) to the desired angle
  * Constructor takes robot's drivetrain and desired angle
  */
-public class SetPoseAngle2910Command extends CommandBase {
+public class VisionAimGyroCommand extends CommandBase {
     private static final double ANGLE_CHECK_TIME = 0.1;
-    private static final double TARGET_ANGLE_BUFFER = 5.0;
+    private static final double TARGET_ANGLE_BUFFER = 2.5;
 
     private final SwerveDriveSubsystem drivetrain;
-    private final double targetAngle;
+    private double targetAngle = 0;
     private final PIDController angleController;
     private final Timer finishTimer = new Timer();
     private boolean isTimerStarted = false;
+    SocketVisionWrapper m_vision;
 
     /**
 
-     * turn the robot to the targetAngle
-     Field oriented.
+     * turn the robot to angle reported by the vision coprocessor (in intialize()), 
+     *   using the gyro while turninng (in execute())
      * @param drivetrain (SwerveDriveSubsystem)
      * @param targetAngle angle to turn to, in degrees (double) Positive is CCW, negative is CW.
      */
-    public SetPoseAngle2910Command(SwerveDriveSubsystem drivetrain, double targetAngle) {
+    public VisionAimGyroCommand(SwerveDriveSubsystem drivetrain, SocketVisionWrapper vision) {
         this.drivetrain = drivetrain;
-
+        m_vision = vision;
         /*if (targetAngle < 0)
             targetAngle += 360;            
         this.targetAngle = targetAngle;
         */
-        this.targetAngle = (targetAngle + 360) % 360; // normalize to range [0,360)
+        // this.targetAngle = (targetAngle + 360) % 360; // normalize to range [0,360)
         angleController = new PIDController(DrivetrainConstants.POSE_ANGLE_kP, DrivetrainConstants.POSE_ANGLE_kI, DrivetrainConstants.POSE_ANGLE_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
@@ -67,13 +70,26 @@ public class SetPoseAngle2910Command extends CommandBase {
         angleController.setOutputRange(-0.5, 0.5);
         angleController.setContinuous(true);
 */
-        angleController.setSetpoint(targetAngle);
-
+        
         addRequirements(drivetrain);
     }
 
     @Override
     public void initialize() {
+        double x;
+        // set target pose angle based on current pose angle and angle of vision target
+        if(m_vision.get().get_direction() != "nada"){
+            x = m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET; // target position in field of view of camera, in pixels from center
+          } else {
+              if( Vision.TUNE) {
+                  System.out.println( "VisionAimGyroCommand: read NADA from vision socket.");
+              }
+            x = 0; 
+          }
+        targetAngle = drivetrain.getGyroAngle() - x * Vision.RFT_PIXELS_TO_DEGREES;
+        
+        angleController.setSetpoint(targetAngle);
+
         finishTimer.stop();
         finishTimer.reset();
         isTimerStarted = false;
@@ -96,7 +112,7 @@ public class SetPoseAngle2910Command extends CommandBase {
 
         //angleController.enable();
         if( DrivetrainConstants.TUNE) {
-            System.out.printf("SetPoseAngle2910Command Turning to %.3f%n", targetAngle);
+            System.out.printf("VisionAimGyroCommand Turning to %.3f%n", targetAngle);
         }
     }
 
@@ -132,7 +148,7 @@ public class SetPoseAngle2910Command extends CommandBase {
     @Override
     public void end( boolean isInterrupted) {
         if( DrivetrainConstants.TUNE) {
-            System.out.println("SetPoseAngle2910Command Done turning");
+            System.out.println("VisionAimGyroCommand: Done turning");
         }
         // angleController.disable();
         drivetrain.holonomicDrive(0, 0, 0);

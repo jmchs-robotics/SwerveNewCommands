@@ -49,7 +49,7 @@ public class VisionAimCommand extends CommandBase {
         this.drivetrain = drivetrain;
 
         this.targetAngle = 0;
-        angleController = new PIDController(0.005, 0, 0); // DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
+        angleController = new PIDController(DrivetrainConstants.POSE_ANGLE_kP, DrivetrainConstants.POSE_ANGLE_kI, DrivetrainConstants.POSE_ANGLE_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
         m_vision = vision;

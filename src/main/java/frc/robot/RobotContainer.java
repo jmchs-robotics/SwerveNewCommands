@@ -236,11 +236,7 @@ public class RobotContainer {
 
     //
     // Intake
-    //
-    m_secondaryController_Start.whenPressed(
-      new IntakeRecieveCommand(m_Intake)
-    ).whenReleased(m_Intake :: stopMotor, m_Intake);
-
+    // Intake forward/reverse are on 2nd game controller, left joystick, Y axis
     m_secondaryController_RightBumper.whenPressed(
       new InstantCommand(m_Intake :: lowerIntake, m_Intake)
     );
@@ -288,19 +284,17 @@ public class RobotContainer {
     //
     // Hopper (Daisy)
     //
-    m_secondaryController_Back.whenPressed(
-      new MoveHopperCommand(m_Hopper, -1)
-    );
-    m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 1));
-    m_secondaryController_LeftTrigger.whileHeld(
-      new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
-    ); 
-    m_secondaryController_LeftTrigger.whenReleased(
-      new InstantCommand( m_Hopper::stopMotor, m_Hopper)
-    ); // stop
+    // m_secondaryController_Back.whenPressed(new MoveHopperCommand(m_Hopper, -1));
+    m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 6));
+    m_secondaryController_DPad_Up.whenPressed(new MoveHopperCommand(m_Hopper,1));
+    m_secondaryController_DPad_Down.whenPressed(new MoveHopperCommand(m_Hopper, -1));
+    m_secondaryController_LeftTrigger.whileHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
+    m_secondaryController_LeftTrigger.whenReleased( new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
     m_secondaryController_DPad_Up.whileHeld(m_Hopper :: smartDashIndex, m_Hopper ); // Index ?
 
+    //
     //Climb
+    //
     m_primaryController_DPad_Up.whileHeld(new ClimbWinchUpCommand(m_Climb));
     m_primaryController_DPad_Down.whileHeld(new ClimbWinchDownCommand(m_Climb));
     
@@ -432,17 +426,25 @@ public class RobotContainer {
       new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
       new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
       new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
-      //new SetWheelAngleCommand( m_swerve, -18),  // point the wheels in the direction we want to go
+      new SetWheelAngleCommand( m_swerve, -18-90),  // point the wheels in the direction we want to go
       new WaitCommand( 2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
-      // new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
-      //new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
-      // new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
+      new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
+      new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
+      new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
       //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
       // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
-      
-      new VisionAimCommand( m_swerve, rft_), // aim at RFT
+      new WaitCommand( 1),
+      new ParallelCommandGroup( // waits for both to end
+                new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
+                new VisionAimCommand( m_swerve, rft_) // aim the robot
+      ),
       new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
-
+      new ParallelRaceGroup(
+                new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
+                new MoveHopperCommand(m_Hopper, 6)
+      ),
+      new SetThrowerSpeedCommand(m_Thrower, 0),
+            
       // very last thing
       new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn off green LED
     );
