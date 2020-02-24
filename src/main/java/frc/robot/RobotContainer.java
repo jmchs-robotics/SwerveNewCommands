@@ -151,7 +151,7 @@ public class RobotContainer {
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
     // Left Trigger: spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
-      m_primaryController_LeftTrigger.whenHeld(
+      m_primaryController_DPad_Up.whenHeld(
         new SequentialCommandGroup(
           new SetThrowerSpeedCommand(m_Thrower, -ThrowerLUT.DEFAULT_RPM).perpetually(), // m_Thrower.getThrowerSpeed())
           new ParallelCommandGroup( 
@@ -198,6 +198,9 @@ public class RobotContainer {
 
     //
     // m_secondaryController_RightTrigger  Intake w/ Daisy Advanced sequence
+    //
+    // enable (and test) when we have solid non-jamming Daisy operation
+    //
     // if Daisy isn't full, run intake beater bar inward until a ball is in the loading slot,
     //   and then if have less than 5 balls pulse the beater bar in reverse and move Daisy one index forward
     //     otherwise reverse the beater bar
