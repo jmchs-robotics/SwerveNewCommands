@@ -146,6 +146,18 @@ public class HopperSubsystem extends SubsystemBase {
     
   }
 
+  /**
+   * Sets the daisy index to the last slot passed.
+   * @param moveToSlot Updates the setpoint for the daisy system to move to this slot, if true.
+   */
+  public void selectNearestSlot(boolean moveToSlot){
+    daisyIndex = (int) (((m_setpoint - HopperConstants.DAISY_OFFSET) / HopperConstants.ONE_ROTATION) * 360.0 / 60.0);
+    if(moveToSlot){
+      m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
+      m_hopperMotor.set(ControlMode.Position,m_setpoint);
+    }
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -233,7 +245,7 @@ public class HopperSubsystem extends SubsystemBase {
       daisyIndex++;
       m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
     }
-    
+
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
