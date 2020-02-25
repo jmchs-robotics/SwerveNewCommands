@@ -25,6 +25,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
+  private int m_sdThrottleCtr = 0;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -50,7 +52,18 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    //SmartDashboard.putNumber("getTriggerAxis", m_primaryController.getTriggerAxis( Hand.kLeft));
+
+    m_sdThrottleCtr ++;
+    if( m_sdThrottleCtr % 10 == 0) {
+      String a = "NADA";
+      try {
+        a = m_robotContainer.getRftSocketReader().get().get_direction();
+      } catch( Exception e ) {
+      }
+      a = a + a + a;
+      SmartDashboard.putString("RFT Vision", a);
+    }
+    m_sdThrottleCtr = m_sdThrottleCtr % 50;
   }
 
   /**

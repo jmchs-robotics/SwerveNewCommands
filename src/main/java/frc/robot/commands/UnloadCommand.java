@@ -45,7 +45,7 @@ public class UnloadCommand extends CommandBase {
             new WaitCommand( waitATick), // give the vision processor a chance to find the RFT
             new ParallelCommandGroup( // waits for both to end
                 new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
-                new VisionAimCommand( m_swerve, rft_) // aim the robot
+                new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
             ),
             new ParallelRaceGroup(
                 new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
