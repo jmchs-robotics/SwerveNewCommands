@@ -77,6 +77,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             module.setAngleKD(DrivetrainConstants.ANGLE_kD);
             module.setAngleKI(DrivetrainConstants.ANGLE_kI);
             module.setAngleKP(DrivetrainConstants.ANGLE_kP);
+            module.zeroDistance();  // 200223 set drive encoder to zero
         }
 
         strafeController = new PIDController(DrivetrainConstants.STRAFE_kP, DrivetrainConstants.STRAFE_kI, DrivetrainConstants.STRAFE_kD);
