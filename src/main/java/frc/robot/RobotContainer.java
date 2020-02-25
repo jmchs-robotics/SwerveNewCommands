@@ -89,6 +89,8 @@ public class RobotContainer {
   // private final JoystickButton m_primaryController_Start = new JoystickButton(m_primaryController, XboxController.Button.kStart.value);
   // private final JoystickButton m_primaryController_Back = new JoystickButton(m_primaryController, XboxController.Button.kBack.value);
 
+  private final JoystickButton m_secondaryController_Back = new JoystickButton(m_secondaryController, XboxController.Button.kBack.value);
+
   // private final JoystickButton m_secondaryController_StickLeft = new JoystickButton(m_secondaryController, XboxController.Button.kStickLeft.value); // runs sample color
   // want b to start Pat Sajak rotation control
   private final JoystickButton m_secondaryController_B = new JoystickButton(m_secondaryController, 
@@ -186,6 +188,9 @@ public class RobotContainer {
       new InstantCommand(m_PatSajak :: turnSpinnerMotorOff, m_PatSajak)
     );
 
+    m_secondaryController_Back.whenPressed(
+      new InstantCommand(m_Thrower::turnOffLED, m_Thrower)
+    );
     //
     // Intake
     // Intake forward/reverse are on 2nd game controller, left joystick, Y axis
