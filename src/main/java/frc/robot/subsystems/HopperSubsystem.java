@@ -109,7 +109,7 @@ public class HopperSubsystem extends SubsystemBase {
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
     resetReference();  
-    resetIndex();
+    selectNearestSlot( false);
     //m_hopperMotor.set(ControlMode.Position, HopperConstants.DAISY_OFFSET);
     
     if(HopperPIDs.TUNE){
@@ -159,6 +159,7 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public void selectNearestSlot(boolean moveToSlot){
     m_setpoint = m_hopperMotor.getSelectedSensorPosition();
+    lastIndex = daisyIndex;
     // set the index to the prevous slot, from the current position 5% beyond the perfect slot location
     // assumes the position has already been normalized to the range [0,ONE_ROTATION)
     daisyIndex = (int) (((m_setpoint - HopperConstants.DAISY_OFFSET) * 1.05 / HopperConstants.ONE_ROTATION) * 360.0 / 60.0);
@@ -249,10 +250,11 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy 1/6 rotation forward, from current position
    */
   public void nextSlot(){
-    // only point to next index position if we were trying to advance and we've fully accomplished the advance
+    // only point to next index position if it's our very first move
+    // or we were trying to advance and we've fully accomplished the advance
     // or if the last attempt was to go backwards
     if(( lastIndex < daisyIndex && m_hopperMotor.getSelectedSensorPosition() > m_setpoint - .05*60/360*HopperConstants.ONE_ROTATION) 
-      || (lastIndex > daisyIndex)) {
+      || (lastIndex >= daisyIndex)) {
     //if(atSetpoint(0.01)){
       lastIndex = daisyIndex;
       daisyIndex++;
