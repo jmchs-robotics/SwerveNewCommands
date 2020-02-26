@@ -183,7 +183,7 @@ public final class Constants {
     public static final double ONE_ROTATION = 4096;
     public static final int ALLOWABLE_ERROR = 0;
 
-    public static final double DAISY_OFFSET = 10 * 4096/360;
+    public static final double DAISY_OFFSET = 20 * 4096/360;
     public static final double DARK_THRESH = 3.2; // between 0 (pitch black) and 5 (bright light)
     // number of samples (one every 0.02 seconds) over which we want to 
     //average the photodiode’s input to make sure we only trigger when a ball’s really there

@@ -50,6 +50,7 @@ public class HopperSubsystem extends SubsystemBase {
    * This will count up throughout the match, so if you want only the 0-6 range, use (daisyIndex%6)
    */
   private int daisyIndex;
+  private int lastIndex;
   private int ballCount = 0; // how many balls are currently loaded
   private int sdThrottlerCtr = 0;
   
@@ -107,7 +108,8 @@ public class HopperSubsystem extends SubsystemBase {
     
     m_setpoint = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
     
-    resetReference();  // not used between 1/26/20 and 2/14/20.
+    resetReference();  
+    resetIndex();
     //m_hopperMotor.set(ControlMode.Position, HopperConstants.DAISY_OFFSET);
     
     if(HopperPIDs.TUNE){
@@ -147,12 +149,22 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   /**
-   * Sets the daisy index to the last slot passed.
-   * @param moveToSlot Updates the setpoint for the daisy system to move to this slot, if true.
+   * Sets the daisy index to the last slot passed.  Called from teleopInit() and autoInit()
+   * Assume we've just loaded the balls before the start of the match.  We'll want to hand-advance Daisy
+   * so the balls won't jam at first move.  So assume that means aligning the petals with a position we mark on
+   * the side of the daisy.  That'd be about 25% ahead of as though the ball were just loaded by the intake.
+   * Then rounding the position down makes sense, and we instantly advance one to reveal the (rest of) the next
+   * slot.
+   * @param moveToSlot move the Daisy to the next slot, if true.
    */
   public void selectNearestSlot(boolean moveToSlot){
-    daisyIndex = (int) (((m_setpoint - HopperConstants.DAISY_OFFSET) / HopperConstants.ONE_ROTATION) * 360.0 / 60.0);
+    m_setpoint = m_hopperMotor.getSelectedSensorPosition();
+    // set the index to the prevous slot, from the current position 5% beyond the perfect slot location
+    // assumes the position has already been normalized to the range [0,ONE_ROTATION)
+    daisyIndex = (int) (((m_setpoint - HopperConstants.DAISY_OFFSET) * 1.05 / HopperConstants.ONE_ROTATION) * 360.0 / 60.0);
     if(moveToSlot){
+      lastIndex = daisyIndex;
+      daisyIndex++;
       m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
       m_hopperMotor.set(ControlMode.Position,m_setpoint);
     }
@@ -161,7 +173,6 @@ public class HopperSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
     // keep track of photodiode
     photodiodeMovingWindow();
 
@@ -216,12 +227,11 @@ public class HopperSubsystem extends SubsystemBase {
     }
     if( sdThrottlerCtr == 2 || sdThrottlerCtr == 14 || sdThrottlerCtr == 27 || sdThrottlerCtr == 41 ) {
       boolean b = photoDiodeAveIsDark();
-      SmartDashboard.putBoolean("Photodiode Is Dark", b);
+      SmartDashboard.putBoolean("Ball received", b);
       SmartDashboard.putNumber("Photodiode Instant value", m_lightSensor.getVoltage());
     }
   }
   
-
   /**
    *  Move the daisy one full rotation, from current position
    */
@@ -239,9 +249,12 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy 1/6 rotation forward, from current position
    */
   public void nextSlot(){
-    // m_setpoint = m_hopperMotor.getSelectedSensorPosition() + HopperConstants.ONE_ROTATION / 6.0;
-    // daisyIndex = (daisyIndex+1) % 6;
-    if(atSetpoint(0.01)){
+    // only point to next index position if we were trying to advance and we've fully accomplished the advance
+    // or if the last attempt was to go backwards
+    if(( lastIndex < daisyIndex && m_hopperMotor.getSelectedSensorPosition() > m_setpoint - .05*60/360*HopperConstants.ONE_ROTATION) 
+      || (lastIndex > daisyIndex)) {
+    //if(atSetpoint(0.01)){
+      lastIndex = daisyIndex;
       daisyIndex++;
       m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
     }
@@ -256,7 +269,12 @@ public class HopperSubsystem extends SubsystemBase {
    *  Move the daisy 1/6 rotation backward, from current position
    */
   public void previousSlot() {
-    if(atSetpoint(0.01)){
+    // only point to previous index position if were last trying to backwards and we've fully accomplished the last reverse
+    // or if the last attempt was to go forwards
+    if(( lastIndex > daisyIndex && m_hopperMotor.getSelectedSensorPosition() < m_setpoint + .05*60/360*HopperConstants.ONE_ROTATION) 
+      || lastIndex < daisyIndex) {
+      lastIndex = daisyIndex;
+    // if(atSetpoint(0.01)){
       daisyIndex--;
       m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET;
     }

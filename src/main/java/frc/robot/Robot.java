@@ -86,6 +86,8 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // Initialize vision
     m_robotContainer.visionInit();
+    // reset the Daisy encoder and index, to match its current position
+    m_robotContainer.resetHopperReference( true);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -106,6 +108,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // Initialize vision
     m_robotContainer.visionInit();
+    // reset the Daisy encoder and index, to match its current position
+    m_robotContainer.resetHopperReference( false);
     
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

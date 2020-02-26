@@ -287,7 +287,7 @@ public class RobotContainer {
     // default swerve drive is to read from joysticks
     m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
     // winch on primary controller, left trigger
-    m_swerve.setDefaultCommand(new DefaultSwerveCommand(m_swerve, m_primaryController));
+    m_Climb.setDefaultCommand(new DefaultWinchCommand(m_Climb, m_primaryController));
     
     // intake on secondary controller, Y axis of Left joystick
     m_Intake.setDefaultCommand(new DefaultIntakeCommand(m_Intake, m_secondaryController));
@@ -302,6 +302,14 @@ public class RobotContainer {
    */
   public String getGameSpecificMessage(){
     return m_station.getGameSpecificMessage();
+  }
+
+  /**
+   * reset the hopper reference point, called from Robot.autoInit() and .teleopInit()
+   */
+  public void resetHopperReference( boolean moveToSlot) {
+    m_Hopper.resetReference(); // set encoder back to range [0, ONE_ROTATION), i.e. (0,360)
+    m_Hopper.selectNearestSlot( moveToSlot); // set the index to match the current position of the Daisy
   }
 
   /**
