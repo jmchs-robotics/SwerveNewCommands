@@ -232,12 +232,14 @@ public class RobotContainer {
     m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 6));
     m_secondaryController_DPad_Up.whenPressed( 
         new SequentialCommandGroup( 
-        new BumpHopperCommand( m_Hopper),
-        new MoveHopperCommand(m_Hopper,1)))
-      .whileHeld(m_Hopper :: smartDashIndex); //m_Hopper ); // Index ?; Commented out requirements so the print command doesn't interfere with the move commands
+          new BumpHopperCommand( m_Hopper),
+          new MoveHopperCommand(m_Hopper,1)
+        )
+      ).whileHeld(m_Hopper :: smartDashIndex); //m_Hopper ); // Index ?; Commented out requirements so the print command doesn't interfere with the move commands
     m_secondaryController_DPad_Down.whenPressed(new MoveHopperCommand(m_Hopper, -1));
-    m_secondaryController_LeftTrigger.whileHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
-    m_secondaryController_LeftTrigger.whenReleased( new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
+    m_secondaryController_LeftTrigger.whileHeld(
+      new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
+    ).whenReleased( new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
 
     //
     //Climb
