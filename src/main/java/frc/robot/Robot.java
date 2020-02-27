@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
     // Initialize vision
     m_robotContainer.visionInit();
     // reset the Daisy encoder and index, to match its current position
-    m_robotContainer.resetHopperReference( true);
+    m_robotContainer.resetHopperReference( false);
 
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 

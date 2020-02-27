@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.util.*;
+// import sun.tools.tree.InstanceOfExpression;
 // import jdk.vm.ci.code.InstalledCode;
 import frc.robot.commands.*;
 import frc.robot.commands.WaitCommand;
@@ -19,35 +20,31 @@ public class Paths { // extends CommandBase {
     //private SwerveDriveSubsystem m_swerve;
     SwerveDriveSubsystem m_swerve;
     ThrowerSubsystem m_Thrower;
+    HopperSubsystem m_Hopper;
+    IntakeSubsystem m_Intake;
     SocketVisionSendWrapper sender_;
     SocketVisionWrapper rft_;
 
-    public Paths( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, SocketVisionSendWrapper sender, SocketVisionWrapper rft) {
+    public Paths( SwerveDriveSubsystem swerve, ThrowerSubsystem thrower, HopperSubsystem hopper, IntakeSubsystem intake, SocketVisionSendWrapper sender, SocketVisionWrapper rft) {
         m_swerve = swerve;
         m_Thrower = thrower;
         sender_ = sender;   
-        rft_ = rft;        
+        rft_ = rft;     
+        m_Hopper = hopper;   
+        m_Intake = intake;
     }
 
+
     /**
-     * Testing
-     * Go from fence to scoring position, staying right of another robot striaght in front of goal 
-     * aim, score
+     * test stuff
+     * @return
      */
-    public Command Path1Command() {
+    public Command PathTestCommand() {
       return new SequentialCommandGroup(
-        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
-        //new SetWheelAngleCommand( m_swerve, -18),  // point the wheels in the direction we want to go
-        new WaitCommand( 2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
-        // new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
-        //new DriveForDist2910Command( m_swerve, -37, -12), // go to destination 
-        // new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
-        //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
-        // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
-        
-        new VisionAimCommand( m_swerve, rft_), // aim at RFT
+        new WaitCommand( 1), 
+        new BumpHopperCommand(m_Hopper),
+        new MoveHopperCommand(m_Hopper, 1),
         new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
 
         // very last thing
@@ -56,39 +53,102 @@ public class Paths { // extends CommandBase {
     }
 
     /**
-     * Main path - drive from the fence and start line, aim, score
-     * staying to the right of another robot striaght in front of goal
+     * test stuff
+     * @return
      */
-    public Command Path2Command() {
+    public Command TestUnload() {
+      return new UnloadCommand(m_swerve, m_Thrower, m_Hopper, sender_, rft_, 1);
+    }
+
+    /**
+     * Go from fence to scoring position, staying right of another robot striaght in front of goal 
+     * aim, score
+     */
+    public Command Path1Command() {
       return new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
-        new WaitCommand( 03), // give the vision coprocessor a chance to compute
-        new InstantCommand(m_Thrower::turnOffLED, m_Thrower)// Testing
-         
-        
-        // to add: 
-        /*
-        // spin up the thrower to expected speed, in parallel.  
-        // turn wheels to the angle we're about to drive, then drive where we want to shoot from
-        // set thrower speed to vision distance
-        new ParallelCommandGroup(  
-          new SetThrowerSpeedCommand( m_Thrower, 4900), // speed from our table to score at this distance
-          new SequentialCommandGroup(
-            new SetWheelAngleCommand( m_swerve, -18), // FIX angle
-            new WaitCommand( 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
-            new DriveForDistanceCommand( m_swerve, -37, -12)  // FIX where we want to move to
-          )
+        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
+        new SetWheelAngleCommand( m_swerve, -18-90),  // point the wheels in the direction we want to go
+        new WaitCommand( 1), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+        new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
+        new DriveForDist2910Command( m_swerve, -57, -12), // go to destination 94 - (25+6.5)/2 - 28
+        new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
+        //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
+        // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
+        new WaitCommand( 1),
+        new ParallelCommandGroup( // waits for both to end
+                  new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
+                  new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
         ),
-        
-        new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance
-        new VisionAimCommand( m_swerve, rft_)
-*/
-        // to add:
-        // ThrowToTarget while spinning Diasy 1 full rotation
+        new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
+        new ParallelRaceGroup(
+                  new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
+                  new SequentialCommandGroup(
+                    new BumpHopperCommand(m_Hopper),
+                    new MoveHopperCommand(m_Hopper, 6)
+                  )
+        ),
+        new SetThrowerSpeedCommand(m_Thrower, 0),
+              
+        // very last thing
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower), // Turn off green LED
+        new InstantCommand(m_swerve::setBrakeOff, m_swerve)
       );
     }
+
+    /**
+     * after Path1, drive into our own trench and retrieve first 3 balls.  We would only do this if our starting position is nearest the trench among our alliance.
+     * — drive completely on encoders
+     * — someday drive on Vision of balls
+     * — end command via encoders, or someday by counting balls
+     * -- Someday set pose angle absolute, then strafe to near the first ball, then a command to “drive by vision toward the ball until the ball is acquired or we hit something (accelerometer impact)” command
+     * return to target range and shoot them
+     * -- need to drive to a field position, probably only one move (i.e. direct angle) or maybe 2, then rotate to straight at target, then setPoseAngleToVisionRFT
+     * @return
+     */
+    public Command PathCCommand() {
+      return new SequentialCommandGroup(
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+        new SetWheelAngleCommand( m_swerve, Math.atan2( 57-28, -(86-12-(34+6.5)/2))),  // point the wheels in the direction we want to go
+        new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), 
+        new DriveForDist2910Command( m_swerve, 57-28, -(86-12-(34+6.5)/2)), // go to front side of trench, aligned with balls
+        new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
+        new SetPoseAngle2910Command(m_swerve, -90), // point intake at the balls by turning left 90 degrees
+        new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), 
+        new InstantCommand(m_Intake::lowerIntake, m_Intake),
+        new ParallelRaceGroup( 
+          new IntakeAdvDaisyCommand(m_Intake, m_Hopper), // intake and auto-advance the Daisy
+          new DriveForDist2910Command( m_swerve, 0, -(108+12)) // drive through 3 balls
+        ),
+        new InstantCommand(m_Intake::raiseIntake, m_Intake),
+        new SetWheelAngleCommand( m_swerve, Math.atan2( -(57-28), 86-12-(34+6.5)/2 + 108+12)),  // point the wheels in the direction we want to go
+        new DriveForDist2910Command( m_swerve, -(57-28), 86-12-(34+6.5)/2 + 108+12),
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
+        new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
+        new SetPoseAngle2910Command(m_swerve, -5),
+        
+        new ParallelCommandGroup( // waits for both to end
+                  new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
+                  new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        ),
+        new ParallelRaceGroup( // ends when first command ends
+          new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
+          new SequentialCommandGroup(
+            new BumpHopperCommand(m_Hopper),
+            new MoveHopperCommand(m_Hopper, 6)
+          )
+        ),
+        new SetThrowerSpeedCommand(m_Thrower, 0),
+    
+        // very last thing
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower), // Turn off green LED
+        new InstantCommand(m_swerve::setBrakeOff, m_swerve)
+
+      );
+    }
+
     
     /**
      * PathG

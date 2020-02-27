@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
@@ -117,7 +118,7 @@ public class RobotContainer {
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
   private final JoystickAnalogButton m_secondaryController_LeftTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kLeft, 0.5);
-  //private final JoystickAnalogButton m_secondaryController_RightTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kRight, 0.5);
+  private final JoystickAnalogButton m_secondaryController_RightTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kRight, 0.5);
   
 
   /**
@@ -156,14 +157,14 @@ public class RobotContainer {
       );
 
     // Thrower on primary controller, Left Trigger to throw without vision, Right Trigger throw with vision
-    // Left Trigger: spin up the thrower to the right speed, then hold it there while simultaneously spinning the Daisy one full rotation
+    // Left Trigger: spin up the thrower to the right speed //, then hold it there while simultaneously spinning the Daisy one full rotation
       m_primaryController_DPad_Up.whenHeld(
         new SequentialCommandGroup(
-          new SetThrowerSpeedCommand(m_Thrower, -ThrowerLUT.DEFAULT_RPM).perpetually(), // m_Thrower.getThrowerSpeed())
-          new ParallelCommandGroup( 
+          new SetThrowerSpeedCommand(m_Thrower, -ThrowerLUT.DEFAULT_RPM).perpetually()
+          /*new ParallelCommandGroup( 
             new SetThrowerSpeedCommand( m_Thrower, -ThrowerLUT.DEFAULT_RPM),
             new MoveHopperCommand(m_Hopper, 6)
-          )
+          )*/
         )
       );
 
@@ -215,45 +216,23 @@ public class RobotContainer {
     //     otherwise reverse the beater bar
     // if Daisy is full, run intake beater bar in reverse
     //
-    /*
-    m_secondaryController_RightTrigger.whileHeld(
-      new ConditionalCommand(
-        new SequentialCommandGroup(
-            //new InstantCommand(m_Intake :: lowerIntake, m_Intake),
-            new ParallelRaceGroup(
-              new IntakeRecieveCommand(m_Intake),
-              new WaitUntilCommand(()->{ return m_Hopper.ballLoaded();}) 
-            ),
-            new InstantCommand( m_Hopper::incBallCount, m_Hopper),
-            new ConditionalCommand( // if not full, advance Daisy; if full, reverse intake
-                new SequentialCommandGroup(
-                  new IntakeReversePulseCommand( m_Intake),
-                  new MoveHopperCommand(m_Hopper, 1),
-                  new InstantCommand( m_Hopper::incBallCount, m_Hopper)
-                ),
-                new IntakeReverseCommand( m_Intake),
-                () -> {return m_Hopper.daisyIsFull();} 
-            )
-          ),
-        new IntakeReverseCommand( m_Intake),
-        () -> {return m_Hopper.daisyIsFull();} // The conditional: if there are less than 5 balls, intake; else, backdrive
-      )
-    ) 
-    */
-    /*.whenReleased( // On release lift the intake, then outtake at 0.7 power for 1.5 seconds. Note that beforeStarting is a decorator that is written after the command body...
+    m_secondaryController_RightTrigger.whileHeld( 
+      new IntakeAdvDaisyCommand( m_Intake, m_Hopper)
+    ).whenReleased( // On release lift the intake, then outtake at 0.7 power for 1.5 seconds. Note that beforeStarting is a decorator that is written after the command body...
       new ParallelRaceGroup(
-        new RunCommand(()->{m_intake.setMotor(-0.7);}, m_intake),
+        new RunCommand(()->{m_Intake.setMotor(-0.7);}, m_Intake),
         new WaitCommand(1.5)
-      ).beforeStarting(m_intake::raiseIntake, m_intake)
-    ) */;
+      ).beforeStarting(m_Intake::raiseIntake, m_Intake)
+    ) ;
 
 
     //
     // Hopper (Daisy)
     //
-    // m_secondaryController_Back.whenPressed(new MoveHopperCommand(m_Hopper, -1));
     m_secondaryController_Start.whenPressed(new MoveHopperCommand(m_Hopper, 6));
-    m_secondaryController_DPad_Up.whenPressed(new MoveHopperCommand(m_Hopper,1));
+    m_secondaryController_DPad_Up.whenPressed( new SequentialCommandGroup( 
+      new BumpHopperCommand( m_Hopper),
+      new MoveHopperCommand(m_Hopper,1)));
     m_secondaryController_DPad_Down.whenPressed(new MoveHopperCommand(m_Hopper, -1));
     m_secondaryController_LeftTrigger.whileHeld(new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)); 
     m_secondaryController_LeftTrigger.whenReleased( new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
@@ -337,15 +316,14 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // Command autoCommand = new VisionApproachTarget(m_swerve, rft_, 100, 5, 5); // 
-    // Angle the robot toward the retroflective tape
-    /*
-    Paths p = new Paths( m_swerve,m_Thrower, sender_, rft_);
+    
+    Paths p = new Paths( m_swerve,m_Thrower, m_Hopper, m_Intake, sender_, rft_);
     Command autoCommand = new SequentialCommandGroup(
       new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
-      p.Path1Command()
+      p.PathTestCommand()
     );
-    */
+    return autoCommand;
+    /*
     Command autoCommand = new SequentialCommandGroup(
       new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
       new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
@@ -373,5 +351,6 @@ public class RobotContainer {
       new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn off green LED
     );
     return autoCommand;
+    */
   }
 }

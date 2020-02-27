@@ -51,6 +51,7 @@ public class HopperSubsystem extends SubsystemBase {
    */
   private int daisyIndex;
   private int lastIndex;
+  private boolean justBumpedBack = false;
   private int ballCount = 0; // how many balls are currently loaded
   private int sdThrottlerCtr = 0;
   
@@ -145,7 +146,6 @@ public class HopperSubsystem extends SubsystemBase {
 
     // Set the quadrature (relative) sensor to match absolute
 		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
-    
   }
 
   /**
@@ -227,7 +227,7 @@ public class HopperSubsystem extends SubsystemBase {
       sdThrottlerCtr = HopperConstants.sdThrottleReset;
     }
     if( sdThrottlerCtr == 2 || sdThrottlerCtr == 14 || sdThrottlerCtr == 27 || sdThrottlerCtr == 41 ) {
-      boolean b = photoDiodeAveIsDark();
+      boolean b = ballLoaded();
       SmartDashboard.putBoolean("Ball received", b);
       SmartDashboard.putNumber("Photodiode Instant value", m_lightSensor.getVoltage());
     }
@@ -247,14 +247,25 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   /**
+   * move the daisy back 1/24th of a rotation, from the current position
+   * used in conjunction with (i.e. right before) nextSlot() to prevent jams
+   */
+  public void bumpBack() {
+    justBumpedBack = true;
+    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET - HopperConstants.ONE_ROTATION * 60 / 360 / 4;
+    m_hopperMotor.set(ControlMode.Position, m_setpoint);
+  }
+  /**
    *  Move the daisy 1/6 rotation forward, from current position
    */
   public void nextSlot(){
     // only point to next index position if it's our very first move
     // or we were trying to advance and we've fully accomplished the advance
     // or if the last attempt was to go backwards
+    // or we just bumped backwards in anticipation of the forwards move
     if(( lastIndex < daisyIndex && m_hopperMotor.getSelectedSensorPosition() > m_setpoint - .05*60/360*HopperConstants.ONE_ROTATION) 
-      || (lastIndex >= daisyIndex)) {
+      || (lastIndex >= daisyIndex)
+      || justBumpedBack) {
     //if(atSetpoint(0.01)){
       lastIndex = daisyIndex;
       daisyIndex++;
@@ -265,6 +276,7 @@ public class HopperSubsystem extends SubsystemBase {
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
     }       
+    justBumpedBack = false;
   }
 
   /**
@@ -286,6 +298,7 @@ public class HopperSubsystem extends SubsystemBase {
     if( HopperPIDs.TUNE) {
       SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION BACKWARD, to index", daisyIndex);
     }
+    justBumpedBack = false;
   }
 
   public void moveForwardSlowly() {

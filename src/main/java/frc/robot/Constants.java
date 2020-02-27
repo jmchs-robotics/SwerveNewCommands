@@ -204,7 +204,7 @@ public final class Constants {
 	  */
     public static final int kPIDLoopIdx = 0;
 
-    public static final double kP = 0.8; // 2e-2;
+    public static final double kP = 1.6; // 2e-2;
     public static final double kI = 0; // 1e-6;
     public static final double kD = 0.0;
     public static final double kF = 0; // 2e-6;
