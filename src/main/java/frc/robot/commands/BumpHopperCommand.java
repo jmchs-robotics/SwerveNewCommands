@@ -19,7 +19,7 @@ public class BumpHopperCommand extends CommandBase {
   private HopperSubsystem m_subsystem;
 
   /**
-   * Move the hopper either (1) one slot forward, (-1) one slot backward, or (6) one full rotation forward.
+   * Move the hopper 1/24 of a slot back, and wait for the hopper to finish.
    */
   public BumpHopperCommand(HopperSubsystem subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
