@@ -16,7 +16,9 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class IntakeAdvDaisyCommand extends ConditionalCommand {
 
   /**
-   * Run the intake beater bar 'forward,' for collecting game pices (balls).
+   * Run the intake beater bar 'forward,' for collecting game pices (balls), shifting the hopper to a new slot as they fill.
+   * @param intake The intake subystem
+   * @param hopper The hopper subsystem
    */
   public IntakeAdvDaisyCommand(IntakeSubsystem intake, HopperSubsystem hopper) {
     // Use addRequirements() here to declare subsystem dependencies.
