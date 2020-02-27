@@ -22,7 +22,7 @@ import frc.robot.subsystems.SwerveDriveModule;
  * @param sender
  * @param rft
  */
-public class UnloadCommand extends CommandBase {
+public class UnloadCommand extends SequentialCommandGroup {
     SwerveDriveSubsystem m_swerve;
     ThrowerSubsystem m_Thrower;
     SocketVisionSendWrapper sender_;
@@ -39,7 +39,7 @@ public class UnloadCommand extends CommandBase {
         sender_ = sender;   
         rft_ = rft;       
 
-        new SequentialCommandGroup(
+        addCommands(
             new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
             new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
             new WaitCommand( waitATick), // give the vision processor a chance to find the RFT
@@ -55,30 +55,5 @@ public class UnloadCommand extends CommandBase {
             new SendVisionCommand(sender_, "_"),
             new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
         );
-    }
-
-    @Override
-    public void initialize() {
-    }
-    @Override
-    public void execute() {
-    }
-
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {
-    }
-
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        boolean b = m_Hopper.atSetpoint(0.01);
-        if( b) {
-        // System.out.println( "MoveHopperCommand isFinished = true");
-        return true; // m_subsystem.atSetpoint(0.01);
-        }
-        else {
-            return false;
-        }
     }
 }
