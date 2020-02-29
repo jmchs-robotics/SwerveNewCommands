@@ -44,6 +44,7 @@ public class Paths { // extends CommandBase {
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
         new WaitCommand( 1), 
         new BumpHopperCommand(m_Hopper),
+        new WaitCommand(.2),
         new MoveHopperCommand(m_Hopper, 1),
         new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
 

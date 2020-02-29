@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -172,7 +173,12 @@ public class RobotContainer {
       // turn on LED, command vision processor to track RFT, spin up thrower based on RFT distance
       // once thrower is at the speed, keep it at the speed based on RFT distance and simlutanously spin Daisy one rotation
       m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
-        new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_, 0.5)
+        //new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_, 0.5)
+        new SequentialCommandGroup(
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
+        new WaitCommand(2),
+        new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        )
       );  
     
     // Pat Sajak commands.
@@ -233,6 +239,7 @@ public class RobotContainer {
     m_secondaryController_DPad_Up.whenPressed( 
         new SequentialCommandGroup( 
           new BumpHopperCommand( m_Hopper),
+          new WaitCommand(.2),
           new MoveHopperCommand(m_Hopper,1)
         )
       ).whileHeld(m_Hopper :: smartDashIndex); //m_Hopper ); // Index ?; Commented out requirements so the print command doesn't interfere with the move commands

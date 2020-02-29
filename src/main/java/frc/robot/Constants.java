@@ -30,7 +30,7 @@ public final class Constants {
   public static final class Vision {
     public static final boolean SHOW_DEBUG = false;
     public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
-    public static final double RFT_PIXELS_TO_DEGREES = 30.0 / 320; 
+    public static final double RFT_PIXELS_TO_DEGREES = 15.0 / 320; 
     public static final boolean TUNE = true;
   }
   
@@ -59,7 +59,7 @@ public final class Constants {
     public static final double LENGTH = 28;
 
     // PID constants for swerve modules
-    public static final double ANGLE_kP = 1.5; // 3.0;
+    public static final double ANGLE_kP = 3.0;
     public static final double ANGLE_kI = 0.0;
     public static final double ANGLE_kD = 0.0;    
 
@@ -86,7 +86,7 @@ public final class Constants {
     public static final double DFD_ROTATION_kD = 0.0;
 
     // PID for controlling pose angle in SetPoseAngle2910 and VisionAim* commands.
-    public static final double POSE_ANGLE_kP = 0.03;
+    public static final double POSE_ANGLE_kP = 0.06;
     public static final double POSE_ANGLE_kI = 0.0;
     public static final double POSE_ANGLE_kD = 0.0;
 

@@ -17,7 +17,7 @@ import frc.robot.Constants.Vision;
  */
 public class VisionAimGyroCommand extends CommandBase {
     private static final double ANGLE_CHECK_TIME = 0.1;
-    private static final double TARGET_ANGLE_BUFFER = 2.5;
+    private static final double TARGET_ANGLE_BUFFER = 1.5;
 
     private final SwerveDriveSubsystem drivetrain;
     private double targetAngle = 0;
@@ -44,6 +44,13 @@ public class VisionAimGyroCommand extends CommandBase {
         angleController = new PIDController(DrivetrainConstants.POSE_ANGLE_kP, DrivetrainConstants.POSE_ANGLE_kI, DrivetrainConstants.POSE_ANGLE_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
+        
+        double x = 0;
+        SmartDashboard.putNumber("x in VisionAimGyro", x);
+        targetAngle = 0;
+        
+        SmartDashboard.putNumber("Target angle in VisionAimGyro", targetAngle);
+
         /*
         angleController = new PIDController(0.03, 0, 0.075, new PIDSource() {
             @Override
@@ -86,8 +93,11 @@ public class VisionAimGyroCommand extends CommandBase {
               }
             x = 0; 
           }
+        SmartDashboard.putNumber("x in VisionAimGyro", x * Vision.RFT_PIXELS_TO_DEGREES);
         targetAngle = drivetrain.getGyroAngle() - x * Vision.RFT_PIXELS_TO_DEGREES;
         
+        SmartDashboard.putNumber("Target angle in VisionAimGyro", targetAngle);
+
         angleController.setSetpoint(targetAngle);
 
         finishTimer.stop();
@@ -127,7 +137,8 @@ public class VisionAimGyroCommand extends CommandBase {
     public boolean isFinished() {
         double currentAngle = drivetrain.getGyroAngle();
         double currentError = currentAngle - targetAngle;
-
+        System.out.println("current Error for Vision Aim: " + currentError);
+        System.out.println("current Angle for Vision Aim: " + currentAngle);
         boolean inTargetBuffer = Math.abs(currentError) < TARGET_ANGLE_BUFFER
                 | 360 - Math.abs(currentError) < TARGET_ANGLE_BUFFER;
 

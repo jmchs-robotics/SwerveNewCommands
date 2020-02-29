@@ -252,7 +252,7 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public void bumpBack() {
     justBumpedBack = true;
-    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET - HopperConstants.ONE_ROTATION * 60 / 360 / 4;
+    m_setpoint = daisyIndex * HopperConstants.ONE_ROTATION * 60 / 360 + HopperConstants.DAISY_OFFSET - HopperConstants.ONE_ROTATION * 60 / 360 / 2;
     m_hopperMotor.set(ControlMode.Position, m_setpoint);
   }
   /**
@@ -313,6 +313,7 @@ public class HopperSubsystem extends SubsystemBase {
   }
 
   public boolean atSetpoint(double thresholdPercent) {
+    SmartDashboard.putNumber("CLosed Loop Error", m_hopperMotor.getClosedLoopError());
     return Math.abs( m_hopperMotor.getClosedLoopError()) < HopperConstants.ONE_ROTATION * thresholdPercent;
     // return Math.abs(m_setpoint - m_hopperMotor.getSensorCollection().getPulseWidthPosition()) <= Math.abs(m_setpoint*thresholdPercent);
   }
