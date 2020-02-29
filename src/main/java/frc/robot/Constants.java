@@ -29,8 +29,8 @@ public final class Constants {
    */
   public static final class Vision {
     public static final boolean SHOW_DEBUG = false;
-    public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
-    public static final double RFT_PIXELS_TO_DEGREES = 15.0 / 320; 
+    public static final long RFT_X_OFFSET = 45; // offset in pixels of vision output vs where we want to point/move the robot
+    public static final double RFT_PIXELS_TO_DEGREES = .110755; 
     public static final boolean TUNE = true;
   }
   

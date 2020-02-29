@@ -36,6 +36,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    m_robotContainer.visionInit();
   }
 
   /**
@@ -58,6 +59,7 @@ public class Robot extends TimedRobot {
       String a = "NADA";
       try {
         a = m_robotContainer.getRftSocketReader().get().get_direction();
+        SmartDashboard.putNumber("RFT Degrees", m_robotContainer.getRftSocketReader().get().get_degrees_x());
       } catch( Exception e ) {
       }
       a = a + a + a;

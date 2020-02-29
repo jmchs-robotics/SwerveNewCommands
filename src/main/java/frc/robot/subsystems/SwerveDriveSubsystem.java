@@ -88,6 +88,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
     public void periodic() {
       if( DrivetrainConstants.TUNE) {
         SmartDashboard.putNumber( "Module 0 Max PID output", mSwerveModules[0].getDriveMotor().getPIDController().getOutputMax());
+        SmartDashboard.putNumber("Gyro Degrees", getGyroAngle());
       }
     }
     /**

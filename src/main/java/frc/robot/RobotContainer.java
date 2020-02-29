@@ -175,11 +175,31 @@ public class RobotContainer {
       m_primaryController_RightTrigger.whenHeld(  // by using whenHeld, the command gets canceled when the 'button' is released
         //new UnloadCommand( m_swerve, m_Thrower, m_Hopper, sender_, rft_, 0.5)
         new SequentialCommandGroup(
-        new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
-        new WaitCommand(2),
-        new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        //new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
+       // new WaitCommand(2),
+        //new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        //)
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new WaitCommand(0.5), // give the vision processor a chance to find the RFT
+            //new ParallelCommandGroup( // waits for both to end
+               // new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
+                new VisionAimGyroCommand( m_swerve, rft_), // aim the robot
+                new WaitCommand(0.5),    
+            //new ParallelRaceGroup(
+                new ThrowToTargetCommand(m_Thrower, m_swerve, rft_)  // never ends
+                //new MoveHopperCommand(hopper, 6)
+            //),
+              //) 
         )
-      );  
+      )
+            .whenReleased(
+              new SequentialCommandGroup(              
+                new SetThrowerSpeedCommand(m_Thrower, 0),
+                new SendVisionCommand(sender_, "_"),
+               new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
+              )
+        );  
     
     // Pat Sajak commands.
     m_secondaryController_A.whenPressed(
