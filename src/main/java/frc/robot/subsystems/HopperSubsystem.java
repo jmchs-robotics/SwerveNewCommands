@@ -263,6 +263,10 @@ public class HopperSubsystem extends SubsystemBase {
     // or we were trying to advance and we've fully accomplished the advance
     // or if the last attempt was to go backwards
     // or we just bumped backwards in anticipation of the forwards move
+    SmartDashboard.putNumber("Selected Sensor Position", m_hopperMotor.getSelectedSensorPosition());
+    SmartDashboard.putNumber("Daisy Setpoint", m_setpoint);
+    SmartDashboard.putNumber("Daisy Last Index", lastIndex);
+    SmartDashboard.putNumber("Daisy Index", daisyIndex);
     if(( lastIndex < daisyIndex && m_hopperMotor.getSelectedSensorPosition() > m_setpoint - .05*60/360*HopperConstants.ONE_ROTATION) 
       || (lastIndex >= daisyIndex)
       || justBumpedBack) {
