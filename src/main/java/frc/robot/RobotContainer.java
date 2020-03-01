@@ -351,6 +351,7 @@ public class RobotContainer {
     Command autoCommand = new SequentialCommandGroup(
       new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
       p.PathTestCommand()
+      //p.Path1Command()
     );
     return autoCommand;
     /*

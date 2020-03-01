@@ -95,7 +95,10 @@ public class VisionAimGyroCommand extends CommandBase {
           }
         SmartDashboard.putNumber("x in VisionAimGyro", x * Vision.RFT_PIXELS_TO_DEGREES);
         targetAngle = drivetrain.getGyroAngle() - x * Vision.RFT_PIXELS_TO_DEGREES;
-        
+        targetAngle %= 360;
+        if( targetAngle < 0) {
+            targetAngle += 360;
+        }
         SmartDashboard.putNumber("Target angle in VisionAimGyro", targetAngle);
 
         angleController.setSetpoint(targetAngle);

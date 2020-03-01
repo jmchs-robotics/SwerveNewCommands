@@ -46,7 +46,9 @@ public class DefaultIntakeCommand extends CommandBase {
   @Override
   public void execute() {
  
-    final double yAxis = m_controller.getY(Hand.kLeft);
+   // final double yAxis = m_controller.getY(Hand.kLeft);
+    final double yAxis = m_controller.getY(Hand.kRight);
+    
     //final double xAxis = m_controller.getX(Hand.kLeft);
     // System.out.println("1");
 

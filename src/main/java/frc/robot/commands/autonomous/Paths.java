@@ -47,7 +47,9 @@ public class Paths { // extends CommandBase {
         new WaitCommand(.2),
         new MoveHopperCommand(m_Hopper, 1),
         new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
-
+        new BumpHopperCommand(m_Hopper),
+        new WaitCommand(.2),
+        new MoveHopperCommand(m_Hopper, 1),
         // very last thing
         new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn off green LED
       );
@@ -69,7 +71,7 @@ public class Paths { // extends CommandBase {
       return new SequentialCommandGroup(
         new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
-        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
+        //new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
         new SetWheelAngleCommand( m_swerve, -18-90),  // point the wheels in the direction we want to go
         new WaitCommand( 1), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
         new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
@@ -78,19 +80,19 @@ public class Paths { // extends CommandBase {
         //new WaitCommand( 0.1), // give vision coprocessor a chance to find the target
         // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
         new WaitCommand( 1),
-        new ParallelCommandGroup( // waits for both to end
-                  new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
-                  new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
-        ),
-        new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
-        new ParallelRaceGroup(
-                  new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
-                  new SequentialCommandGroup(
-                    new BumpHopperCommand(m_Hopper),
-                    new MoveHopperCommand(m_Hopper, 6)
-                  )
-        ),
-        new SetThrowerSpeedCommand(m_Thrower, 0),
+       // new ParallelCommandGroup( // waits for both to end
+         //         new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
+         //         new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+       // ),
+        //new WaitCommand( 1),// give the drivetrain a chance to respond to the SetWheelAngle command
+        //new ParallelRaceGroup(
+          //        new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
+            //      new SequentialCommandGroup(
+            //        new BumpHopperCommand(m_Hopper),
+             //       new MoveHopperCommand(m_Hopper, 6)
+            //      )
+        //),
+        //new SetThrowerSpeedCommand(m_Thrower, 0),
               
         // very last thing
         new InstantCommand(m_Thrower::turnOffLED, m_Thrower), // Turn off green LED
