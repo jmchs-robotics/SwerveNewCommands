@@ -81,7 +81,7 @@ public final class Constants {
 
     // PID for controlling rotation in DriveForDist2910Command
     // they had set .02, 0, 0 
-    public static final double DFD_ROTATION_kP = 0.03;
+    public static final double DFD_ROTATION_kP = 0.03; // for next test after 3/1, try drastically reducing from 0.03
     public static final double DFD_ROTATION_kI = 0.0;
     public static final double DFD_ROTATION_kD = 0.0;
 
