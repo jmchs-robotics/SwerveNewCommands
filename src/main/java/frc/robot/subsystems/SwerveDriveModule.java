@@ -29,6 +29,7 @@ public class SwerveDriveModule extends SubsystemBase {
     private final int moduleNumber;
 
     private final double mZeroOffset;
+    private double m_autoDist = 0;
 
     // Spark Max controllers, sensors, PID
     // private final TalonSRX mAngleMotor; // Orig
@@ -275,7 +276,7 @@ public class SwerveDriveModule extends SubsystemBase {
 
         targetAngle %= 360;
 
-        // SmartDashboard.putNumber("Module " + moduleNumber + " Target Angle Desired ", targetAngle % 360);
+        //SmartDashboard.putNumber("Module " + moduleNumber + " Target Angle Desired ", targetAngle % 360);
 
         targetAngle += mZeroOffset;
 
@@ -313,7 +314,54 @@ public class SwerveDriveModule extends SubsystemBase {
 
     }
 
+    public void setTargetAngleAuto(double targetAngle) {
+
+        lastTargetAngle = targetAngle;
+
+        targetAngle %= 360;
+
+        //SmartDashboard.putNumber("Module " + moduleNumber + " Target Angle Desired ", targetAngle % 360);
+
+        targetAngle += mZeroOffset;
+
+        // double currentAngle = mAngleMotor.getSelectedSensorPosition(0) * (360.0 / 1024.0); // 2910's original 2018 code
+        // we've set the conversion factor so getPosition returns a value in [0,1)
+        double currentAngle = ( m_analogSensorAngle.getPosition()) * 360.0; 
+        
+        double currentAngleMod = currentAngle % 360;
+        if (currentAngleMod < 0) currentAngleMod += 360;
+
+        double delta = currentAngleMod - targetAngle;
+
+        if (delta > 180) {
+            targetAngle += 360;
+        } else if (delta < -180) {
+            targetAngle -= 360;
+        }
+
+        delta = currentAngleMod - targetAngle;
+        if (delta > 90 || delta < -90) {
+            if (delta > 90)
+                targetAngle += 180;
+            else if (delta < -90)
+                targetAngle -= 180;
+            mDriveMotor.setInverted(false);
+            setTargetDistance(m_autoDist);
+        } else {
+            mDriveMotor.setInverted(true);
+            setTargetDistance(m_autoDist);
+        }
+
+        targetAngle += currentAngle - currentAngleMod;
+
+        targetAngle = targetAngle  / 360.0; // * 3.3;  // changed 11/13/19 to be range of [0, 1) 11/29 range [0, 3.3)
+        m_pidControllerAngle.setReference(targetAngle, ControlType.kPosition); // new for all Spark Max controllers
+        // SmartDashboard.putNumber("Module " + moduleNumber + " Target Angle Set ", targetAngle);
+
+    }
+
     public void setTargetDistance(double distance) {
+        m_autoDist = distance;
         if (driveInverted) distance = -distance;
 
 

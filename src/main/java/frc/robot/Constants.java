@@ -86,7 +86,7 @@ public final class Constants {
     public static final double DFD_ROTATION_kD = 0.0;
 
     // PID for controlling pose angle in SetPoseAngle2910 and VisionAim* commands.
-    public static final double POSE_ANGLE_kP = 0.06;
+    public static final double POSE_ANGLE_kP = 0.03;
     public static final double POSE_ANGLE_kI = 0.0;
     public static final double POSE_ANGLE_kD = 0.0;
 

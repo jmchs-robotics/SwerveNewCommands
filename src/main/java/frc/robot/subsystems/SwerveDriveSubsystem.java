@@ -50,7 +50,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(0, 
                 new CANSparkMax(FRONT_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(FRONT_LEFT_DRIVE, MotorType.kBrushless),
-                81.25- 65+7 + 180 + 18), //325.25 + 6 + 290 - 360-180), //offset need to be between 0 and 360
+                221.25) , // 81.25- 65+7 + 180 + 18) //offset need to be between 0 and 360
 
             new SwerveDriveModule(1, 
                 new CANSparkMax(FRONT_RIGHT_ANGLE, MotorType.kBrushless),
@@ -60,12 +60,12 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(2,
                 new CANSparkMax(BACK_RIGHT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_RIGHT_DRIVE, MotorType.kBrushless),
-                300-8-2),//175.095 + 6 + 73 - 180), // offset needs to be between 0 and 360
+                290), // 300-8-2) // offset needs to be between 0 and 360
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top
             new SwerveDriveModule(3,
                 new CANSparkMax(BACK_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_LEFT_DRIVE, MotorType.kBrushless),
-                 31.357+80+45.6),//319.357 + 17 + 55 - 360), //offset needs to be between 0 and 360
+                 157), //offset needs to be between 0 and 360
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top   
         };
 
@@ -399,5 +399,9 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       forwardMaxOutput = 1;
       strafeMaxOutput = 1;
       rotationMaxOutput = 1;
+    }
+
+    public void holonomicDriveToZero() {
+      holonomicDrive(0,0,0);
     }
 }

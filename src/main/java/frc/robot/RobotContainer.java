@@ -182,6 +182,17 @@ public class RobotContainer {
         new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
         new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
         new WaitCommand(0.5), // give the vision processor a chance to find the RFT
+        
+        new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        /*      
+        new SequentialCommandGroup(
+        //new InstantCommand(m_Thrower::turnOnLED, m_Thrower),
+       // new WaitCommand(2),
+        //new VisionAimGyroCommand( m_swerve, rft_) // aim the robot
+        //)
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // Can't be a lambda because Sender's aren't subsystems
+        new WaitCommand(0.5), // give the vision processor a chance to find the RFT
             //new ParallelCommandGroup( // waits for both to end
                // new SpinUpThrowerCommand(m_Thrower, m_swerve, rft_),  // set thrower speed to vision distance, end when it's there
                 new VisionAimGyroCommand( m_swerve, rft_), // aim the robot
@@ -198,8 +209,11 @@ public class RobotContainer {
                 new SetThrowerSpeedCommand(m_Thrower, 0),
                 new SendVisionCommand(sender_, "_"),
                new InstantCommand(m_Thrower::turnOffLED, m_Thrower) // Turn on green LED
+              */
               )
+              
         );  
+        
     
     // Pat Sajak commands.
     m_secondaryController_A.whenPressed(
@@ -350,8 +364,8 @@ public class RobotContainer {
     Paths p = new Paths( m_swerve,m_Thrower, m_Hopper, m_Intake, sender_, rft_);
     Command autoCommand = new SequentialCommandGroup(
       new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
-      p.PathTestCommand()
-      //p.Path1Command()
+      //p.PathTestCommand()
+      p.Path1Command()
     );
     return autoCommand;
     /*

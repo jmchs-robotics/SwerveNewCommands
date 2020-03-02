@@ -36,11 +36,6 @@ public class VisionAimGyroCommand extends CommandBase {
     public VisionAimGyroCommand(SwerveDriveSubsystem drivetrain, SocketVisionWrapper vision) {
         this.drivetrain = drivetrain;
         m_vision = vision;
-        /*if (targetAngle < 0)
-            targetAngle += 360;            
-        this.targetAngle = targetAngle;
-        */
-        // this.targetAngle = (targetAngle + 360) % 360; // normalize to range [0,360)
         angleController = new PIDController(DrivetrainConstants.POSE_ANGLE_kP, DrivetrainConstants.POSE_ANGLE_kI, DrivetrainConstants.POSE_ANGLE_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();

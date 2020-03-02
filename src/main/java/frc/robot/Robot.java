@@ -60,9 +60,11 @@ public class Robot extends TimedRobot {
       try {
         a = m_robotContainer.getRftSocketReader().get().get_direction();
         SmartDashboard.putNumber("RFT Degrees", m_robotContainer.getRftSocketReader().get().get_degrees_x());
+        // Pull down the match specific string and put it on the Dashboard
+        SmartDashboard.putString("Match String", m_robotContainer.getGameSpecificMessage());
       } catch( Exception e ) {
       }
-      a = a + a + a;
+      a = a + " " + a + " " + a;
       SmartDashboard.putString("RFT Vision", a);
     }
     m_sdThrottleCtr = m_sdThrottleCtr % 50;
@@ -127,9 +129,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    // Pull down the match specific string and put it on the Dashboard
-    SmartDashboard.putString("Match String", m_robotContainer.getGameSpecificMessage());
-  }
+    }
 
   @Override
   public void testInit() {

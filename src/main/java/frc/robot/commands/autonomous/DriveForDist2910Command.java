@@ -142,7 +142,7 @@ public class DriveForDist2910Command extends CommandBase {
         double[] moduleAngles = drivetrain.calculateSwerveModuleAngles(forwardFactor, strafeFactor, rotation);  // -rotationFactor); // 191206
 
         for (int i = 0; i < 4; i++) {
-            drivetrain.getSwerveModule(i).setTargetAngle(moduleAngles[i]);
+            drivetrain.getSwerveModule(i).setTargetAngle(moduleAngles[i]); 
             
             try {
                 // 191206 also save the time in milliseconds, and the driveDistance
