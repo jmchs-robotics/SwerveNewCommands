@@ -6,10 +6,11 @@ import frc.robot.Constants.ThrowerPIDs;;
    */
 public class ThrowerLUT {
     // if the vision coprocessor can't see the RFT, thrower should be set to this speed
-    public static double DEFAULT_RPM = 5050;  // 5050 should score from the Initiation Line
+    public static double DEFAULT_RPM = 4550;  // from testing 3/2, and estimating, hopefully scores at autonomous dist.
 
     // Known distance to rpm values, determined from our testing
-    // first column is inches from the target; second column is RPM that scores from that distance
+    // first column is inches from the target as reported by the vision processor; 
+    //   second column is RPM that scores from that distance
     // keep the table organized from closest to farthest
     private static final double[][] LUT = {
       // from testing 3/2 with 53 degrees hood angle = 37 degrees departure angle from horizontal
@@ -21,6 +22,8 @@ public class ThrowerLUT {
       {197, 4675},
       {214, 4825},
       {239, 5065},
+
+      {300, 5480} // from testing 2/8. Go for it!
       
       /* testing 2/29 with 53 degrees hood angle = 37 degrees departure angle from horizontal
       // from 

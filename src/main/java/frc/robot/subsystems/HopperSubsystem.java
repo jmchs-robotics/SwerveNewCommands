@@ -126,7 +126,6 @@ public class HopperSubsystem extends SubsystemBase {
 
       SmartDashboard.putNumber("Daisy Index", daisyIndex); // Puts the dasiy index on SmartDash
     }
-    
   }
 
   /**
@@ -137,12 +136,13 @@ public class HopperSubsystem extends SubsystemBase {
    */
   public void resetReference(){
     int absolutePosition = m_hopperMotor.getSensorCollection().getPulseWidthPosition();
-    m_setpoint = absolutePosition; // m_hopperMotor.getSelectedSensorPosition(HopperPIDs.kPIDLoopIdx); // getSensorCollection().getPulseWidthPosition();//getPosition();
-
     // Mask out overflows, keep bottom 12 bits 
-		absolutePosition &= 0xFFF;
+    absolutePosition &= 0xFFF;
+
 		if (HopperPIDs.kSensorPhase) { absolutePosition *= -1; }
 		if (HopperPIDs.kMotorInvert) { absolutePosition *= -1; }
+
+    m_setpoint = absolutePosition; // m_hopperMotor.getSelectedSensorPosition(HopperPIDs.kPIDLoopIdx); // getSensorCollection().getPulseWidthPosition();//getPosition();
 
     // Set the quadrature (relative) sensor to match absolute
 		m_hopperMotor.setSelectedSensorPosition(absolutePosition, HopperPIDs.kPIDLoopIdx, HopperPIDs.kTimeoutMs);
@@ -152,7 +152,7 @@ public class HopperSubsystem extends SubsystemBase {
    * Sets the daisy index to the last slot passed.  Called from teleopInit() and autoInit()
    * Assume we've just loaded the balls before the start of the match.  We'll want to hand-advance Daisy
    * so the balls won't jam at first move.  So assume that means aligning the petals with a position we mark on
-   * the side of the daisy.  That'd be about 25% ahead of as though the ball were just loaded by the intake.
+   * the side of the daisy, which is about 25% ahead of as though the ball were just loaded by the intake.
    * Then rounding the position down makes sense, and we instantly advance one to reveal the (rest of) the next
    * slot.
    * @param moveToSlot move the Daisy to the next slot, if true.
@@ -163,6 +163,9 @@ public class HopperSubsystem extends SubsystemBase {
     // set the index to the prevous slot, from the current position 5% beyond the perfect slot location
     // assumes the position has already been normalized to the range [0,ONE_ROTATION)
     daisyIndex = (int) (((m_setpoint - HopperConstants.DAISY_OFFSET) * 1.05 / HopperConstants.ONE_ROTATION) * 360.0 / 60.0);
+    if( HopperPIDs.TUNE) {
+      SmartDashboard.putNumber("DAISY MOVES ONE SIXTH ROTATION, to index", daisyIndex);
+    } 
     if(moveToSlot){
       lastIndex = daisyIndex;
       daisyIndex++;

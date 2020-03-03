@@ -116,6 +116,7 @@ public class RobotContainer {
   // add d-pad up and d-pad down for daisy index and daisy unjame sequence respectively
   private final POVButton m_secondaryController_DPad_Up = new POVButton(m_secondaryController, 0);
   private final POVButton m_secondaryController_DPad_Down = new POVButton(m_secondaryController, 180);
+  private final POVButton m_secondaryController_DPad_Right = new POVButton(m_secondaryController, 90);
   // right trigger for intake with daisy advance sequence(pick up the balls)
   // left trigger for intake reverse
   private final JoystickAnalogButton m_secondaryController_LeftTrigger = new JoystickAnalogButton( m_secondaryController, Hand.kLeft, 0.5);
@@ -277,8 +278,9 @@ public class RobotContainer {
           new WaitCommand(.2),
           new MoveHopperCommand(m_Hopper,1)
         )
-      ).whileHeld(m_Hopper :: smartDashIndex); //m_Hopper ); // Index ?; Commented out requirements so the print command doesn't interfere with the move commands
+      ); // .whileHeld(m_Hopper :: smartDashIndex); //m_Hopper ); // Index ?; Commented out requirements so the print command doesn't interfere with the move commands
     m_secondaryController_DPad_Down.whenPressed(new MoveHopperCommand(m_Hopper, -1));
+    m_secondaryController_DPad_Right.whenPressed(new MoveHopperCommand(m_Hopper, 1));
     m_secondaryController_LeftTrigger.whileHeld(
       new InstantCommand( m_Hopper::moveForwardSlowly, m_Hopper)
     ).whenReleased( new InstantCommand( m_Hopper::stopMotor, m_Hopper)); // stop
