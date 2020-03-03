@@ -12,8 +12,18 @@ public class ThrowerLUT {
     // first column is inches from the target; second column is RPM that scores from that distance
     // keep the table organized from closest to farthest
     private static final double[][] LUT = {
-      // from testing 2/29 with 53 degrees hood angle = 37 degrees departure angle from horizontal
+      // from testing 3/2 with 53 degrees hood angle = 37 degrees departure angle from horizontal
+      //And fresh Battery :)
       {0, DEFAULT_RPM}, // Default RPM
+      {132, 4300},
+      {149, 4350},
+      {173, 4600},
+      {197, 4675},
+      {214, 4825},
+      {239, 5065},
+      
+      /* testing 2/29 with 53 degrees hood angle = 37 degrees departure angle from horizontal
+      // from 
       {125, 4200},
       {143, 4400},
       {163, 4625},

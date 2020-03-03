@@ -77,22 +77,22 @@ public class ClimbSubsystem extends SubsystemBase {
    * Sets the soleoid to forward.
    */
   public void raiseArm(){
-    m_climbSolenoid.set(Value.kForward);
+    m_climbSolenoid.set(Value.kReverse);
     m_raised = true;
   }
   public void extendArm() {
-    m_extendSolenoid.set(Value.kForward);
+    m_extendSolenoid.set(Value.kReverse);
   }
 
   /**
    * Sets the solenoid to reverse.
    */
   public void lowerArm(){
-    m_climbSolenoid.set(Value.kReverse);
+    m_climbSolenoid.set(Value.kForward);
     m_raised = false;
   }
   public void retractArm() {
-    m_extendSolenoid.set(Value.kReverse);
+    m_extendSolenoid.set(Value.kForward);
   }
   /**
    * Sets the solenoid to off.
