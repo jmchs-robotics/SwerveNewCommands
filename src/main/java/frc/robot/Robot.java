@@ -76,7 +76,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     // Kill vision
-    m_robotContainer.visionShutDown();
+   // m_robotContainer.visionShutDown();
   }
 
   @Override

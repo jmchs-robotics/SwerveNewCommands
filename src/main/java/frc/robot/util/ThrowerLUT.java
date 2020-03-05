@@ -22,7 +22,6 @@ public class ThrowerLUT {
       {197, 4675},
       {214, 4825},
       {239, 5065},
-
       {300, 5480} // from testing 2/8. Go for it!
       
       /* testing 2/29 with 53 degrees hood angle = 37 degrees departure angle from horizontal
