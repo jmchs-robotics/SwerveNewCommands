@@ -76,7 +76,7 @@ public class Paths { // extends CommandBase {
         new SetWheelAngleCommand( m_swerve, -18-90),  // point the wheels in the direction we want to go
         new WaitCommand( 0.2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
         new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
-        new DriveForTime2910Command(m_swerve, 1, .2, -.5), // this drives pretty close to -57, -12
+        new DriveForTime2910Command(m_swerve, 0.8, .2, -.5), // this drives pretty close to -57, -12
         //new DriveForDist2910Command( m_swerve, -57, -12), // go to destination 94 - (25+6.5)/2 - 28
         new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
         new WaitCommand( 1), // give vision coprocessor a chance to find the target
