@@ -362,14 +362,23 @@ public class RobotContainer {
    * Use this to pass the autonomous command to the main {@link Robot} class.
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand( String a) {
     
     Paths p = new Paths( m_swerve,m_Thrower, m_Hopper, m_Intake, sender_, rft_);
     Command autoCommand = new SequentialCommandGroup(
       new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
-      //p.PathTestCommand()
       p.Path1Command()
     );
+    switch( a) {
+      case "1": 
+        break;
+      case "2":
+        autoCommand = new SequentialCommandGroup(
+          new InstantCommand( m_Hopper::setBallCountTo3, m_Hopper),
+          p.Path2Command()
+        );
+    }
+
     return autoCommand;
     /*
     Command autoCommand = new SequentialCommandGroup(

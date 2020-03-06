@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 
 /**
@@ -27,6 +27,9 @@ public class Robot extends TimedRobot {
 
   private int m_sdThrottleCtr = 0;
 
+  private final SendableChooser<String> startPosChooser = new SendableChooser<>();	
+	
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -35,6 +38,14 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
+
+    startPosChooser.setDefaultOption("Path1 back 12, left 57", "1");
+    startPosChooser.addOption("Path2 fwd 12, left 57", "2");
+		
+		// 'print' the Chooser to the dashboard
+		SmartDashboard.putData("Path Chosen", startPosChooser);
+
+
     m_robotContainer = new RobotContainer();
     m_robotContainer.visionInit();
   }
@@ -93,7 +104,9 @@ public class Robot extends TimedRobot {
     // reset the Daisy encoder and index, to match its current position
     m_robotContainer.resetHopperReference( false);
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    String startPos = startPosChooser.getSelected();
+		
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand( startPos);
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
@@ -113,7 +126,7 @@ public class Robot extends TimedRobot {
     // Initialize vision
     m_robotContainer.visionInit();
     // reset the Daisy encoder and index, to match its current position
-    m_robotContainer.resetHopperReference( false);
+    // m_robotContainer.resetHopperReference( false);
     
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

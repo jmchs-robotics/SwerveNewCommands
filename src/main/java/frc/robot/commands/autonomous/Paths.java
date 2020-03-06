@@ -64,7 +64,7 @@ public class Paths { // extends CommandBase {
     }
 
     /**
-     * Go from fence to scoring position, staying right of another robot striaght in front of goal 
+     * Go from fence back and left to mid/back scoring position, staying right of another robot striaght in front of goal 
      * aim, score
      */
     public Command Path1Command() {
@@ -81,6 +81,66 @@ public class Paths { // extends CommandBase {
         new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
         new WaitCommand( 1), // give vision coprocessor a chance to find the target
         new SetPoseAngle2910Command( m_swerve, 10),
+        new WaitCommand( 1), // give vision coprocessor a chance to find the target
+        // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
+        new VisionAimGyroCommand( m_swerve, rft_), // aim the robot
+        new ParallelRaceGroup(
+          new ThrowToTargetCommand(m_Thrower, m_swerve, rft_),  // never ends
+            new SequentialCommandGroup( 
+              new WaitCommand(2),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1),
+              new BumpHopperCommand( m_Hopper),
+              new WaitCommand(.2),
+              new MoveHopperCommand(m_Hopper,1),
+              new WaitCommand(1)
+            )
+          ),
+        //new SetThrowerSpeedCommand(m_Thrower, 0),
+              
+        // very last thing
+        new InstantCommand(m_Thrower::turnOffLED, m_Thrower), // Turn off green LED
+        new InstantCommand(m_swerve::setBrakeOff, m_swerve)
+      );
+    }
+
+
+    /**
+     * Go from fence forward and left to close scoring position, staying right of another robot striaght in front of goal 
+     * aim, score
+     */
+    public Command Path2Command() {
+      return new SequentialCommandGroup(
+        new InstantCommand(m_swerve::holonomicDriveToZero, m_swerve),
+        new InstantCommand(m_swerve::setBrakeOn, m_swerve), // Brake mode on!
+        new InstantCommand(m_Thrower::turnOnLED, m_Thrower), // Turn on green LED
+        new SendVisionCommand(sender_, "R"), // tell vision coprocessor to track the RFT
+        new SetWheelAngleCommand( m_swerve, 18-90),  // point the wheels in the direction we want to go
+        new WaitCommand( 0.2), // 0.2), // give the drivetrain a chance to respond to the SetWheelAngle command
+        new InstantCommand( m_swerve::setDrivePIDToSlow, m_swerve), // test doing DriveForDist at slow speed
+        new DriveForTime2910Command(m_swerve, 1., -.2, -.5), // this drives pretty close to -57, 12
+        //new DriveForDist2910Command( m_swerve, -57, 12), // go to destination 94 - (25+6.5)/2 - 28
+        new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
+        new WaitCommand( 1), // give vision coprocessor a chance to find the target
+        new SetPoseAngle2910Command( m_swerve, 0),
         new WaitCommand( 1), // give vision coprocessor a chance to find the target
         // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
         new VisionAimGyroCommand( m_swerve, rft_), // aim the robot
