@@ -140,7 +140,7 @@ public class Paths { // extends CommandBase {
         //new DriveForDist2910Command( m_swerve, -57, 12), // go to destination 94 - (25+6.5)/2 - 28
         new InstantCommand( m_swerve::setDrivePIDToFast, m_swerve), // put DriveForDist at regular speed
         new WaitCommand( 1), // give vision coprocessor a chance to find the target
-        new SetPoseAngle2910Command( m_swerve, 0),
+        new SetPoseAngle2910Command( m_swerve,0),
         new WaitCommand( 1), // give vision coprocessor a chance to find the target
         // TODO: UnloadCommand().  remove VisionAim and any last WaitCommand()
         new VisionAimGyroCommand( m_swerve, rft_), // aim the robot
