@@ -21,6 +21,12 @@ import java.nio.file.Paths;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.util.SocketVisionWrapper;
 import frc.robot.Constants.Vision;
+
+// switching to Limelight 3/9
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 /**
  * Command to turn the robot (set the robot's pose) to the desired angle
  * Constructor takes robot's drivetrain and desired angle
@@ -35,6 +41,12 @@ public class VisionAimCommand extends CommandBase {
     private final PIDController angleController;
     private final Timer finishTimer = new Timer();
     private boolean isTimerStarted = false;
+
+    // switching to Limelight 3/9
+    private NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    private NetworkTableEntry tx = table.getEntry("tx");
+    private NetworkTableEntry ty = table.getEntry("ty");
+    private NetworkTableEntry tv = table.getEntry("tv");
 
 
   SwerveDriveSubsystem m_drivetrain;
@@ -109,6 +121,7 @@ public class VisionAimCommand extends CommandBase {
 
     @Override
     public void execute() {
+        /*
         if(m_vision.get().get_direction() != "nada"){
             previousXCoord = m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET; // pixels converted to approximate degrees of field of view of camera
             //previousDistance = m_vision.get().get_distance();
@@ -116,7 +129,9 @@ public class VisionAimCommand extends CommandBase {
             // Assume robot continued to move at same rate
             previousXCoord = 0; //previousXCoord - m_drivetrain.getStrafeErrorDerivative();
             //previousDistance = previousDistance - m_drivetrain.getForwardErrorDerivative();
-          }
+          } 
+          */
+          previousXCoord = tx.getDouble(0) + Vision.RFT_X_OFFSET_LL; // switching to Limelight 3/9
         double rotation = angleController.calculate( previousXCoord * Vision.RFT_PIXELS_TO_DEGREES);
         // rotation = Math.min( 0.5, Math.max( -0.5, rotation));  // clamp
         for (int i = 0; i < 4; i++)
@@ -125,7 +140,8 @@ public class VisionAimCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        double currentAngle = (m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET) * Vision.RFT_PIXELS_TO_DEGREES;
+        // double currentAngle = (m_vision.get().get_degrees_x() + Vision.RFT_X_OFFSET) * Vision.RFT_PIXELS_TO_DEGREES;
+        double currentAngle = tx.getDouble(0) + Vision.RFT_X_OFFSET_LL; // 3/9 Limelight
         double currentError = currentAngle - targetAngle;
 
         boolean inTargetBuffer = Math.abs(currentError) < TARGET_ANGLE_BUFFER;
@@ -147,7 +163,7 @@ public class VisionAimCommand extends CommandBase {
     @Override
     public void end( boolean isInterrupted) {
         if( DrivetrainConstants.TUNE) {
-            System.out.println("VisionAim turning ");
+            System.out.println("VisionAim turning " + tx.getDouble(0));
         }
         // angleController.disable();
         drivetrain.holonomicDrive(0, 0, 0);

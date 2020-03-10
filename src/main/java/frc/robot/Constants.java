@@ -32,6 +32,7 @@ public final class Constants {
     public static final long RFT_X_OFFSET = 45; // offset in pixels of vision output vs where we want to point/move the robot
     public static final double RFT_PIXELS_TO_DEGREES = .110755; 
     public static final boolean TUNE = true;
+    public static final double RFT_X_OFFSET_LL = 0;  // limelight offset, degrees, 3/9
   }
   
   /**
