@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 //import com.revrobotics.CANPIDController;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -15,52 +17,39 @@ import frc.robot.subsystems.HopperSubsystem;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperPIDs;
 
-public class MoveHopperCommand extends CommandBase {
+public class BumpHopperCommand extends CommandBase {
   private HopperSubsystem m_subsystem;
-  private double m_moveToWhere = 0;
+
   /**
-   * Move the hopper either (1) one slot forward, (-1) one slot backward, or (6) one full rotation forward.
+   * Move the hopper 1/24 of a slot back, and wait for the hopper to finish.
    */
-  public MoveHopperCommand(HopperSubsystem subsystem, double moveToWhere) {
+  public BumpHopperCommand(HopperSubsystem subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
 
-    m_subsystem = subsystem;
-    m_moveToWhere = moveToWhere;
+    m_subsystem = subsystem; 
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // System.out.println("MoveHopperCommand calling dischargeAll");
-    if( m_moveToWhere == 6) {
-      m_subsystem.dischargeAll();
-    }
-    else if (m_moveToWhere == 1) {
-      m_subsystem.nextSlot();
-    }
-    else if (m_moveToWhere == -1) {
-      m_subsystem.previousSlot();
-    }
-    else {
-      m_subsystem.dischargeAll();
-    }
+    m_subsystem.bumpBack();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    SmartDashboard.putString("You Done Daisy", "Im am so done");
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetpoint(0.02);
+      return m_subsystem.atSetpoint(0.02);
   }
 }

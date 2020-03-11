@@ -7,60 +7,54 @@
 
 package frc.robot.commands;
 
-//import com.revrobotics.CANPIDController;
-
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.HopperSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
-import frc.robot.Constants.HopperConstants;
-import frc.robot.Constants.HopperPIDs;
+public class IntakeReverseCommand extends CommandBase {
+  //private final ColorMatch m_colorMatcher = new ColorMatch();
 
-public class MoveHopperCommand extends CommandBase {
-  private HopperSubsystem m_subsystem;
-  private double m_moveToWhere = 0;
+  private IntakeSubsystem m_intake;
+ 
+
   /**
-   * Move the hopper either (1) one slot forward, (-1) one slot backward, or (6) one full rotation forward.
+   * Run the intake beater bar 'reverse,' for ejecting game pices (balls)
    */
-  public MoveHopperCommand(HopperSubsystem subsystem, double moveToWhere) {
+  public IntakeReverseCommand(IntakeSubsystem intake) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    // Requires the ControlPanel Subsystem
+    addRequirements(intake);
 
-    m_subsystem = subsystem;
-    m_moveToWhere = moveToWhere;
+    m_intake = intake;
+    //m_int = m_int + 1;
+
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // System.out.println("MoveHopperCommand calling dischargeAll");
-    if( m_moveToWhere == 6) {
-      m_subsystem.dischargeAll();
-    }
-    else if (m_moveToWhere == 1) {
-      m_subsystem.nextSlot();
-    }
-    else if (m_moveToWhere == -1) {
-      m_subsystem.previousSlot();
-    }
-    else {
-      m_subsystem.dischargeAll();
-    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
+    // run the intake motor     
+    m_intake.setMotor(-0.7);
+
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_intake.setMotor(0.0);
+    //m_intake.lowerIntake();
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetpoint(0.02);
+    return false;
   }
 }

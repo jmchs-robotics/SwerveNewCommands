@@ -19,7 +19,7 @@ public class IntakeRecieveCommand extends CommandBase {
  
 
   /**
-   * Creates a new SampleColor.
+   * Run the intake beater bar 'forward,' for collecting game pices (balls).
    */
   public IntakeRecieveCommand(IntakeSubsystem intake) {
     // Use addRequirements() here to declare subsystem dependencies.

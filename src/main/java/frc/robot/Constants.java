@@ -29,8 +29,9 @@ public final class Constants {
    */
   public static final class Vision {
     public static final boolean SHOW_DEBUG = false;
-    public static final long RFT_X_OFFSET = 0; // offset in pixels of vision output vs where we want to point/move the robot
-    public static final double RFT_PIXELS_TO_DEGREES = 320.0 / 30.0; // approximation/guess 2/13/20
+    public static final long RFT_X_OFFSET = 45; // offset in pixels of vision output vs where we want to point/move the robot
+    public static final double RFT_PIXELS_TO_DEGREES = .110755; 
+    public static final boolean TUNE = true;
   }
   
   /**
@@ -52,8 +53,8 @@ public final class Constants {
 
   public static final class DrivetrainConstants {
     // set for SwerveyJr 191207
-    public static final double WHEELBASE = 22;
-    public static final double TRACKWIDTH = 19.5;
+    public static final double WHEELBASE = 27.5;
+    public static final double TRACKWIDTH = 18.5;
     public static final double WIDTH = 25.75;
     public static final double LENGTH = 28;
 
@@ -72,18 +73,24 @@ public final class Constants {
     public static final double FORWARD_kI = 0.0;
     public static final double FORWARD_kD = 0.0;
 
-    // PID constants for whole-drivetrain strafe control
-    public static final double ROTATION_kP = 0.01;
+    // PID constants for whole-drivetrain strafe control.
+    // 0.03, 0, 0.075 are from 2910's pose angle code
+    public static final double ROTATION_kP = 0.03;
     public static final double ROTATION_kI = 0.0;
     public static final double ROTATION_kD = 0.0;
-  }
 
-  /**
-   * Contains the CAN IDs of the elevator SparkMax motors
-   */
-  public static final class CarriageMotors {
-    public static final int LEFT_MOTOR = 21;
-    public static final int RIGHT_MOTOR = 22;
+    // PID for controlling rotation in DriveForDist2910Command
+    // they had set .02, 0, 0 
+    public static final double DFD_ROTATION_kP = 0.03; // for next test after 3/1, try drastically reducing from 0.03
+    public static final double DFD_ROTATION_kI = 0.0;
+    public static final double DFD_ROTATION_kD = 0.0;
+
+    // PID for controlling pose angle in SetPoseAngle2910 and VisionAim* commands.
+    public static final double POSE_ANGLE_kP = 0.03;
+    public static final double POSE_ANGLE_kI = 0.0;
+    public static final double POSE_ANGLE_kD = 0.0;
+
+    public static final boolean TUNE = true;
   }
 
   /**
@@ -96,8 +103,7 @@ public final class Constants {
     public static final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
     public static final double cpSpinnerSpeed = 0.5;
   }
-
-
+  
   /**
    * Constants for the control panel
    */
@@ -116,6 +122,8 @@ public final class Constants {
     public static final int climbVictorID = 8;
     public static final int soleniodForward = 4;
     public static final int soleniodBackward = 5;
+    public static final int extendSolenoidForward = 6;
+    public static final int extendSolenoidReverse = 7;
 
     // motor run characteristics
     public static final double forwardSpeed = 0.7;
@@ -125,6 +133,14 @@ public final class Constants {
     public static final boolean TUNE = true;
   }
 
+  // vision coprocessor computes distance as inverse of width of target
+  // if robot is at an angle (i.e. not straight on) then the coprocessor will think the target is farther than it is
+  // by a factor of the cos(angle from straight on), i.e. the projection of the target
+  // set this to true to multiply the distance returned by vision to the angle of the robot's pose,
+  // i.e. to scale the distance back down
+  public static final class ThrowerVision {
+    public static final boolean ADAPT_SPEED_TO_POSE_ANGLE = true;
+  }
 
   public static final class ThrowerMotor {
     public static final int THROWER_MASTER_ID = 14;
@@ -167,11 +183,12 @@ public final class Constants {
     public static final double ONE_ROTATION = 4096;
     public static final int ALLOWABLE_ERROR = 0;
 
-    public static final double DAISY_OFFSET = 0;
-    public static final double DARK_THRESH = 0.5;
-    public static final double PHOTO_DURATION = 0.25; // duration (seconds) over which we want to 
-      //average the photodiode’s input to make sure we only trigger when a ball’s really there
-    public static final double PHOTO_ALPHA =  0.02 / PHOTO_DURATION; // periodic() runs every 0.02 seconds
+    public static final double DAISY_OFFSET = 20 * 4096/360;
+    public static final double DARK_THRESH = 3.2; // between 0 (pitch black) and 5 (bright light)
+    // number of samples (one every 0.02 seconds) over which we want to 
+    //average the photodiode’s input to make sure we only trigger when a ball’s really there
+    public static final int PHOTO_NUM_SAMPLES = 12; 
+    public static final int sdThrottleReset = 25; // start counting from here to 50 for how often to update the SmartDashboard
     
   }
 
@@ -187,7 +204,7 @@ public final class Constants {
 	  */
     public static final int kPIDLoopIdx = 0;
 
-    public static final double kP = 0.4; // 2e-2;
+    public static final double kP = 1.6; // 2e-2;
     public static final double kI = 0; // 1e-6;
     public static final double kD = 0.0;
     public static final double kF = 0; // 2e-6;
@@ -213,17 +230,24 @@ public final class Constants {
 	  public static boolean kMotorInvert = false;
 
     // set to true to put PID and other data on the smart dashboard
-
     public static final boolean TUNE = true;
     
   }
 
+  /** 
+   * which DIO ports control which LEDs
+   */
   public static final class LED {
     public static final int GREEN = 0;
     public static final int SPOTLIGHT = 1;
   }
 
+  /** 
+   * autonomous 
+   */
   public static final class AUTO {
     public static final double DISTANCE_CHECK_TIME = 0.25;
+    public static final boolean TUNE = true;
   }
+
 }

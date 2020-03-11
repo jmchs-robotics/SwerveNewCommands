@@ -50,22 +50,21 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             new SwerveDriveModule(0, 
                 new CANSparkMax(FRONT_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(FRONT_LEFT_DRIVE, MotorType.kBrushless),
-                81.25), //325.25 + 6 + 290 - 360-180), //offset need to be between 0 and 360
-
+                221.25 + 7) , // 81.25- 65+7 + 180 + 18) //offset need to be between 0 and 360
             new SwerveDriveModule(1, 
                 new CANSparkMax(FRONT_RIGHT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(FRONT_RIGHT_DRIVE, MotorType.kBrushless),
-                95.421),//68.421 + 10 + 17), // offset needs to be between 0 and 360
+                296 - 200),//68.421 + 10 + 17), // offset needs to be between 0 and 360
             // 10/26/19 need to change the other 2 modules to SparkMax
             new SwerveDriveModule(2,
                 new CANSparkMax(BACK_RIGHT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_RIGHT_DRIVE, MotorType.kBrushless),
-                254.095),//175.095 + 6 + 73), // offset needs to be between 0 and 360
+                290), // 300-8-2) // offset needs to be between 0 and 360
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top
             new SwerveDriveModule(3,
                 new CANSparkMax(BACK_LEFT_ANGLE, MotorType.kBrushless),
                 new CANSparkMax(BACK_LEFT_DRIVE, MotorType.kBrushless),
-                 31.357),//319.357 + 17 + 55 - 360), //offset needs to be between 0 and 360
+                 153), //offset needs to be between 0 and 360
             // 11/26/19 less positive angle offset settings turns wheel angle clockwise looking from the top   
         };
 
@@ -77,6 +76,7 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
             module.setAngleKD(DrivetrainConstants.ANGLE_kD);
             module.setAngleKI(DrivetrainConstants.ANGLE_kI);
             module.setAngleKP(DrivetrainConstants.ANGLE_kP);
+            module.zeroDistance();  // 200223 set drive encoder to zero
         }
 
         strafeController = new PIDController(DrivetrainConstants.STRAFE_kP, DrivetrainConstants.STRAFE_kI, DrivetrainConstants.STRAFE_kD);
@@ -84,6 +84,12 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
         rotationController = new PIDController(DrivetrainConstants.ROTATION_kP, DrivetrainConstants.ROTATION_kI, DrivetrainConstants.ROTATION_kD);
     }
 
+    public void periodic() {
+      if( DrivetrainConstants.TUNE) {
+        SmartDashboard.putNumber( "Module 0 Max PID output", mSwerveModules[0].getDriveMotor().getPIDController().getOutputMax());
+        SmartDashboard.putNumber("Gyro Degrees", getGyroAngle());
+      }
+    }
     /**
      * compute the angles of the four modules and return a vector of them
      * uses private member isFieldOriented to decide to adjust based on gyro reading
@@ -195,11 +201,11 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
     }
 
     /**
-     * Control Swerve Drive with 3 PID controllers, one for each of the axes.
-     * @param forwardError The error term (from the input device) for forward movement.
-     * @param strafeError The error term (from the input device) for strafe movement.
-     * @param angleError The error term (from the input device, generally gyroscope) for rotation.
-     * @param fieldOriented Whether the frame of reference for Forward and Strafe is the field (true) or the robot (false).
+     * As of 2/17/20, don't use pidMove.  It doesn't yet work.
+     * @param forwardError
+     * @param strafeError
+     * @param angleError
+     * @param fieldOriented
      */
     public void pidMove(double forwardError, double strafeError, double angleError, boolean fieldOriented){
       double forward = forwardController.calculate(forwardError);
@@ -264,8 +270,33 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       setBrake(true);
     }
 
-    // ALL the PID methods. Like, all of them. There are a lot.
+    /**
+     * set the min, max allowable output for all drive PIDs
+     * @param min
+     * @param max
+     */
+    public void setDrivePIDOutputRange( double min, double max) {
+      for( int i=0; i<4; i++) {
+        mSwerveModules[i].setDrivePIDOutputRange(min, max);
+      }
+    }
 
+    /**
+     * So can set the PID output range from an InstantCommand
+     */
+    public void setDrivePIDToSlow() {
+      double x = 0.3;
+      setDrivePIDOutputRange(-1 * x, x);
+    }
+
+    public void setDrivePIDToFast() {
+      double x = 1;
+      setDrivePIDOutputRange(-1 * x, x);
+    }
+    /*
+     # from Eric 1/2020
+     * ALL the PID methods. Like, all of them. There are a lot.
+     */
     public void setForwardSetpoint(double setpoint){
       forwardController.setSetpoint(setpoint);
     }
@@ -367,5 +398,9 @@ public class SwerveDriveSubsystem extends HolonomicDrivetrain {
       forwardMaxOutput = 1;
       strafeMaxOutput = 1;
       rotationMaxOutput = 1;
+    }
+
+    public void holonomicDriveToZero() {
+      holonomicDrive(0,0,0);
     }
 }
