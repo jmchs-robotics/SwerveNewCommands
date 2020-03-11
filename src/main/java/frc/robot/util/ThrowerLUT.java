@@ -87,4 +87,35 @@ public class ThrowerLUT {
         double y = (m * inches) + b;
         return y;
     }
+
+
+    private static final double[][] llLUT = {
+        // from testing 3/2 with 53 degrees hood angle = 37 degrees departure angle from horizontal
+        //And fresh Battery :)
+        {-15, 5500}
+        {-10, 5000},
+        {-5, 4000},
+        {0, DEFAULT_RPM}, // Default RPM
+        {5, 4000},
+        {10, 5000},
+
+    };
+
+    public static double llAngleToRPMs( double angle) {
+        int index = llLUT.length - 2; // Start at the highest meaningful index for a right-handed discrete derivative
+        while(angle < llLUT[index][0]){ index--; } // iterate down. Safe if the lowest index contains {0, DEFAULT_RPM}
+        // No need to check if we're off the deep end, because the worst that could happen
+        // is the motor gets set to full forward. This would replace the loop & following if-statement.
+        
+        // the slope intercept formulas
+        // m = y2 - y1 / x2 - x1
+        // b = y - mx
+        // y = mx + b
+        double m = ( llLUT[index + 1][1] - llLUT[index][1])
+            / ( llLUT[index + 1][0] - llLUT[index][0]);
+        double b = llLUT[index][1] - (m * llLUT[index][0]);
+        double y = (m * angle) + b;
+        return y;
+    }
+    }
 }
