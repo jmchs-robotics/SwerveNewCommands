@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
 
 
     m_robotContainer = new RobotContainer();
-    m_robotContainer.visionInit();
+    //m_robotContainer.visionInit();
   }
 
   /**
@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // Initialize vision
-    m_robotContainer.visionInit();
+    //m_robotContainer.visionInit();
     // reset the Daisy encoder and index, to match its current position
     m_robotContainer.resetHopperReference( false);
 
@@ -124,7 +124,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // Initialize vision
-    m_robotContainer.visionInit();
+    //m_robotContainer.visionInit();
     // reset the Daisy encoder and index, to match its current position
     // m_robotContainer.resetHopperReference( false);
     

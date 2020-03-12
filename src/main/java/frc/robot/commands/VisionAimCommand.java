@@ -50,21 +50,21 @@ public class VisionAimCommand extends CommandBase {
 
 
   SwerveDriveSubsystem m_drivetrain;
-  SocketVisionWrapper m_vision;
+  //SocketVisionWrapper m_vision;
 
   private double previousXCoord = 0;
 
     /**
      * turn the robot to aim at the target
      */
-    public VisionAimCommand(SwerveDriveSubsystem drivetrain, SocketVisionWrapper vision) {
+    public VisionAimCommand(SwerveDriveSubsystem drivetrain) { //,SocketVisionWrapper vision) {
         this.drivetrain = drivetrain;
 
         this.targetAngle = 0;
         angleController = new PIDController(DrivetrainConstants.POSE_ANGLE_kP, DrivetrainConstants.POSE_ANGLE_kI, DrivetrainConstants.POSE_ANGLE_kD);
         angleController.enableContinuousInput(0, 360);
         angleController.reset();
-        m_vision = vision;
+        //m_vision = vision;
         /*
         angleController = new PIDController(0.03, 0, 0.075, new PIDSource() {
             @Override
