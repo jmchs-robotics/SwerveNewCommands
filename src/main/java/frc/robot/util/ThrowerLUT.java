@@ -92,7 +92,7 @@ public class ThrowerLUT {
     private static final double[][] llLUT = {
         // from testing 3/2 with 53 degrees hood angle = 37 degrees departure angle from horizontal
         //And fresh Battery :)
-        {-15, 5500}
+        {-15, 5500},
         {-10, 5000},
         {-5, 4000},
         {0, DEFAULT_RPM}, // Default RPM
@@ -117,5 +117,4 @@ public class ThrowerLUT {
         double y = (m * angle) + b;
         return y;
     }
-    }
-}
+} 
