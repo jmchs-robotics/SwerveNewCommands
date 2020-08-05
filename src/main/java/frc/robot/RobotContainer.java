@@ -218,12 +218,14 @@ public class RobotContainer {
         
     
     // Pat Sajak commands.
+    /*
     m_secondaryController_A.whenPressed(
-      new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak)
+      new InstantComman(m_PatSajak::raiseSpinner, m_PatSajak)
     );
     m_secondaryController_B.whenPressed(
-      new InstantCommand(m_PatSajak::raiseSpinner, m_PatSajak)
+      new InstantCommand(m_PatSajak::lowerSpinner, m_PatSajak)
     );
+    */
     m_secondaryController_Y.whenPressed(
       new ControlPanelRotation(m_PatSajak, m_colorSensor)
     );
